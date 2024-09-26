@@ -11,7 +11,8 @@ public class Main extends Game {
     @Override
     public void create() {
         this.assetManager = new AssetManager();
-        this.assetManager.load("game/InterAstra.atlas", TextureAtlas.class);
+        this.assetManager.load("planets/planets.atlas", TextureAtlas.class);
+        this.assetManager.load("ship/ship.atlas", TextureAtlas.class);
         this.setScreen(new LoadingScreen(this));
     }
 

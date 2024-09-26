@@ -6,24 +6,28 @@ import io.github.interastra.screens.GameScreen;
 
 import java.util.Random;
 
-public class Planet implements CameraEnabledEntity {
+public class Planet implements CameraEnabledEntity, Comparable<Planet> {
+    public static final String[] PLANET_NAMES = {"Thalnox", "Eldara", "Vortellis", "Zyrath", "Orivon", "Solunara",
+        "Kryntor", "Neboros", "Pyrius"};
     public static final int NUM_PLANETS_AVAILABLE = 11;
     public static final float MAX_PLANET_SIZE = 10f;
     public static final float MIN_PLANET_SIZE = 5f;
     public static final float MAX_ORBITAL_SPEED = 0.00005f;
     public static final float MAX_ORBITAL_RADIUS = (GameScreen.MIN_WORLD_SIZE / 2f) - MAX_PLANET_SIZE;
-    public static final float MIN_ORBITAL_RADIUS = 25f;
+    public static final float MIN_ORBITAL_RADIUS = 50f;
     public static final float TWO_PI = (float) (2f * Math.PI);
 
     public int index;
+    public String name;
     public Sprite planetSprite;
     public float orbitalRadius;
     public float orbitalSpeed;
     public float orbitalPosition;
 
-    public Planet(final TextureAtlas textureAtlas) {
+    public Planet(final TextureAtlas textureAtlas, String name) {
         Random rand = new Random();
         this.index = rand.nextInt(NUM_PLANETS_AVAILABLE);
+        this.name = name;
         this.planetSprite = new Sprite(textureAtlas.findRegion("planet", this.index));
         float size = rand.nextFloat(MAX_PLANET_SIZE - MIN_PLANET_SIZE) + MIN_PLANET_SIZE;
         this.planetSprite.setSize(size, size);
@@ -61,5 +65,10 @@ public class Planet implements CameraEnabledEntity {
     @Override
     public float getHeight() {
         return this.planetSprite.getHeight();
+    }
+
+    @Override
+    public int compareTo(Planet o) {
+        return Float.compare(this.orbitalRadius, o.orbitalRadius);
     }
 }

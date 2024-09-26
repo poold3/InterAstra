@@ -10,9 +10,11 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import io.github.interastra.Main;
 import io.github.interastra.models.CameraEnabledEntity;
 import io.github.interastra.models.Planet;
+import io.github.interastra.models.Star;
 import io.github.interastra.tools.CameraOperator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class GameScreen implements Screen, InputProcessor {
     public static final float MIN_WORLD_SIZE = 1000f;
@@ -25,8 +27,9 @@ public class GameScreen implements Screen, InputProcessor {
     public CameraEnabledEntity entityBeingFollowed = null;
 
     public SpriteBatch spriteBatch;
-    public TextureAtlas textureAtlas;
+    public TextureAtlas planetsTextureAtlas;
 
+    public Star sol;
     public ArrayList<Planet> planets;
 
     public float speedMultiplier;
@@ -44,10 +47,10 @@ public class GameScreen implements Screen, InputProcessor {
         this.spriteBatch = new SpriteBatch();
 
         // Get our textureAtlas
-        this.textureAtlas = this.game.assetManager.get("game/InterAstra.atlas", TextureAtlas.class);
+        this.planetsTextureAtlas = this.game.assetManager.get("planets/planets.atlas", TextureAtlas.class);
 
         // Load planets
-        this.loadPlanets();
+        this.loadSolarSystem();
     }
 
     @Override
@@ -68,6 +71,7 @@ public class GameScreen implements Screen, InputProcessor {
     public void resize(int width, int height) {
         this.viewport.update(width, height, true);
         this.camera.center();
+        this.sol.reposition(this.viewport.getWorldWidth() / 2f, this.viewport.getWorldHeight() / 2f);
     }
 
     @Override
@@ -116,8 +120,7 @@ public class GameScreen implements Screen, InputProcessor {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
             this.entityBeingFollowed = this.planets.get(8);
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) {
-            this.entityBeingFollowed = null;
-            this.camera.center();
+            this.entityBeingFollowed = this.sol;
         }
 
         this.moveWithArrows();
@@ -146,6 +149,8 @@ public class GameScreen implements Screen, InputProcessor {
         // Draw the sprites
         this.spriteBatch.begin();
 
+        this.sol.starSprite.draw(this.spriteBatch);
+
         for (Planet planet : this.planets) {
             planet.planetSprite.draw(this.spriteBatch);
         }
@@ -153,11 +158,16 @@ public class GameScreen implements Screen, InputProcessor {
         this.spriteBatch.end();
     }
 
-    public void loadPlanets() {
+    public void loadSolarSystem() {
+        // Add Sol
+        this.sol = new Star(this.planetsTextureAtlas, "Sol");
+
+        // Add Planets
         this.planets = new ArrayList<>();
         for (int i = 0; i < NUM_PLANETS; ++i) {
-            this.planets.add(new Planet(this.textureAtlas));
+            this.planets.add(new Planet(this.planetsTextureAtlas, Planet.PLANET_NAMES[i]));
         }
+        Collections.sort(this.planets);
     }
 
     public void moveWithArrows() {
