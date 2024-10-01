@@ -2,6 +2,7 @@ package io.github.interastra.screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
@@ -55,9 +56,8 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void show() {
-        // Set fullscreen
-        Graphics.DisplayMode displayMode = Gdx.graphics.getDisplayMode();
-        Gdx.graphics.setFullscreenMode(displayMode);
+        // Set Full Screen
+
     }
 
     @Override
@@ -100,36 +100,18 @@ public class GameScreen implements Screen, InputProcessor {
             Gdx.app.exit();
         }
 
-        // Follow planet
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-            this.entityBeingFollowed = this.planets.get(0);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            this.entityBeingFollowed = this.planets.get(1);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-            this.entityBeingFollowed = this.planets.get(2);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
-            this.entityBeingFollowed = this.planets.get(3);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
-            this.entityBeingFollowed = this.planets.get(4);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-            this.entityBeingFollowed = this.planets.get(5);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
-            this.entityBeingFollowed = this.planets.get(6);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
-            this.entityBeingFollowed = this.planets.get(7);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
-            this.entityBeingFollowed = this.planets.get(8);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) {
-            this.entityBeingFollowed = this.sol;
-        }
-
         this.moveWithArrows();
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+            this.speedMultiplier *= 2f;
+            System.out.println(this.speedMultiplier);
+        }
     }
 
     public void logic() {
         // Move planets
         for (Planet planet : this.planets) {
-            planet.move(this.viewport.getWorldWidth(), this.viewport.getWorldHeight(), speedMultiplier);
+            planet.move(this.viewport.getWorldWidth(), this.viewport.getWorldHeight(), Gdx.graphics.getDeltaTime(), speedMultiplier);
         }
 
         // If following an entity, tell the camera operator to do so.
@@ -142,7 +124,7 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     public void draw() {
-        ScreenUtils.clear(Color.BLACK);
+        ScreenUtils.clear(new Color(0.004f, 0f, 0.03f, 1f));
         this.viewport.apply();
         this.spriteBatch.setProjectionMatrix(this.camera.combined);
 
@@ -153,6 +135,9 @@ public class GameScreen implements Screen, InputProcessor {
 
         for (Planet planet : this.planets) {
             planet.planetSprite.draw(this.spriteBatch);
+            if (planet.moon != null) {
+                planet.moon.moonSprite.draw(this.spriteBatch);
+            }
         }
 
         this.spriteBatch.end();

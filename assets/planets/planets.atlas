@@ -92,6 +92,5 @@ bounds:2,2,1024,1024
 planets14.png
 size:2048,2048
 repeat:none
-planet
-index:10
+moon
 bounds:2,2,1024,1024

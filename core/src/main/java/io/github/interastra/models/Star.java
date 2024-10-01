@@ -2,7 +2,6 @@ package io.github.interastra.models;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import java.util.Random;
 

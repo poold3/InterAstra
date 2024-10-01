@@ -49,7 +49,7 @@ public class LoadingScreen implements Screen {
         if (this.game.assetManager.update(16)) {
             this.loadingTime += delta;
             if (this.loadingTime >= WAIT_LOADING_TIME) {
-                this.game.setScreen(new GameScreen(this.game));
+                this.game.setScreen(new MainMenuScreen(this.game));
                 this.dispose();
                 return;
             }

@@ -9,13 +9,15 @@ import java.util.Random;
 public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public static final String[] PLANET_NAMES = {"Thalnox", "Eldara", "Vortellis", "Zyrath", "Orivon", "Solunara",
         "Kryntor", "Neboros", "Pyrius"};
-    public static final int NUM_PLANETS_AVAILABLE = 11;
+    public static final int NUM_PLANETS_AVAILABLE = 10;
     public static final float MAX_PLANET_SIZE = 10f;
     public static final float MIN_PLANET_SIZE = 5f;
-    public static final float MAX_ORBITAL_SPEED = 0.00005f;
+    public static final float MAX_ORBITAL_SPEED = 0.005f;
     public static final float MAX_ORBITAL_RADIUS = (GameScreen.MIN_WORLD_SIZE / 2f) - MAX_PLANET_SIZE;
     public static final float MIN_ORBITAL_RADIUS = 50f;
     public static final float TWO_PI = (float) (2f * Math.PI);
+    // Read the chance as "One in __ chance."
+    public static final int CHANCE_PLANET_HAS_MOON = 4;
 
     public int index;
     public String name;
@@ -23,6 +25,7 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public float orbitalRadius;
     public float orbitalSpeed;
     public float orbitalPosition;
+    public Moon moon = null;
 
     public Planet(final TextureAtlas textureAtlas, String name) {
         Random rand = new Random();
@@ -35,16 +38,26 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
         this.orbitalRadius = rand.nextFloat(MAX_ORBITAL_RADIUS - MIN_ORBITAL_RADIUS) + MIN_ORBITAL_RADIUS;
         this.orbitalSpeed =  (1f - (this.orbitalRadius / MAX_ORBITAL_RADIUS)) * MAX_ORBITAL_SPEED;
         this.orbitalPosition = rand.nextFloat(TWO_PI);
+
+        // Chance this planet has a moon
+        if (rand.nextInt(CHANCE_PLANET_HAS_MOON) == 0) {
+            this.moon = new Moon(textureAtlas, this);
+        }
     }
 
-    public void move(float width, float height, float speedMultiplier) {
-        this.orbitalPosition += (this.orbitalSpeed * speedMultiplier);
+    public void move(float width, float height, float deltaTime, float speedMultiplier) {
+        this.orbitalPosition += (this.orbitalSpeed * deltaTime * speedMultiplier);
         if (this.orbitalPosition >= TWO_PI) {
             this.orbitalPosition -= TWO_PI;
         }
         float x = this.orbitalRadius * (float) Math.cos(this.orbitalPosition) + (width / 2f);
         float y = this.orbitalRadius * (float) Math.sin(this.orbitalPosition) + (height / 2f);
         this.planetSprite.setCenter(x, y);
+
+        // Move moon as well
+        if (this.moon != null) {
+            this.moon.move(deltaTime, speedMultiplier);
+        }
     }
 
     @Override
