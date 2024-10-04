@@ -1,4 +1,4 @@
-package io.github.interastra.tools;
+package io.github.interastra.services;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;

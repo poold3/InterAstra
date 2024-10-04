@@ -6,23 +6,9 @@ filter: Linear, Linear
 repeat: none
 cursor-16
   rotate: false
-  xy: 487, 651
+  xy: 1016, 1000
   size: 2, 16
   orig: 2, 16
-  offset: 0, 0
-  index: -1
-cursor-32
-  rotate: false
-  xy: 1016, 984
-  size: 2, 32
-  orig: 2, 32
-  offset: 0, 0
-  index: -1
-cursor-48
-  rotate: false
-  xy: 455, 593
-  size: 2, 48
-  orig: 2, 48
   offset: 0, 0
   index: -1
 bar_shadow_round_large

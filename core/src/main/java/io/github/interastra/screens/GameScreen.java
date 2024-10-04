@@ -2,7 +2,6 @@ package io.github.interastra.screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
@@ -12,7 +11,7 @@ import io.github.interastra.Main;
 import io.github.interastra.models.CameraEnabledEntity;
 import io.github.interastra.models.Planet;
 import io.github.interastra.models.Star;
-import io.github.interastra.tools.CameraOperator;
+import io.github.interastra.services.CameraOperator;
 
 import java.util.ArrayList;
 import java.util.Collections;
