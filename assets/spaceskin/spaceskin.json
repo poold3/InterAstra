@@ -1,0 +1,119 @@
+{
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+	Teko-16: {
+		file: Teko-16.fnt
+		scaledSize: -1
+		markupEnabled: false
+		flip: false
+	}
+	Teko-32: {
+		file: Teko-32.fnt
+		scaledSize: -1
+		markupEnabled: false
+		flip: false
+	}
+	Teko-48: {
+		file: Teko-48.fnt
+		scaledSize: -1
+		markupEnabled: false
+		flip: false
+	}
+}
+com.badlogic.gdx.graphics.Color: {
+	BLACK: {
+		r: 0
+		g: 0
+		b: 0
+		a: 1
+	}
+	GREY: {
+		r: 0.6862745
+		g: 0.6862745
+		b: 0.6862745
+		a: 1
+	}
+	WHITE: {
+		r: 1
+		g: 1
+		b: 1
+		a: 1
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+	default: {
+		up: button_rectangle_depth
+		down: button_rectangle
+		over: button_rectangle_depth
+		focused: button_rectangle_depth
+		disabled: button_rectangle
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
+	default: {
+		checkboxOn: button_square
+		checkboxOff: button_square_depth
+		font: Teko-16
+		fontColor: WHITE
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
+	default: {
+		font: Teko-16
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+	default: {
+		font: Teko-16
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
+	default: {
+		font: Teko-16
+		fontColorSelected: WHITE
+		fontColorUnselected: WHITE
+		selection: panel_rectangle
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
+	default-horizontal: {
+		background: bar_shadow_round_large
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
+	default-horizontal: {
+		background: bar_shadow_round_large
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+	default: {
+		font: Teko-16
+		fontColor: BLACK
+		up: button_rectangle_depth
+		down: button_rectangle
+		over: button_rectangle_depth
+		focused: button_rectangle_depth
+		disabled: button_rectangle
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
+	default: {
+		font: Teko-16
+		fontColor: WHITE
+		background: panel_rectangle
+		focusedBackground: panel_rectangle
+		cursor: cursor-16
+		selection: bar_shadow_square_small
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
+	default: {
+		label: default
+		background: panel_rectangle
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+	default: {
+		titleFont: Teko-32
+	}
+}
+}
