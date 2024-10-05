@@ -8,6 +8,7 @@ public class ValidationService {
         MIN_NAME_LENGTH,
         MAX_NAME_LENGTH
     );
+    public static final String GAME_CODE_VALIDATION_MESSAGE = "Game codes must be 6 digits.";
 
     public static boolean validateName(final String name) {
         int length = name.length();

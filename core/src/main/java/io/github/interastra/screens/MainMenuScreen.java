@@ -2,6 +2,7 @@ package io.github.interastra.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -11,13 +12,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.NotificationService;
 import io.github.interastra.services.ValidationService;
 
 public class MainMenuScreen implements Screen {
@@ -37,8 +38,9 @@ public class MainMenuScreen implements Screen {
     public Sound leaveSound;
     public boolean exitGame = false;
     public float exitTime = 0f;
-    TextField usernameTextField;
-    TextField gameCodeTextField;
+    public TextField usernameTextField;
+    public TextField gameCodeTextField;
+    public NotificationService notificationService;
 
     public MainMenuScreen(final Main game) {
         this.game = game;
@@ -52,15 +54,13 @@ public class MainMenuScreen implements Screen {
         this.buttonSound = this.game.assetManager.get("audio/button.mp3", Sound.class);
         this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
         this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
+        this.notificationService = new NotificationService(this.skin.getFont("Teko-16"));
     }
 
     @Override
     public void show() {
         Graphics.DisplayMode displayMode = Gdx.graphics.getDisplayMode();
         Gdx.graphics.setFullscreenMode(displayMode);
-
-        float worldWidth = this.viewport.getWorldWidth();
-        float worldHeight = this.viewport.getWorldHeight();
 
         Image backgroundImage = new Image(this.background);
         backgroundImage.setFillParent(true);
@@ -108,6 +108,15 @@ public class MainMenuScreen implements Screen {
         ScreenUtils.clear(Color.BLACK);
         stage.act(delta);
         stage.draw();
+
+        this.viewport.apply();
+        this.spriteBatch.setProjectionMatrix(this.viewport.getCamera().combined);
+        this.spriteBatch.begin();
+
+        float worldHeight = this.viewport.getWorldHeight();
+
+        this.notificationService.drawMessage(this.spriteBatch, delta, 5f, worldHeight - 5f);
+        this.spriteBatch.end();
     }
 
     @Override
@@ -139,6 +148,7 @@ public class MainMenuScreen implements Screen {
         this.badSound.dispose();
         this.buttonSound.dispose();
         this.leaveSound.dispose();
+        this.notificationService.dispose();
     }
 
     public Label getTitleLabel() {
@@ -173,6 +183,7 @@ public class MainMenuScreen implements Screen {
                 String name = usernameTextField.getText().trim();
                 if (!ValidationService.validateName(name)) {
                     badSound.play();
+                    notificationService.setMessage(ValidationService.NAME_VALIDATION_MESSAGE);
                     return;
                 }
             }
@@ -188,12 +199,14 @@ public class MainMenuScreen implements Screen {
                 String name = usernameTextField.getText().trim();
                 if (!ValidationService.validateName(name)) {
                     badSound.play();
+                    notificationService.setMessage(ValidationService.NAME_VALIDATION_MESSAGE);
                     return;
                 }
 
                 String gameCode = gameCodeTextField.getText().trim();
                 if (!ValidationService.validateGameCode(gameCode)) {
                     badSound.play();
+                    notificationService.setMessage(ValidationService.GAME_CODE_VALIDATION_MESSAGE);
                     return;
                 }
             }
@@ -207,6 +220,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 leaveSound.play();
+                notificationService.setMessage("Goodbye!");
                 exitGame = true;
             }
         });
