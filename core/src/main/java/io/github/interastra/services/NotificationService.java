@@ -32,17 +32,17 @@ public class NotificationService {
     public void setMessage(final String message) {
         this.message = message;
         this.duration = 10f;
+        this.stopLoading();
     }
 
     public void setMessage(final String message, float duration) {
         this.message = message;
         this.duration = duration;
+        this.stopLoading();
     }
 
-    /**
-     * Starts the loading animation. Must be called if the message is changed while loading.
-     */
-    public void startLoading() {
+    public void startLoading(final String message) {
+        this.message = message;
         this.isLoading = true;
         this.currentNumberOfPeriods = 1;
         this.loadingTimer = 0f;
@@ -51,7 +51,6 @@ public class NotificationService {
 
     public void stopLoading() {
         this.isLoading = false;
-        this.currentNumberOfPeriods = 0;
     }
 
     public void drawMessage(final SpriteBatch spriteBatch, float delta, float x, float y) {
@@ -70,18 +69,16 @@ public class NotificationService {
         }
 
         this.loadingTimer += delta;
-        if (this.loadingTimer < LOADING_TICK) {
-            this.font.draw(spriteBatch, this.loadingMessage, x, y);
-            return;
-        }
 
-        this.loadingTimer -= LOADING_TICK;
-        this.currentNumberOfPeriods += 1;
-        if (this.currentNumberOfPeriods > MAX_NUMBER_OF_PERIODS) {
-            this.currentNumberOfPeriods = 1;
-            this.loadingMessage = this.message + " .";
-        } else {
-            this.loadingMessage += " .";
+        if (this.loadingTimer >= LOADING_TICK) {
+            this.loadingTimer -= LOADING_TICK;
+            this.currentNumberOfPeriods += 1;
+            if (this.currentNumberOfPeriods > MAX_NUMBER_OF_PERIODS) {
+                this.currentNumberOfPeriods = 1;
+                this.loadingMessage = this.message + " .";
+            } else {
+                this.loadingMessage += " .";
+            }
         }
 
         this.font.draw(spriteBatch, this.loadingMessage, x, y);

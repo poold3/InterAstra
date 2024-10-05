@@ -2,7 +2,6 @@ package io.github.interastra.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -75,7 +74,7 @@ public class MainMenuScreen implements Screen {
         table.add(gameTitleLabel).expandX().center().padTop(20);
         table.row();
 
-        this.usernameTextField = this.getMenuTextField("Enter Username");
+        this.usernameTextField = this.getMenuTextField("Enter Name");
         table.add(usernameTextField).center().padTop(30f).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
         table.row();
 
@@ -100,7 +99,7 @@ public class MainMenuScreen implements Screen {
     public void render(float delta) {
         if (this.exitGame) {
             this.exitTime += delta;
-            if (this.exitTime >= 0.5f) {
+            if (this.exitTime >= 0.75f) {
                 Gdx.app.exit();
             }
         }
@@ -182,7 +181,7 @@ public class MainMenuScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 String name = usernameTextField.getText().trim();
                 if (!ValidationService.validateName(name)) {
-                    badSound.play();
+                    badSound.play(0.5f);
                     notificationService.setMessage(ValidationService.NAME_VALIDATION_MESSAGE);
                     return;
                 }
@@ -198,14 +197,14 @@ public class MainMenuScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 String name = usernameTextField.getText().trim();
                 if (!ValidationService.validateName(name)) {
-                    badSound.play();
+                    badSound.play(0.5f);
                     notificationService.setMessage(ValidationService.NAME_VALIDATION_MESSAGE);
                     return;
                 }
 
                 String gameCode = gameCodeTextField.getText().trim();
                 if (!ValidationService.validateGameCode(gameCode)) {
-                    badSound.play();
+                    badSound.play(0.5f);
                     notificationService.setMessage(ValidationService.GAME_CODE_VALIDATION_MESSAGE);
                     return;
                 }
