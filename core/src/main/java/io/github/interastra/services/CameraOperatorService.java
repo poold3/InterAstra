@@ -9,7 +9,7 @@ import io.github.interastra.models.CameraEnabledEntity;
  * Hi! I'm a camera operator! Just tell me where to film by setting my targetPosition and targetZoom properties.
  * Every time my move() function is called, I slowly move towards the targetPosition and targetZoom settings.
  */
-public class CameraOperator extends OrthographicCamera {
+public class CameraOperatorService extends OrthographicCamera {
     public static final float MOVE_SPEED = 0.1f;
     public static final float ZOOM_SPEED = 0.05f;
 
@@ -17,7 +17,7 @@ public class CameraOperator extends OrthographicCamera {
     public Vector3 targetPosition;
     public float targetZoom;
 
-    public CameraOperator() {
+    public CameraOperatorService() {
         super();
         this.targetPosition = new Vector3();
         this.targetZoom = 1f;

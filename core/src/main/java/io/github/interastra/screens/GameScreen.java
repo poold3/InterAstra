@@ -11,7 +11,7 @@ import io.github.interastra.Main;
 import io.github.interastra.models.CameraEnabledEntity;
 import io.github.interastra.models.Planet;
 import io.github.interastra.models.Star;
-import io.github.interastra.services.CameraOperator;
+import io.github.interastra.services.CameraOperatorService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +22,7 @@ public class GameScreen implements Screen, InputProcessor {
     public static final float ARROW_KEY_MOVE_SPEED = 25f;
 
     public Main game;
-    public CameraOperator camera;
+    public CameraOperatorService camera;
     public ExtendViewport viewport;
     public CameraEnabledEntity entityBeingFollowed = null;
 
@@ -40,7 +40,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         Gdx.input.setInputProcessor(this);
 
-        this.camera = new CameraOperator();
+        this.camera = new CameraOperatorService();
         this.viewport = new ExtendViewport(MIN_WORLD_SIZE, MIN_WORLD_SIZE, camera);
         this.camera.setViewport(this.viewport);
 

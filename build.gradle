@@ -29,7 +29,7 @@ allprojects {
 
 configure(subprojects) {
   apply plugin: 'java-library'
-  sourceCompatibility = 11
+  sourceCompatibility = 17
 
   // From https://lyze.dev/2021/04/29/libGDX-Internal-Assets-List/
   // The article can be helpful when using assets.txt in your project.
@@ -67,6 +67,13 @@ subprojects {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
     maven { url 'https://jitpack.io' }
+  }
+  dependencies {
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.14'
+    //implementation 'org.springframework:spring-websocket:6.1.13'
+    //implementation 'org.springframework:spring-messaging:6.1.13'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket:3.3.4'
+    implementation 'com.google.code.gson:gson:2.11.0'
   }
 }
 

@@ -8,17 +8,17 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
-import io.github.interastra.responses.JoinGameResponse;
-import io.github.interastra.tables.MainMenuTable;
+import io.github.interastra.services.MessageService;
 import io.github.interastra.tables.NotificationTable;
 
 import java.util.ArrayList;
 
-public class MainMenuScreen implements Screen {
+public class LobbyScreen implements Screen {
     public Main game;
     public ScreenViewport viewport;
     public Stage stage;
@@ -28,15 +28,12 @@ public class MainMenuScreen implements Screen {
     public Sound buttonSound;
     public Sound badSound;
     public Sound leaveSound;
-    public boolean exitGame = false;
-    public float exitTime = 0f;
     public NotificationTable notificationTable;
-    public MainMenuTable mainMenuTable;
-    public JoinGameResponse joinGameResponse;
+    public MessageService messageService;
 
-    public MainMenuScreen(final Main game) {
+    public LobbyScreen(final Main game, final String gameCode, final ArrayList<String> names) {
         this.game = game;
-
+        this.messageService = new MessageService(gameCode);
         this.viewport = new ScreenViewport();
         this.stage = new Stage(this.viewport);
         Gdx.input.setInputProcessor(this.stage);
@@ -47,8 +44,6 @@ public class MainMenuScreen implements Screen {
         this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
         this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
         this.notificationTable = new NotificationTable(this.skin);
-        this.mainMenuTable = new MainMenuTable(this, this.skin);
-        this.joinGameResponse = null;
     }
 
     @Override
@@ -60,22 +55,11 @@ public class MainMenuScreen implements Screen {
         backgroundImage.setFillParent(true);
         this.stage.addActor(backgroundImage);
 
-        this.stage.addActor(this.mainMenuTable);
         this.stage.addActor(this.notificationTable);
     }
 
     @Override
     public void render(float delta) {
-        if (this.exitGame) {
-            this.exitTime += delta;
-            if (this.exitTime >= 0.75f) {
-                Gdx.app.exit();
-            }
-        } else if (this.joinGameResponse != null) {
-            this.game.setScreen(new LobbyScreen(this.game, this.joinGameResponse.gameCode, this.joinGameResponse.names));
-            this.dispose();
-        }
-
         ScreenUtils.clear(Color.BLACK);
         stage.act(delta);
         stage.draw();
@@ -103,11 +87,12 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
+        this.background.dispose();
+        this.skin.dispose();
         this.spriteBatch.dispose();
         this.stage.dispose();
-    }
-
-    public synchronized void joinGameSuccess(final JoinGameResponse response) {
-        this.joinGameResponse = response;
+        this.badSound.dispose();
+        this.buttonSound.dispose();
+        this.leaveSound.dispose();
     }
 }
