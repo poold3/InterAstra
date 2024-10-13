@@ -70,8 +70,6 @@ subprojects {
   }
   dependencies {
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.14'
-    //implementation 'org.springframework:spring-websocket:6.1.13'
-    //implementation 'org.springframework:spring-messaging:6.1.13'
     implementation 'org.springframework.boot:spring-boot-starter-websocket:3.3.4'
     implementation 'com.google.code.gson:gson:2.11.0'
   }

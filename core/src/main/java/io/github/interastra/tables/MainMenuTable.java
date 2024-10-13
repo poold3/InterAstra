@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.utils.Align;
 import io.github.interastra.screens.MainMenuScreen;
-import io.github.interastra.services.ApiService;
+import io.github.interastra.rest.RestService;
 import io.github.interastra.services.ClickListenerService;
 import io.github.interastra.services.ValidationService;
 
@@ -92,7 +92,7 @@ public class MainMenuTable extends Table {
                 }
 
                 screen.notificationTable.startLoading("Connecting");
-                ApiService.newGame(screen, name);
+                RestService.newGame(screen, name);
             }
         });
         return newGameButton;
@@ -118,7 +118,7 @@ public class MainMenuTable extends Table {
                 }
 
                 screen.notificationTable.startLoading("Connecting");
-                ApiService.joinGame(screen, name, gameCode);
+                RestService.joinGame(screen, name, gameCode);
             }
         });
         return joinGameButton;
@@ -132,7 +132,7 @@ public class MainMenuTable extends Table {
                 screen.leaveSound.play();
                 screen.notificationTable.setMessage("Goodbye!");
                 screen.exitGame = true;
-                ApiService.shutdownClient();
+                RestService.shutdownClient();
             }
         });
         return exitButton;

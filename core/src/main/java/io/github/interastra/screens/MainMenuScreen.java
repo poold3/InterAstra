@@ -12,11 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
-import io.github.interastra.responses.JoinGameResponse;
+import io.github.interastra.rest.responses.JoinGameResponse;
 import io.github.interastra.tables.MainMenuTable;
 import io.github.interastra.tables.NotificationTable;
-
-import java.util.ArrayList;
 
 public class MainMenuScreen implements Screen {
     public Main game;

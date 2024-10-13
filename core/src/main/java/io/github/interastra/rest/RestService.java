@@ -1,7 +1,7 @@
-package io.github.interastra.services;
+package io.github.interastra.rest;
 
 import com.google.gson.Gson;
-import io.github.interastra.responses.JoinGameResponse;
+import io.github.interastra.rest.responses.JoinGameResponse;
 import io.github.interastra.screens.MainMenuScreen;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-public class ApiService {
+public class RestService {
     public static final String BASE_URL = "http://localhost:8080";
     public static final String SERVER_ERROR = "We ran into an error. Please try again later.";
     public static final OkHttpClient client = new OkHttpClient.Builder()

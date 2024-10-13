@@ -13,13 +13,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
-import io.github.interastra.services.MessageService;
+import io.github.interastra.message.MessageService;
 import io.github.interastra.tables.NotificationTable;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
 
 public class LobbyScreen implements Screen {
     public Main game;
+    public String gameCode;
+    public StompSession messageSession;
+
     public ScreenViewport viewport;
     public Stage stage;
     public SpriteBatch spriteBatch;
@@ -31,9 +35,11 @@ public class LobbyScreen implements Screen {
     public NotificationTable notificationTable;
     public MessageService messageService;
 
+
     public LobbyScreen(final Main game, final String gameCode, final ArrayList<String> names) {
         this.game = game;
-        this.messageService = new MessageService(gameCode);
+        this.gameCode = gameCode;
+        this.messageService = new MessageService(this);
         this.viewport = new ScreenViewport();
         this.stage = new Stage(this.viewport);
         Gdx.input.setInputProcessor(this.stage);
@@ -87,12 +93,12 @@ public class LobbyScreen implements Screen {
 
     @Override
     public void dispose() {
-        this.background.dispose();
-        this.skin.dispose();
         this.spriteBatch.dispose();
         this.stage.dispose();
-        this.badSound.dispose();
-        this.buttonSound.dispose();
-        this.leaveSound.dispose();
+    }
+
+    public void setMessageSession(final StompSession messageSession) {
+        this.messageSession = messageSession;
+
     }
 }

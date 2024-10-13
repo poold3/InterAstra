@@ -1,4 +1,4 @@
-package io.github.interastra.responses;
+package io.github.interastra.rest.responses;
 
 public class Response {
     public boolean success;
