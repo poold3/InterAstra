@@ -18,5 +18,6 @@ public class MessageSessionHandler extends StompSessionHandlerAdapter {
     @Override
     public void afterConnected(@NotNull StompSession session, @NotNull StompHeaders connectedHeaders) {
         this.lobbyScreen.setMessageSession(session);
+        this.lobbyScreen.subscribeToLobbyTopics();
     }
 }

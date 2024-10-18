@@ -14,15 +14,25 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
 import io.github.interastra.message.MessageService;
+import io.github.interastra.message.StompHandlers.LobbyUpdate;
+import io.github.interastra.message.models.LobbyPlayerModel;
+import io.github.interastra.models.Player;
+import io.github.interastra.tables.LobbyTable;
 import io.github.interastra.tables.NotificationTable;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class LobbyScreen implements Screen {
     public Main game;
     public String gameCode;
     public StompSession messageSession;
+    public MessageService messageService;
+    public ArrayList<StompSession.Subscription> lobbySubscriptions;
+    public String myName;
+    public ArrayList<LobbyPlayerModel> players;
+    public final ReentrantLock playersLock;
 
     public ScreenViewport viewport;
     public Stage stage;
@@ -33,13 +43,17 @@ public class LobbyScreen implements Screen {
     public Sound badSound;
     public Sound leaveSound;
     public NotificationTable notificationTable;
-    public MessageService messageService;
+    public LobbyTable lobbyTable;
 
-
-    public LobbyScreen(final Main game, final String gameCode, final ArrayList<String> names) {
+    public LobbyScreen(final Main game, final String gameCode, final String myName) {
         this.game = game;
         this.gameCode = gameCode;
+        this.myName = myName;
         this.messageService = new MessageService(this);
+        this.lobbySubscriptions = new ArrayList<>();
+        this.playersLock = new ReentrantLock(true);
+        this.players = new ArrayList<>();
+
         this.viewport = new ScreenViewport();
         this.stage = new Stage(this.viewport);
         Gdx.input.setInputProcessor(this.stage);
@@ -50,6 +64,7 @@ public class LobbyScreen implements Screen {
         this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
         this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
         this.notificationTable = new NotificationTable(this.skin);
+        this.lobbyTable = new LobbyTable(this, this.skin);
     }
 
     @Override
@@ -62,6 +77,7 @@ public class LobbyScreen implements Screen {
         this.stage.addActor(backgroundImage);
 
         this.stage.addActor(this.notificationTable);
+        this.stage.addActor(this.lobbyTable);
     }
 
     @Override
@@ -99,6 +115,23 @@ public class LobbyScreen implements Screen {
 
     public void setMessageSession(final StompSession messageSession) {
         this.messageSession = messageSession;
+    }
 
+    public void unsubscribeToLobbyTopics() {
+        for (StompSession.Subscription sub : this.lobbySubscriptions) {
+            sub.unsubscribe();
+        }
+        this.lobbySubscriptions.clear();
+    }
+
+    public void subscribeToLobbyTopics() {
+        this.unsubscribeToLobbyTopics();
+        System.out.println(String.format("/topic/lobby-update/%s", this.gameCode));
+        this.lobbySubscriptions.add(
+            this.messageSession.subscribe(
+                String.format("/topic/lobby-update/%s", this.gameCode),
+                new LobbyUpdate(this)
+            )
+        );
     }
 }

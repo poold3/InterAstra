@@ -62,6 +62,10 @@ public class MainMenuTable extends Table {
         return new Label("Inter Astra", titleLabelStyle);
     }
 
+    public String getUsernameText() {
+        return usernameTextField.getText().trim();
+    }
+
     public TextField getMenuTextField(String text) {
         TextField menuTextField = new TextField(text, this.skin);
         menuTextField.setAlignment(Align.center);

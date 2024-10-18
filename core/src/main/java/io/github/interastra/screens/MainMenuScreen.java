@@ -70,7 +70,7 @@ public class MainMenuScreen implements Screen {
                 Gdx.app.exit();
             }
         } else if (this.joinGameResponse != null) {
-            this.game.setScreen(new LobbyScreen(this.game, this.joinGameResponse.gameCode, this.joinGameResponse.names));
+            this.game.setScreen(new LobbyScreen(this.game, this.joinGameResponse.gameCode, this.mainMenuTable.getUsernameText()));
             this.dispose();
         }
 
