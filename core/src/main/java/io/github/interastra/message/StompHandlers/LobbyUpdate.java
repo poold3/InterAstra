@@ -27,6 +27,6 @@ public class LobbyUpdate implements StompFrameHandler {
         this.lobbyScreen.playersLock.lock();
         this.lobbyScreen.players = message.players();
         this.lobbyScreen.playersLock.unlock();
-        System.out.println(this.lobbyScreen.players.get(0).name());
+        this.lobbyScreen.lobbyTable.addPlayers();
     }
 }
