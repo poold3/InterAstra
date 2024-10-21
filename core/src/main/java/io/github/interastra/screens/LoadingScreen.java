@@ -8,18 +8,16 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
 
 public class LoadingScreen implements Screen {
-    public static final int WIDTH = 320;
-    public static final int HEIGHT = 240;
     public static final float PROGRESS_BAR_WIDTH = 100;
     public static final float PROGRESS_BAR_HEIGHT = 25;
     public static final float WAIT_LOADING_TIME = 0.75f;
 
     public final Main game;
-    public FitViewport viewport;
+    public ScreenViewport viewport;
     public SpriteBatch spriteBatch;
     public BitmapFont bitmapFont;
     public ShapeRenderer shapeRenderer;
@@ -33,9 +31,8 @@ public class LoadingScreen implements Screen {
     @Override
     public void show() {
         // Prepare your screen here.
-        Gdx.graphics.setWindowedMode(WIDTH, HEIGHT);
 
-        this.viewport = new FitViewport(WIDTH, HEIGHT);
+        this.viewport = new ScreenViewport();
         this.spriteBatch = new SpriteBatch();
         this.bitmapFont = new BitmapFont();
         this.bitmapFont.setColor(Color.WHITE);
@@ -60,8 +57,8 @@ public class LoadingScreen implements Screen {
         this.spriteBatch.setProjectionMatrix(this.viewport.getCamera().combined);
         this.shapeRenderer.setProjectionMatrix(this.viewport.getCamera().combined);
 
-        float startX = (WIDTH / 2f) - (PROGRESS_BAR_WIDTH / 2f);
-        float startY = 100f;
+        float startX = (this.viewport.getWorldWidth() / 2f) - (PROGRESS_BAR_WIDTH / 2f);
+        float startY = this.viewport.getWorldHeight() / 2f;
 
         this.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         this.shapeRenderer.setColor(Color.WHITE);
@@ -72,13 +69,13 @@ public class LoadingScreen implements Screen {
 
         this.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         this.shapeRenderer.setColor(Color.WHITE);
-        this.shapeRenderer.rect(startX + 1f, startY + 2f, progress, PROGRESS_BAR_HEIGHT - 3f);
+        this.shapeRenderer.rect(startX + 1f, startY + 1f, progress, PROGRESS_BAR_HEIGHT - 3f);
         this.shapeRenderer.end();
 
         GlyphLayout layout = new GlyphLayout(this.bitmapFont, "Inter Astra");
 
         this.spriteBatch.begin();
-        this.bitmapFont.draw(this.spriteBatch, layout, (this.viewport.getWorldWidth() - layout.width) / 2, 150f);
+        this.bitmapFont.draw(this.spriteBatch, layout, (this.viewport.getWorldWidth() - layout.width) / 2, startY + 50f);
         this.spriteBatch.end();
     }
 

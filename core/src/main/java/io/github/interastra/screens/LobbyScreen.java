@@ -16,7 +16,6 @@ import io.github.interastra.Main;
 import io.github.interastra.message.MessageService;
 import io.github.interastra.message.StompHandlers.LobbyUpdate;
 import io.github.interastra.message.models.LobbyPlayerModel;
-import io.github.interastra.models.Player;
 import io.github.interastra.tables.LobbyTable;
 import io.github.interastra.tables.NotificationTable;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -69,9 +68,6 @@ public class LobbyScreen implements Screen {
 
     @Override
     public void show() {
-        Graphics.DisplayMode displayMode = Gdx.graphics.getDisplayMode();
-        Gdx.graphics.setFullscreenMode(displayMode);
-
         Image backgroundImage = new Image(this.background);
         backgroundImage.setFillParent(true);
         this.stage.addActor(backgroundImage);
@@ -133,5 +129,18 @@ public class LobbyScreen implements Screen {
                 new LobbyUpdate(this)
             )
         );
+    }
+
+    public boolean getReadyStatus(final String name) {
+        boolean ready = false;
+        this.playersLock.lock();
+        for (LobbyPlayerModel player : this.players) {
+            if (player.name().equals(name)) {
+                ready = player.ready();
+                break;
+            }
+        }
+        this.playersLock.unlock();
+        return ready;
     }
 }

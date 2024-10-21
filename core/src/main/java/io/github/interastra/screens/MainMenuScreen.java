@@ -51,9 +51,6 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
-        Graphics.DisplayMode displayMode = Gdx.graphics.getDisplayMode();
-        Gdx.graphics.setFullscreenMode(displayMode);
-
         Image backgroundImage = new Image(this.background);
         backgroundImage.setFillParent(true);
         this.stage.addActor(backgroundImage);
