@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import io.github.interastra.message.models.LobbyPlayerModel;
 import io.github.interastra.rest.RestService;
@@ -14,8 +15,8 @@ import io.github.interastra.services.ValidationService;
 
 
 public class LobbyTable extends Table {
-    public static final float PLAYER_LABEL_MAX_WIDTH = 200f;
-    public static final float PLAYER_LABEL_MIN_WIDTH = 100f;
+    public static final float PLAYER_LABEL_WIDTH = 150f;
+    public static final float READY_BUTTON_WIDTH = 100f;
 
     private final LobbyScreen screen;
     private final Skin skin;
@@ -50,42 +51,37 @@ public class LobbyTable extends Table {
     }
 
     public void addPlayers() {
-        float playerLabelWidth = this.getPlayerLabelWidth();
         this.playersTable.clearChildren();
         this.screen.playersLock.lock();
         for (LobbyPlayerModel player : this.screen.players) {
-            Label playerLabel = this.getPlayerLabel(player.name(), player.name().equals(this.screen.myName));
-            this.playersTable.add(playerLabel)
-                .pad(20f, 10f, 0f, 10f)
-                .width(playerLabelWidth)
-                .center();
+            Table playerTable = this.getPlayerTable(player.name(), player.ready(), player.name().equals(this.screen.myName));
+            this.playersTable.add(playerTable);
         }
         this.playersTable.row();
-        for (LobbyPlayerModel player : this.screen.players) {
-            TextButton playerReadyButton = this.getPlayerReadyButton(player.ready(), player.name().equals(this.screen.myName));
-            this.playersTable.add(playerReadyButton)
-                .pad(20f, 10f, 0f, 10f)
-                .width(playerLabelWidth)
-                .center();
-        }
         this.screen.playersLock.unlock();
 
     }
 
-    public Label getPlayerLabel(final String name, final boolean self) {
-        Label.LabelStyle playerLabelStyle = new Label.LabelStyle();
-        playerLabelStyle.font = this.skin.getFont("Teko-32");
-        playerLabelStyle.background = this.skin.getDrawable("panel_square");
+    public Table getPlayerTable(final String name, final boolean ready, final boolean self) {
+        Table playerTable = new Table();
+        playerTable.setDebug(true);
+        playerTable.center();
+        Drawable background = this.skin.getDrawable("button_square_header_blade_square_screws");
+        background.setMinWidth(0);
+        background.setMinHeight(0);
+        playerTable.setBackground(background);
 
-        Label playerLabel = new Label(String.format(name), playerLabelStyle);
-        playerLabel.setAlignment(Align.center);
-        playerLabel.setEllipsis(true);
-        return playerLabel;
-    }
+        Label playerReadyLabel = new Label(ready ? "Ready" : "Not Ready", this.skin);
+        playerReadyLabel.setEllipsis(true);
+        playerTable.add(playerReadyLabel).left();
 
-    public float getPlayerLabelWidth() {
-        float playerLabelWidth = Math.max((this.screen.stage.getWidth() - 50f) / 4f, PLAYER_LABEL_MIN_WIDTH);
-        return Math.min(playerLabelWidth, PLAYER_LABEL_MAX_WIDTH);
+        playerTable.row();
+
+        Label playerNameLabel = new Label(name, this.skin);
+        playerNameLabel.setEllipsis(true);
+        playerTable.add(playerNameLabel);
+
+        return playerTable;
     }
 
     public TextButton getPlayerReadyButton(final boolean ready, final boolean self) {
