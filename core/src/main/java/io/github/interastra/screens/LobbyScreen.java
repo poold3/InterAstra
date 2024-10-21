@@ -1,12 +1,12 @@
 package io.github.interastra.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -35,11 +35,11 @@ public class LobbyScreen implements Screen {
 
     public ScreenViewport viewport;
     public Stage stage;
+    public TextureAtlas iconsTextureAtlas;
     public SpriteBatch spriteBatch;
     public Skin skin;
     public Texture background;
     public Sound buttonSound;
-    public Sound badSound;
     public Sound leaveSound;
     public NotificationTable notificationTable;
     public LobbyTable lobbyTable;
@@ -56,11 +56,11 @@ public class LobbyScreen implements Screen {
         this.viewport = new ScreenViewport();
         this.stage = new Stage(this.viewport);
         Gdx.input.setInputProcessor(this.stage);
+        this.iconsTextureAtlas = this.game.assetManager.get("icons/icons.atlas", TextureAtlas.class);
         this.skin = this.game.assetManager.get("spaceskin/spaceskin.json", Skin.class);
         this.background = this.game.assetManager.get("background.png", Texture.class);
         this.spriteBatch = new SpriteBatch();
         this.buttonSound = this.game.assetManager.get("audio/button.mp3", Sound.class);
-        this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
         this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
         this.notificationTable = new NotificationTable(this.skin);
         this.lobbyTable = new LobbyTable(this, this.skin);
@@ -142,5 +142,12 @@ public class LobbyScreen implements Screen {
         }
         this.playersLock.unlock();
         return ready;
+    }
+
+    public void leave() {
+        this.unsubscribeToLobbyTopics();
+        this.messageSession.disconnect();
+        this.game.setScreen(new MainMenuScreen(this.game));
+        this.dispose();
     }
 }

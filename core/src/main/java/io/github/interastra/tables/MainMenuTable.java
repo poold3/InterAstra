@@ -1,8 +1,10 @@
 package io.github.interastra.tables;
 
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.utils.Align;
 import io.github.interastra.screens.MainMenuScreen;
@@ -80,12 +82,13 @@ public class MainMenuTable extends Table {
                 }
             }
         });
+        menuTextField.addListener(new ClickListenerService(null, Cursor.SystemCursor.Ibeam));
         return menuTextField;
     }
 
     public TextButton getNewGameButton() {
         TextButton newGameButton = new TextButton("New Game", this.skin);
-        newGameButton.addListener(new ClickListenerService(this.screen.buttonSound) {
+        newGameButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 String name = usernameTextField.getText().trim();
@@ -104,7 +107,7 @@ public class MainMenuTable extends Table {
 
     public TextButton getJoinGameButton() {
         TextButton joinGameButton = new TextButton("Join Game", this.skin);
-        joinGameButton.addListener(new ClickListenerService(this.screen.buttonSound) {
+        joinGameButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 String name = usernameTextField.getText().trim();
@@ -130,7 +133,7 @@ public class MainMenuTable extends Table {
 
     public TextButton getExitButton() {
         TextButton exitButton = new TextButton("Exit", this.skin);
-        exitButton.addListener(new ClickListenerService(this.screen.buttonSound) {
+        exitButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 screen.leaveSound.play();

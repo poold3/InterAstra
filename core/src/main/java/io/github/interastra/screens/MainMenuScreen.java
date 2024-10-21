@@ -64,6 +64,8 @@ public class MainMenuScreen implements Screen {
         if (this.exitGame) {
             this.exitTime += delta;
             if (this.exitTime >= 0.75f) {
+                this.dispose();
+                this.game.assetManager.dispose();
                 Gdx.app.exit();
             }
         } else if (this.joinGameResponse != null) {
