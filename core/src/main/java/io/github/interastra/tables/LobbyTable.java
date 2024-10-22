@@ -43,6 +43,8 @@ public class LobbyTable extends Table {
         this.row();
 
         this.playersTable = new Table();
+        this.playersTable.add()
+            .width(PLAYER_LABEL_WIDTH).height(PLAYER_LABEL_HEIGHT);
         this.add(this.playersTable).padTop(20f).expandX().center();
         this.row();
 
@@ -95,6 +97,7 @@ public class LobbyTable extends Table {
 
     public void updatePlayers() {
         this.playersTable.clearChildren();
+        this.playerReadyButton.setDisabled(true);
         this.screen.playersLock.lock();
         for (LobbyPlayerMessageModel player : this.screen.players) {
             this.playersTable.add(this.getPlayerTable(player.name(), player.ready()))
@@ -102,6 +105,7 @@ public class LobbyTable extends Table {
 
             if (player.name().equals(this.screen.myName)) {
                 this.playerReadyButton.setText(player.ready() ? "Ready Down" : "Ready Up");
+                this.playerReadyButton.setDisabled(false);
             }
         }
         this.screen.playersLock.unlock();
@@ -134,6 +138,7 @@ public class LobbyTable extends Table {
                 RestService.setReady(screen, screen.gameCode, screen.myName, !screen.getReadyStatus(screen.myName));
             }
         });
+        playerReadyButton.setDisabled(true);
         return playerReadyButton;
     }
 
