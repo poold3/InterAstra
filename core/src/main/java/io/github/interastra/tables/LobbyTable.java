@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Clipboard;
-import io.github.interastra.message.models.LobbyPlayerModel;
+import io.github.interastra.message.models.LobbyPlayerMessageModel;
 import io.github.interastra.rest.RestService;
 import io.github.interastra.screens.LobbyScreen;
 import io.github.interastra.services.ClickListenerService;
@@ -96,7 +96,7 @@ public class LobbyTable extends Table {
     public void updatePlayers() {
         this.playersTable.clearChildren();
         this.screen.playersLock.lock();
-        for (LobbyPlayerModel player : this.screen.players) {
+        for (LobbyPlayerMessageModel player : this.screen.players) {
             this.playersTable.add(this.getPlayerTable(player.name(), player.ready()))
                 .maxWidth(PLAYER_LABEL_WIDTH).maxHeight(PLAYER_LABEL_HEIGHT).padLeft(10f).padRight(10f);
 

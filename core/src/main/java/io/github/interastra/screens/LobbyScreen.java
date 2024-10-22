@@ -14,8 +14,11 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
 import io.github.interastra.message.MessageService;
+import io.github.interastra.message.StompHandlers.GameStart;
 import io.github.interastra.message.StompHandlers.LobbyUpdate;
-import io.github.interastra.message.models.LobbyPlayerModel;
+import io.github.interastra.message.messages.GameStartMessage;
+import io.github.interastra.message.models.LobbyPlayerMessageModel;
+import io.github.interastra.message.models.PlanetMessageModel;
 import io.github.interastra.tables.LobbyTable;
 import io.github.interastra.tables.NotificationTable;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -30,7 +33,7 @@ public class LobbyScreen implements Screen {
     public MessageService messageService;
     public ArrayList<StompSession.Subscription> lobbySubscriptions;
     public String myName;
-    public ArrayList<LobbyPlayerModel> players;
+    public ArrayList<LobbyPlayerMessageModel> players;
     public final ReentrantLock playersLock;
 
     public ScreenViewport viewport;
@@ -122,11 +125,20 @@ public class LobbyScreen implements Screen {
 
     public void subscribeToLobbyTopics() {
         this.unsubscribeToLobbyTopics();
-        System.out.println(String.format("/topic/lobby-update/%s", this.gameCode));
+
+        // Add lobby update subscription
         this.lobbySubscriptions.add(
             this.messageSession.subscribe(
                 String.format("/topic/lobby-update/%s", this.gameCode),
                 new LobbyUpdate(this)
+            )
+        );
+
+        // Add game start subscription
+        this.lobbySubscriptions.add(
+            this.messageSession.subscribe(
+                String.format("/topic/game-start/%s", this.gameCode),
+                new GameStart(this)
             )
         );
     }
@@ -134,7 +146,7 @@ public class LobbyScreen implements Screen {
     public boolean getReadyStatus(final String name) {
         boolean ready = false;
         this.playersLock.lock();
-        for (LobbyPlayerModel player : this.players) {
+        for (LobbyPlayerMessageModel player : this.players) {
             if (player.name().equals(name)) {
                 ready = player.ready();
                 break;
@@ -149,5 +161,12 @@ public class LobbyScreen implements Screen {
         this.messageSession.disconnect();
         this.game.setScreen(new MainMenuScreen(this.game));
         this.dispose();
+    }
+
+    public void startGame(final GameStartMessage message) {
+        for (PlanetMessageModel planet : message.planets()) {
+            System.out.println(planet.name());
+            System.out.println(planet.index());
+        }
     }
 }
