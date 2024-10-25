@@ -363,26 +363,6 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/dalli/Downloads/kenney_ui-pack-space-expansion/PNG/Extra/Default/panel_square_screws.png
-			bgColor: {
-				r: 1
-				g: 1
-				b: 1
-				a: 1
-			}
-			tint: null
-			tintName: null
-			name: panel_square_screws
-			tiled: false
-			minWidth: -1
-			minHeight: -1
-			customized: false
-			tenPatchData: null
-			tvgData: null
-			type: TEXTURE
-			hidden: false
-		}
-		{
 			file: C:/Users/dalli/Downloads/kenney_ui-pack-space-expansion/PNG/Grey/Default/button_square_header_notch_rectangle_screws.png
 			bgColor: {
 				r: 1
@@ -740,6 +720,26 @@ atlasData: {
 			tenPatchData: null
 			tvgData: null
 			type: TEXTURE
+			hidden: false
+		}
+		{
+			file: C:/Users/dalli/Downloads/panel_square_screws.9.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: panel_square_screws
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: NINE_PATCH
 			hidden: false
 		}
 	]

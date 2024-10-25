@@ -4,7 +4,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -17,7 +16,6 @@ public class LoadingScreen implements Screen {
 
     public final Main game;
     public ScreenViewport viewport;
-    public SpriteBatch spriteBatch;
     public BitmapFont bitmapFont;
     public ShapeRenderer shapeRenderer;
 
@@ -32,7 +30,6 @@ public class LoadingScreen implements Screen {
         // Prepare your screen here.
 
         this.viewport = new ScreenViewport();
-        this.spriteBatch = new SpriteBatch();
         this.bitmapFont = new BitmapFont();
         this.bitmapFont.setColor(Color.WHITE);
         this.shapeRenderer = new ShapeRenderer();
@@ -53,7 +50,7 @@ public class LoadingScreen implements Screen {
 
         ScreenUtils.clear(Color.BLACK);
         this.viewport.apply();
-        this.spriteBatch.setProjectionMatrix(this.viewport.getCamera().combined);
+        this.game.spriteBatch.setProjectionMatrix(this.viewport.getCamera().combined);
         this.shapeRenderer.setProjectionMatrix(this.viewport.getCamera().combined);
 
         float startX = (this.viewport.getWorldWidth() / 2f) - (PROGRESS_BAR_WIDTH / 2f);
@@ -73,9 +70,9 @@ public class LoadingScreen implements Screen {
 
         GlyphLayout layout = new GlyphLayout(this.bitmapFont, "Inter Astra");
 
-        this.spriteBatch.begin();
-        this.bitmapFont.draw(this.spriteBatch, layout, (this.viewport.getWorldWidth() - layout.width) / 2, startY + 50f);
-        this.spriteBatch.end();
+        this.game.spriteBatch.begin();
+        this.bitmapFont.draw(this.game.spriteBatch, layout, (this.viewport.getWorldWidth() - layout.width) / 2, startY + 50f);
+        this.game.spriteBatch.end();
     }
 
     @Override
@@ -101,8 +98,6 @@ public class LoadingScreen implements Screen {
 
     @Override
     public void dispose() {
-        // Destroy screen's assets here.
-        this.spriteBatch.dispose();
         this.bitmapFont.dispose();
         this.shapeRenderer.dispose();
     }

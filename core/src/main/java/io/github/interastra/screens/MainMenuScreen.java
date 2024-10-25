@@ -5,7 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -19,7 +19,6 @@ public class MainMenuScreen implements Screen {
     public Main game;
     public ScreenViewport viewport;
     public Stage stage;
-    public SpriteBatch spriteBatch;
     public Skin skin;
     public Texture background;
     public Sound buttonSound;
@@ -39,7 +38,6 @@ public class MainMenuScreen implements Screen {
         Gdx.input.setInputProcessor(this.stage);
         this.skin = this.game.assetManager.get("spaceskin/spaceskin.json", Skin.class);
         this.background = this.game.assetManager.get("background.png", Texture.class);
-        this.spriteBatch = new SpriteBatch();
         this.buttonSound = this.game.assetManager.get("audio/button.mp3", Sound.class);
         this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
         this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
@@ -64,7 +62,6 @@ public class MainMenuScreen implements Screen {
             this.exitTime += delta;
             if (this.exitTime >= 0.75f) {
                 this.dispose();
-                this.game.assetManager.dispose();
                 Gdx.app.exit();
             }
         } else if (this.joinGameResponse != null) {
@@ -99,7 +96,6 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
-        this.spriteBatch.dispose();
         this.stage.dispose();
     }
 

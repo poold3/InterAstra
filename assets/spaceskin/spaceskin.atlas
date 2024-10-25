@@ -144,13 +144,6 @@ panel_square
   orig: 64, 64
   offset: 0, 0
   index: -1
-panel_square_screws
-  rotate: false
-  xy: 641, 708
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
 button_square_header_blade_rectangle
   rotate: false
   xy: 195, 537
@@ -167,14 +160,14 @@ button_square_header_blade_rectangle_screws
   index: -1
 button_square_header_blade_square
   rotate: false
-  xy: 1, 141
+  xy: 707, 708
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_header_blade_square_screws
   rotate: false
-  xy: 67, 207
+  xy: 1, 141
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -195,14 +188,14 @@ button_square_header_large_rectangle_screws
   index: -1
 button_square_header_large_square
   rotate: false
-  xy: 133, 273
+  xy: 67, 207
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_header_large_square_screws
   rotate: false
-  xy: 199, 339
+  xy: 133, 273
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -223,14 +216,14 @@ button_square_header_notch_rectangle_screws
   index: -1
 button_square_header_notch_square
   rotate: false
-  xy: 1, 207
+  xy: 641, 708
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_header_notch_square_screws
   rotate: false
-  xy: 67, 273
+  xy: 1, 207
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -251,15 +244,24 @@ button_square_header_small_rectangle_screws
   index: -1
 button_square_header_small_square
   rotate: false
-  xy: 133, 339
+  xy: 67, 273
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_header_small_square_screws
   rotate: false
-  xy: 707, 708
+  xy: 133, 339
   size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+panel_square_screws
+  rotate: false
+  xy: 199, 339
+  size: 64, 64
+  split: 13, 13, 15, 13
+  pad: 0, 0, 0, 0
   orig: 64, 64
   offset: 0, 0
   index: -1

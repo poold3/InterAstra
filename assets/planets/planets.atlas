@@ -2,7 +2,7 @@ planets.png
 size:2048,2048
 repeat:none
 planet
-index:0
+index:9
 bounds:2,2,1280,1280
 
 planets2.png
@@ -65,7 +65,7 @@ planets10.png
 size:2048,2048
 repeat:none
 planet
-index:9
+index:0
 bounds:2,2,1280,1280
 
 planets11.png

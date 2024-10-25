@@ -1,13 +1,11 @@
 package io.github.interastra.tables;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Clipboard;
 import io.github.interastra.models.Planet;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
@@ -31,11 +29,11 @@ public class PlanetsTable extends Table {
         this.bottom();
 
         for (Planet planet : this.screen.planets) {
-            this.add(this.getPlanetButton(planet)).maxWidth(this.buttonSize).maxHeight(this.buttonSize).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
+            this.add(this.getPlanetContainer(planet)).maxWidth(this.buttonSize).maxHeight(this.buttonSize).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
         }
     }
 
-    public Container<ImageButton> getPlanetButton(Planet planet) {
+    public Container<ImageButton> getPlanetContainer(Planet planet) {
         TextureRegion planetTextureRegion = this.screen.planetsTextureAtlas.findRegion("planet", planet.index);
         Drawable planetDrawable = new TextureRegionDrawable(planetTextureRegion);
 
@@ -47,7 +45,12 @@ public class PlanetsTable extends Table {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 screen.entityBeingFollowed = planet;
-                screen.camera.targetZoom = screen.camera.getZoomForSize(planet.getWidth());
+                if (planet.moon != null) {
+                    screen.camera.targetZoom = screen.camera.getZoomForSize((planet.moon.orbitalRadius * 2f) + planet.moon.getWidth());
+                } else {
+                    screen.camera.targetZoom = screen.camera.getZoomForSize(planet.getWidth());
+                }
+
             }
         });
 
@@ -61,7 +64,9 @@ public class PlanetsTable extends Table {
         tooltipManager.initialTime = 0f;
         tooltipManager.subsequentTime = 0f;
 
-        TextTooltip.TextTooltipStyle planetNameStyle = this.skin.get(TextTooltip.TextTooltipStyle.class);
+        TextTooltip.TextTooltipStyle planetNameStyle = new TextTooltip.TextTooltipStyle(
+            this.skin.get(TextTooltip.TextTooltipStyle.class)
+        );
         planetNameStyle.label.font = this.skin.getFont("Teko-32");
         TextTooltip planetName = new TextTooltip(planet.name, tooltipManager, planetNameStyle);
         planetContainer.addListener(planetName);

@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -37,7 +36,6 @@ public class LobbyScreen implements Screen {
     public ScreenViewport viewport;
     public Stage stage;
     public TextureAtlas iconsTextureAtlas;
-    public SpriteBatch spriteBatch;
     public Skin skin;
     public Texture background;
     public Sound buttonSound;
@@ -63,7 +61,6 @@ public class LobbyScreen implements Screen {
         this.iconsTextureAtlas = this.game.assetManager.get("icons/icons.atlas", TextureAtlas.class);
         this.skin = this.game.assetManager.get("spaceskin/spaceskin.json", Skin.class);
         this.background = this.game.assetManager.get("background.png", Texture.class);
-        this.spriteBatch = new SpriteBatch();
         this.buttonSound = this.game.assetManager.get("audio/button.mp3", Sound.class);
         this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
         this.notificationTable = new NotificationTable(this.skin);
@@ -122,7 +119,6 @@ public class LobbyScreen implements Screen {
 
     @Override
     public void dispose() {
-        this.spriteBatch.dispose();
         this.stage.dispose();
     }
 

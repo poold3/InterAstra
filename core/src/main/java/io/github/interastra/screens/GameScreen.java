@@ -4,11 +4,7 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -21,6 +17,7 @@ import io.github.interastra.models.*;
 import io.github.interastra.services.CameraOperatorService;
 import io.github.interastra.stages.GameStage;
 import io.github.interastra.tables.NotificationTable;
+import io.github.interastra.tables.OptionsTable;
 import io.github.interastra.tables.PlanetsTable;
 
 import java.util.ArrayList;
@@ -46,8 +43,8 @@ public class GameScreen implements Screen {
     public Sound badSound;
     public NotificationTable notificationTable;
     public PlanetsTable planetsTable;
+    public OptionsTable optionsTable;
 
-    public SpriteBatch spriteBatch;
     public TextureAtlas planetsTextureAtlas;
 
     public Star sol;
@@ -55,6 +52,8 @@ public class GameScreen implements Screen {
     public ArrayList<Player> players;
     public ArrayList<Rocket> rockets;
     public float speedMultiplier;
+    public boolean leaveGame = false;
+    public boolean optionsMenuOpen = false;
 
     public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
         this.game = game;
@@ -70,8 +69,6 @@ public class GameScreen implements Screen {
         this.gameViewport = new ExtendViewport(MIN_WORLD_SIZE, MIN_WORLD_SIZE, camera);
         this.camera.setViewport(this.gameViewport);
 
-        this.spriteBatch = new SpriteBatch();
-
         this.stageViewport = new ScreenViewport();
         this.stage = new GameStage(this.stageViewport, this);
         Gdx.input.setInputProcessor(this.stage);
@@ -83,6 +80,7 @@ public class GameScreen implements Screen {
         this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
         this.notificationTable = new NotificationTable(this.skin);
         this.planetsTable = new PlanetsTable(this, this.skin);
+        this.optionsTable = new OptionsTable(this, this.skin);
     }
 
     @Override
@@ -130,18 +128,27 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        // Destroy screen's assets here.
+        this.stage.dispose();
     }
 
     public void input() {
         // Escape key to exit
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-            Gdx.app.exit();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            this.toggleOptionsMenu();
         }
 
     }
 
     public void logic() {
+        if (this.leaveGame) {
+            this.game.setScreen(new MainMenuScreen(this.game));
+            this.lobbyScreen.unsubscribeToLobbyTopics();
+            this.unsubscribeToGameTopics();
+            this.lobbyScreen.messageSession.disconnect();
+            this.lobbyScreen.dispose();
+            this.dispose();
+        }
+
         // Move planets
         for (Planet planet : this.planets) {
             planet.move(this.gameViewport.getWorldWidth(), this.gameViewport.getWorldHeight(), Gdx.graphics.getDeltaTime(), speedMultiplier);
@@ -158,21 +165,21 @@ public class GameScreen implements Screen {
 
     public void draw() {
         this.gameViewport.apply();
-        this.spriteBatch.setProjectionMatrix(this.camera.combined);
+        this.game.spriteBatch.setProjectionMatrix(this.camera.combined);
 
         // Draw the sprites
-        this.spriteBatch.begin();
+        this.game.spriteBatch.begin();
 
-        this.sol.starSprite.draw(this.spriteBatch);
+        this.sol.starSprite.draw(this.game.spriteBatch);
 
         for (Planet planet : this.planets) {
-            planet.planetSprite.draw(this.spriteBatch);
+            planet.planetSprite.draw(this.game.spriteBatch);
             if (planet.moon != null) {
-                planet.moon.moonSprite.draw(this.spriteBatch);
+                planet.moon.moonSprite.draw(this.game.spriteBatch);
             }
         }
 
-        this.spriteBatch.end();
+        this.game.spriteBatch.end();
     }
 
     public void loadGameData(final GameStartMessage gameData) {
@@ -194,5 +201,19 @@ public class GameScreen implements Screen {
 
         // Add Rockets
         this.rockets = new ArrayList<>();
+    }
+
+    public void unsubscribeToGameTopics() {
+
+    }
+
+    public void toggleOptionsMenu() {
+        optionsMenuOpen = !optionsMenuOpen;
+        if (optionsMenuOpen) {
+            this.goodSound.play(0.5f);
+            this.stage.addActor(this.optionsTable);
+        } else {
+            this.optionsTable.remove();
+        }
     }
 }
