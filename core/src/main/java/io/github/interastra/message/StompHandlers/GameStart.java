@@ -24,7 +24,6 @@ public class GameStart implements StompFrameHandler {
 
     @Override
     public void handleFrame(StompHeaders headers, Object payload) {
-        GameStartMessage message = (GameStartMessage) payload;
-        this.lobbyScreen.startGame(message);
+        this.lobbyScreen.gameData = (GameStartMessage) payload;
     }
 }

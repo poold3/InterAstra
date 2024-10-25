@@ -24,9 +24,9 @@ public class LobbyUpdate implements StompFrameHandler {
     @Override
     public void handleFrame(StompHeaders headers, Object payload) {
         LobbyUpdateMessage message = (LobbyUpdateMessage) payload;
-        this.lobbyScreen.playersLock.lock();
-        this.lobbyScreen.players = message.players();
-        this.lobbyScreen.playersLock.unlock();
+        this.lobbyScreen.players.lock();
+        this.lobbyScreen.players.setData(message.players());
+        this.lobbyScreen.players.unlock();
         this.lobbyScreen.lobbyTable.updatePlayers();
     }
 }

@@ -18,13 +18,12 @@ import io.github.interastra.message.StompHandlers.GameStart;
 import io.github.interastra.message.StompHandlers.LobbyUpdate;
 import io.github.interastra.message.messages.GameStartMessage;
 import io.github.interastra.message.models.LobbyPlayerMessageModel;
-import io.github.interastra.message.models.PlanetMessageModel;
+import io.github.interastra.services.LockService;
 import io.github.interastra.tables.LobbyTable;
 import io.github.interastra.tables.NotificationTable;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class LobbyScreen implements Screen {
     public Main game;
@@ -33,8 +32,7 @@ public class LobbyScreen implements Screen {
     public MessageService messageService;
     public ArrayList<StompSession.Subscription> lobbySubscriptions;
     public String myName;
-    public ArrayList<LobbyPlayerMessageModel> players;
-    public final ReentrantLock playersLock;
+    public LockService<ArrayList<LobbyPlayerMessageModel>> players;
 
     public ScreenViewport viewport;
     public Stage stage;
@@ -47,14 +45,17 @@ public class LobbyScreen implements Screen {
     public NotificationTable notificationTable;
     public LobbyTable lobbyTable;
 
+    public boolean leaveLobby = false;
+    public float leaveTime = 0f;
+    public GameStartMessage gameData;
+
     public LobbyScreen(final Main game, final String gameCode, final String myName) {
         this.game = game;
         this.gameCode = gameCode;
         this.myName = myName;
         this.messageService = new MessageService(this);
         this.lobbySubscriptions = new ArrayList<>();
-        this.playersLock = new ReentrantLock(true);
-        this.players = new ArrayList<>();
+        this.players = new LockService<>(new ArrayList<>(), true);
 
         this.viewport = new ScreenViewport();
         this.stage = new Stage(this.viewport);
@@ -71,6 +72,7 @@ public class LobbyScreen implements Screen {
 
     @Override
     public void show() {
+        this.stage.clear();
         Image backgroundImage = new Image(this.background);
         backgroundImage.setFillParent(true);
         this.stage.addActor(backgroundImage);
@@ -81,6 +83,18 @@ public class LobbyScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if (this.leaveLobby) {
+            this.leaveTime += delta;
+            if (this.leaveTime >= 0.75f) {
+                this.unsubscribeToLobbyTopics();
+                this.messageSession.disconnect();
+                this.game.setScreen(new MainMenuScreen(this.game));
+                this.dispose();
+            }
+        } else if (this.gameData != null) {
+            this.game.setScreen(new GameScreen(this.game, this, this.gameData));
+        }
+
         ScreenUtils.clear(Color.BLACK);
         stage.act(delta);
         stage.draw();
@@ -145,28 +159,14 @@ public class LobbyScreen implements Screen {
 
     public boolean getReadyStatus(final String name) {
         boolean ready = false;
-        this.playersLock.lock();
-        for (LobbyPlayerMessageModel player : this.players) {
+        this.players.lock();
+        for (LobbyPlayerMessageModel player : this.players.getData()) {
             if (player.name().equals(name)) {
                 ready = player.ready();
                 break;
             }
         }
-        this.playersLock.unlock();
+        this.players.unlock();
         return ready;
-    }
-
-    public void leave() {
-        this.unsubscribeToLobbyTopics();
-        this.messageSession.disconnect();
-        this.game.setScreen(new MainMenuScreen(this.game));
-        this.dispose();
-    }
-
-    public void startGame(final GameStartMessage message) {
-        for (PlanetMessageModel planet : message.planets()) {
-            System.out.println(planet.name());
-            System.out.println(planet.index());
-        }
     }
 }

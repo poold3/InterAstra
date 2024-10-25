@@ -1,16 +1,14 @@
 package io.github.interastra.models;
 
+import io.github.interastra.message.models.PlayerMessageModel;
+
 public class Player {
     public String name;
-    public String messageSessionId;
     public float balance;
-    public boolean ready;
 
-    public Player(String name) {
-        this.name = name;
-        this.messageSessionId = null;
-        this.balance = 0f;
-        this.ready = false;
+    public Player(PlayerMessageModel playerMessageModel) {
+        this.name = playerMessageModel.name();
+        this.balance = playerMessageModel.balance();
     }
 
     @Override

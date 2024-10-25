@@ -56,6 +56,13 @@ public class CameraOperatorService extends OrthographicCamera {
         this.targetPosition.set(entity.getX(), entity.getY(), 0f);
     }
 
+    public void forceCameraPosition() {
+        this.position.x = this.targetPosition.x;
+        this.position.y = this.targetPosition.y;
+        this.position.z = this.targetPosition.z;
+        this.update();
+    }
+
     /**
      * Gets the zoom value for this camera to ensure that the provided dimension value is visible in both the x and y
      * directions.

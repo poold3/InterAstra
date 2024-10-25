@@ -2,13 +2,10 @@ package io.github.interastra.models;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import io.github.interastra.message.models.MoonMessageModel;
 
-import java.util.Random;
 
 public class Moon implements CameraEnabledEntity {
-    public static final float MAX_MOON_SIZE = 1f;
-    public static final float MIN_MOON_SIZE = .1f;
-    public static final float MOON_ORBITAL_SPEED = 0.05f;
     public static final float TWO_PI = (float) (2f * Math.PI);
 
     public final Planet planet;
@@ -18,17 +15,16 @@ public class Moon implements CameraEnabledEntity {
     public float orbitalSpeed;
     public float orbitalPosition;
 
-    public Moon(final TextureAtlas textureAtlas, final Planet planet) {
-        Random rand = new Random();
+    public Moon(final TextureAtlas textureAtlas, final Planet planet, MoonMessageModel moonMessageModel) {
         this.planet = planet;
         this.name = String.format("%s's Moon", this.planet.name);
         this.moonSprite = new Sprite(textureAtlas.findRegion("moon"));
-        float size = rand.nextFloat(MAX_MOON_SIZE - MIN_MOON_SIZE) + MIN_MOON_SIZE;
+        float size = moonMessageModel.size();
         this.moonSprite.setSize(size, size);
         this.moonSprite.setOrigin(size / 2f, size / 2f);
-        this.orbitalRadius = this.planet.planetSprite.getWidth();
-        this.orbitalSpeed = MOON_ORBITAL_SPEED;
-        this.orbitalPosition = rand.nextFloat(TWO_PI);
+        this.orbitalRadius = moonMessageModel.orbitalRadius();
+        this.orbitalSpeed = moonMessageModel.orbitalSpeed();
+        this.orbitalPosition = moonMessageModel.startingOrbitalPosition();
     }
 
     public void move(float deltaTime, float speedMultiplier) {

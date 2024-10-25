@@ -2,24 +2,18 @@ package io.github.interastra.models;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-
-import java.util.Random;
+import io.github.interastra.message.models.StarMessageModel;
 
 public class Star implements CameraEnabledEntity {
-    public static final int NUM_STARS_AVAILABLE = 3;
-    public static final float MAX_STAR_SIZE = 25f;
-    public static final float MIN_STAR_SIZE = 15f;
-
     public int index;
     public String name;
     public Sprite starSprite;
 
-    public Star(final TextureAtlas textureAtlas, String name) {
-        Random rand = new Random();
-        this.index = rand.nextInt(NUM_STARS_AVAILABLE);
-        this.name = name;
+    public Star(final TextureAtlas textureAtlas, StarMessageModel starMessageModel) {
+        this.index = starMessageModel.index();
+        this.name = starMessageModel.name();
         this.starSprite = new Sprite(textureAtlas.findRegion("star", this.index));
-        float size = rand.nextFloat(MAX_STAR_SIZE - MIN_STAR_SIZE) + MIN_STAR_SIZE;
+        float size = starMessageModel.size();
         this.starSprite.setSize(size, size);
         this.starSprite.setOrigin(size / 2f, size / 2f);
     }

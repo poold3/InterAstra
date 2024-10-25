@@ -98,8 +98,8 @@ public class LobbyTable extends Table {
     public void updatePlayers() {
         this.playersTable.clearChildren();
         this.playerReadyButton.setDisabled(true);
-        this.screen.playersLock.lock();
-        for (LobbyPlayerMessageModel player : this.screen.players) {
+        this.screen.players.lock();
+        for (LobbyPlayerMessageModel player : this.screen.players.getData()) {
             this.playersTable.add(this.getPlayerTable(player.name(), player.ready()))
                 .maxWidth(PLAYER_LABEL_WIDTH).maxHeight(PLAYER_LABEL_HEIGHT).padLeft(10f).padRight(10f);
 
@@ -108,7 +108,7 @@ public class LobbyTable extends Table {
                 this.playerReadyButton.setDisabled(false);
             }
         }
-        this.screen.playersLock.unlock();
+        this.screen.players.unlock();
     }
 
     public Table getPlayerTable(final String name, final boolean ready) {
@@ -148,7 +148,7 @@ public class LobbyTable extends Table {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 screen.leaveSound.play();
-                screen.leave();
+                screen.leaveLobby = true;
             }
         });
         return leaveButton;

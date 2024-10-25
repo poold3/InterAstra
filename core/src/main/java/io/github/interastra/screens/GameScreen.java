@@ -1,76 +1,116 @@
 package io.github.interastra.screens;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
-import io.github.interastra.models.CameraEnabledEntity;
-import io.github.interastra.models.Planet;
-import io.github.interastra.models.Star;
+import io.github.interastra.message.messages.GameStartMessage;
+import io.github.interastra.message.models.PlanetMessageModel;
+import io.github.interastra.message.models.PlayerMessageModel;
+import io.github.interastra.models.*;
 import io.github.interastra.services.CameraOperatorService;
+import io.github.interastra.stages.GameStage;
+import io.github.interastra.tables.NotificationTable;
+import io.github.interastra.tables.PlanetsTable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class GameScreen implements Screen, InputProcessor {
+public class GameScreen implements Screen {
     public static final float MIN_WORLD_SIZE = 1000f;
-    public static final int NUM_PLANETS = 9;
     public static final float ARROW_KEY_MOVE_SPEED = 25f;
 
     public Main game;
+    public LobbyScreen lobbyScreen;
     public CameraOperatorService camera;
-    public ExtendViewport viewport;
+    public ExtendViewport gameViewport;
     public CameraEnabledEntity entityBeingFollowed = null;
+
+    public ScreenViewport stageViewport;
+    public GameStage stage;
+    public TextureAtlas iconsTextureAtlas;
+    public Skin skin;
+    public Sound buttonSound;
+    public Sound leaveSound;
+    public Sound goodSound;
+    public Sound badSound;
+    public NotificationTable notificationTable;
+    public PlanetsTable planetsTable;
 
     public SpriteBatch spriteBatch;
     public TextureAtlas planetsTextureAtlas;
 
     public Star sol;
     public ArrayList<Planet> planets;
-
+    public ArrayList<Player> players;
+    public ArrayList<Rocket> rockets;
     public float speedMultiplier;
 
-    public GameScreen(final Main game) {
+    public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
         this.game = game;
+        this.lobbyScreen = lobbyScreen;
+
+        this.planetsTextureAtlas = this.game.assetManager.get("planets/planets.atlas", TextureAtlas.class);
+
+        this.loadGameData(gameData);
+
         this.speedMultiplier = 1f;
 
-        Gdx.input.setInputProcessor(this);
-
         this.camera = new CameraOperatorService();
-        this.viewport = new ExtendViewport(MIN_WORLD_SIZE, MIN_WORLD_SIZE, camera);
-        this.camera.setViewport(this.viewport);
+        this.gameViewport = new ExtendViewport(MIN_WORLD_SIZE, MIN_WORLD_SIZE, camera);
+        this.camera.setViewport(this.gameViewport);
 
         this.spriteBatch = new SpriteBatch();
 
-        // Get our textureAtlas
-        this.planetsTextureAtlas = this.game.assetManager.get("planets/planets.atlas", TextureAtlas.class);
-
-        // Load planets
-        this.loadSolarSystem();
+        this.stageViewport = new ScreenViewport();
+        this.stage = new GameStage(this.stageViewport, this);
+        Gdx.input.setInputProcessor(this.stage);
+        this.iconsTextureAtlas = this.game.assetManager.get("icons/icons.atlas", TextureAtlas.class);
+        this.skin = this.game.assetManager.get("spaceskin/spaceskin.json", Skin.class);
+        this.buttonSound = this.game.assetManager.get("audio/button.mp3", Sound.class);
+        this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
+        this.goodSound = this.game.assetManager.get("audio/good.mp3", Sound.class);
+        this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
+        this.notificationTable = new NotificationTable(this.skin);
+        this.planetsTable = new PlanetsTable(this, this.skin);
     }
 
     @Override
     public void show() {
-        // Set Full Screen
-
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+        this.notificationTable.setMessage("Welcome to our Solar System!");
+        this.stage.addActor(this.notificationTable);
+        this.stage.addActor(this.planetsTable);
     }
 
     @Override
     public void render(float delta) {
+        ScreenUtils.clear(new Color(0.004f, 0f, 0.03f, 1f));
+
         this.input();
         this.logic();
         this.draw();
+
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-        this.viewport.update(width, height, true);
+        this.stageViewport.update(width, height, true);
+        this.gameViewport.update(width, height, true);
         this.camera.center();
-        this.sol.reposition(this.viewport.getWorldWidth() / 2f, this.viewport.getWorldHeight() / 2f);
+        this.sol.reposition(this.gameViewport.getWorldWidth() / 2f, this.gameViewport.getWorldHeight() / 2f);
     }
 
     @Override
@@ -99,18 +139,12 @@ public class GameScreen implements Screen, InputProcessor {
             Gdx.app.exit();
         }
 
-        this.moveWithArrows();
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-            this.speedMultiplier *= 2f;
-            System.out.println(this.speedMultiplier);
-        }
     }
 
     public void logic() {
         // Move planets
         for (Planet planet : this.planets) {
-            planet.move(this.viewport.getWorldWidth(), this.viewport.getWorldHeight(), Gdx.graphics.getDeltaTime(), speedMultiplier);
+            planet.move(this.gameViewport.getWorldWidth(), this.gameViewport.getWorldHeight(), Gdx.graphics.getDeltaTime(), speedMultiplier);
         }
 
         // If following an entity, tell the camera operator to do so.
@@ -123,8 +157,7 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     public void draw() {
-        ScreenUtils.clear(new Color(0.004f, 0f, 0.03f, 1f));
-        this.viewport.apply();
+        this.gameViewport.apply();
         this.spriteBatch.setProjectionMatrix(this.camera.combined);
 
         // Draw the sprites
@@ -142,80 +175,24 @@ public class GameScreen implements Screen, InputProcessor {
         this.spriteBatch.end();
     }
 
-    public void loadSolarSystem() {
+    public void loadGameData(final GameStartMessage gameData) {
         // Add Sol
-        this.sol = new Star(this.planetsTextureAtlas, "Sol");
+        this.sol = new Star(this.planetsTextureAtlas, gameData.sol());
 
         // Add Planets
         this.planets = new ArrayList<>();
-        for (int i = 0; i < NUM_PLANETS; ++i) {
-            this.planets.add(new Planet(this.planetsTextureAtlas, Planet.PLANET_NAMES[i]));
+        for (PlanetMessageModel planet : gameData.planets()) {
+            this.planets.add(new Planet(this.planetsTextureAtlas, planet));
         }
         Collections.sort(this.planets);
-    }
 
-    public void moveWithArrows() {
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            this.camera.targetPosition.x -= (ARROW_KEY_MOVE_SPEED * this.camera.zoom);
-            this.entityBeingFollowed = null;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            this.camera.targetPosition.x += (ARROW_KEY_MOVE_SPEED * this.camera.zoom);
-            this.entityBeingFollowed = null;
+        // Add Players
+        this.players = new ArrayList<>();
+        for (PlayerMessageModel player : gameData.players()) {
+            this.players.add(new Player(player));
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            this.camera.targetPosition.y += (ARROW_KEY_MOVE_SPEED * this.camera.zoom);
-            this.entityBeingFollowed = null;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            this.camera.targetPosition.y -= (ARROW_KEY_MOVE_SPEED * this.camera.zoom);
-            this.entityBeingFollowed = null;
-        }
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(float amountX, float amountY) {
-        this.camera.targetZoom += amountY * 0.05f;
-        this.camera.targetZoom = MathUtils.clamp(this.camera.targetZoom, this.camera.getZoomForSize(Planet.MAX_PLANET_SIZE), 1f);
-        return true;
+        // Add Rockets
+        this.rockets = new ArrayList<>();
     }
 }
