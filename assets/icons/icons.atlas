@@ -1,5 +1,11 @@
 icons.png
-size:128,128
+size:512,128
 repeat:none
+arrow_drop_down
+bounds:296,2,96,96
+arrow_drop_up
+bounds:198,2,96,96
 copy
 bounds:2,2,96,96
+undo
+bounds:100,2,96,96

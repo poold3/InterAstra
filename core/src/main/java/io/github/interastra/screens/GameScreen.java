@@ -25,7 +25,6 @@ import java.util.Collections;
 
 public class GameScreen implements Screen {
     public static final float MIN_WORLD_SIZE = 1000f;
-    public static final float ARROW_KEY_MOVE_SPEED = 25f;
 
     public Main game;
     public LobbyScreen lobbyScreen;
@@ -191,7 +190,6 @@ public class GameScreen implements Screen {
         for (PlanetMessageModel planet : gameData.planets()) {
             this.planets.add(new Planet(this.planetsTextureAtlas, planet));
         }
-        Collections.sort(this.planets);
 
         // Add Players
         this.players = new ArrayList<>();
@@ -210,7 +208,6 @@ public class GameScreen implements Screen {
     public void toggleOptionsMenu() {
         optionsMenuOpen = !optionsMenuOpen;
         if (optionsMenuOpen) {
-            this.goodSound.play(0.5f);
             this.stage.addActor(this.optionsTable);
         } else {
             this.optionsTable.remove();

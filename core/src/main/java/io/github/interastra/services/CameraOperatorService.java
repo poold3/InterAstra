@@ -33,12 +33,12 @@ public class CameraOperatorService extends OrthographicCamera {
 
     public void move() {
         // Adjust zoom
-        this.zoom = this.floatLerp(this.zoom, this.targetZoom, ZOOM_SPEED);
+        this.zoom = floatLerp(this.zoom, this.targetZoom, ZOOM_SPEED);
 
         // Adjust position
-        this.position.x = this.floatLerp(this.position.x, this.targetPosition.x, MOVE_SPEED);
+        this.position.x = floatLerp(this.position.x, this.targetPosition.x, MOVE_SPEED);
 
-        this.position.y = this.floatLerp(this.position.y, this.targetPosition.y, MOVE_SPEED);
+        this.position.y = floatLerp(this.position.y, this.targetPosition.y, MOVE_SPEED);
 
         this.update();
     }
@@ -75,11 +75,11 @@ public class CameraOperatorService extends OrthographicCamera {
         return Math.max(widthZoomValue, heightZoomValue);
     }
 
-    public float floatLerp(float current, float target, float epsilon) {
+    public static float floatLerp(float current, float target, float epsilon) {
         return (1f - epsilon) * current + epsilon * target;
     }
 
-    public float floatLerp(float current, float target) {
+    public static float floatLerp(float current, float target) {
         return floatLerp(current, target, 0.5f);
     }
 }

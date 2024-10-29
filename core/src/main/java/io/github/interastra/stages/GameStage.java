@@ -33,6 +33,16 @@ public class GameStage extends Stage {
         this.screen.gameViewport.unproject(mousePosition);
         Vector3 diff = mousePosition.sub(this.touchDownMousePosition);
         this.screen.camera.targetPosition.sub(diff);
+        this.screen.camera.targetPosition.x = MathUtils.clamp(
+            this.screen.camera.targetPosition.x,
+            0f,
+            this.screen.gameViewport.getWorldWidth()
+        );
+        this.screen.camera.targetPosition.y = MathUtils.clamp(
+            this.screen.camera.targetPosition.y,
+            0f,
+            this.screen.gameViewport.getWorldHeight()
+        );
         this.screen.camera.forceCameraPosition();
 
         return super.touchDragged(screenX, screenY, pointer);
@@ -41,7 +51,7 @@ public class GameStage extends Stage {
     @Override
     public boolean scrolled (float amountX, float amountY) {
         this.screen.camera.targetZoom += amountY * 0.1f * this.screen.camera.zoom;
-        this.screen.camera.targetZoom = MathUtils.clamp(this.screen.camera.targetZoom, 0.01f, 1f);
+        this.screen.camera.targetZoom = MathUtils.clamp(this.screen.camera.targetZoom, 0.001f, 1f);
         return super.scrolled(amountX, amountY);
     }
 }
