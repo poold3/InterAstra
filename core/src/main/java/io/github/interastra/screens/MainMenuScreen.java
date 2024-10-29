@@ -35,7 +35,6 @@ public class MainMenuScreen implements Screen {
 
         this.viewport = new ScreenViewport();
         this.stage = new Stage(this.viewport);
-        Gdx.input.setInputProcessor(this.stage);
         this.skin = this.game.assetManager.get("spaceskin/spaceskin.json", Skin.class);
         this.background = this.game.assetManager.get("background.png", Texture.class);
         this.buttonSound = this.game.assetManager.get("audio/button.mp3", Sound.class);
@@ -44,16 +43,18 @@ public class MainMenuScreen implements Screen {
         this.notificationTable = new NotificationTable(this.skin);
         this.mainMenuTable = new MainMenuTable(this, this.skin);
         this.joinGameResponse = null;
-    }
 
-    @Override
-    public void show() {
         Image backgroundImage = new Image(this.background);
         backgroundImage.setFillParent(true);
         this.stage.addActor(backgroundImage);
 
         this.stage.addActor(this.mainMenuTable);
         this.stage.addActor(this.notificationTable);
+    }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(this.stage);
     }
 
     @Override

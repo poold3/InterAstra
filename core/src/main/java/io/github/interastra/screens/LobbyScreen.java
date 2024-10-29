@@ -57,7 +57,6 @@ public class LobbyScreen implements Screen {
 
         this.viewport = new ScreenViewport();
         this.stage = new Stage(this.viewport);
-        Gdx.input.setInputProcessor(this.stage);
         this.iconsTextureAtlas = this.game.assetManager.get("icons/icons.atlas", TextureAtlas.class);
         this.skin = this.game.assetManager.get("spaceskin/spaceskin.json", Skin.class);
         this.background = this.game.assetManager.get("background.png", Texture.class);
@@ -65,17 +64,18 @@ public class LobbyScreen implements Screen {
         this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
         this.notificationTable = new NotificationTable(this.skin);
         this.lobbyTable = new LobbyTable(this, this.skin);
-    }
 
-    @Override
-    public void show() {
-        this.stage.clear();
         Image backgroundImage = new Image(this.background);
         backgroundImage.setFillParent(true);
         this.stage.addActor(backgroundImage);
 
         this.stage.addActor(this.notificationTable);
         this.stage.addActor(this.lobbyTable);
+    }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(this.stage);
     }
 
     @Override

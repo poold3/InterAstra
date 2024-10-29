@@ -10,6 +10,10 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
+import io.github.interastra.message.StompHandlers.GameEnd;
+import io.github.interastra.message.StompHandlers.GameStart;
+import io.github.interastra.message.StompHandlers.GameUpdate;
+import io.github.interastra.message.StompHandlers.LobbyUpdate;
 import io.github.interastra.message.messages.GameStartMessage;
 import io.github.interastra.message.models.PlanetMessageModel;
 import io.github.interastra.message.models.PlayerMessageModel;
@@ -19,6 +23,7 @@ import io.github.interastra.stages.GameStage;
 import io.github.interastra.tables.NotificationTable;
 import io.github.interastra.tables.OptionsTable;
 import io.github.interastra.tables.PlanetsTable;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +48,6 @@ public class GameScreen implements Screen {
     public NotificationTable notificationTable;
     public PlanetsTable planetsTable;
     public OptionsTable optionsTable;
-
     public TextureAtlas planetsTextureAtlas;
 
     public Star sol;
@@ -53,6 +57,8 @@ public class GameScreen implements Screen {
     public float speedMultiplier;
     public boolean leaveGame = false;
     public boolean optionsMenuOpen = false;
+    public ArrayList<StompSession.Subscription> gameSubscriptions;
+    public boolean endGame = false;
 
     public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
         this.game = game;
@@ -62,6 +68,9 @@ public class GameScreen implements Screen {
 
         this.loadGameData(gameData);
 
+        this.gameSubscriptions = new ArrayList<>();
+        this.subscribeToGameTopics();
+
         this.speedMultiplier = 1f;
 
         this.camera = new CameraOperatorService();
@@ -70,7 +79,6 @@ public class GameScreen implements Screen {
 
         this.stageViewport = new ScreenViewport();
         this.stage = new GameStage(this.stageViewport, this);
-        Gdx.input.setInputProcessor(this.stage);
         this.iconsTextureAtlas = this.game.assetManager.get("icons/icons.atlas", TextureAtlas.class);
         this.skin = this.game.assetManager.get("spaceskin/spaceskin.json", Skin.class);
         this.buttonSound = this.game.assetManager.get("audio/button.mp3", Sound.class);
@@ -80,14 +88,16 @@ public class GameScreen implements Screen {
         this.notificationTable = new NotificationTable(this.skin);
         this.planetsTable = new PlanetsTable(this, this.skin);
         this.optionsTable = new OptionsTable(this, this.skin);
+
+        this.stage.addActor(this.notificationTable);
+        this.stage.addActor(this.planetsTable);
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(this.stage);
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
         this.notificationTable.setMessage("Welcome to our Solar System!");
-        this.stage.addActor(this.notificationTable);
-        this.stage.addActor(this.planetsTable);
     }
 
     @Override
@@ -95,7 +105,7 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(new Color(0.004f, 0f, 0.03f, 1f));
 
         this.input();
-        this.logic();
+        this.logic(delta);
         this.draw();
 
         stage.act(delta);
@@ -138,13 +148,18 @@ public class GameScreen implements Screen {
 
     }
 
-    public void logic() {
+    public void logic(float delta) {
         if (this.leaveGame) {
             this.game.setScreen(new MainMenuScreen(this.game));
             this.lobbyScreen.unsubscribeToLobbyTopics();
             this.unsubscribeToGameTopics();
             this.lobbyScreen.messageSession.disconnect();
             this.lobbyScreen.dispose();
+            this.dispose();
+        } else if (this.endGame) {
+            this.lobbyScreen.gameData = null;
+            this.game.setScreen(this.lobbyScreen);
+            this.unsubscribeToGameTopics();
             this.dispose();
         }
 
@@ -202,7 +217,30 @@ public class GameScreen implements Screen {
     }
 
     public void unsubscribeToGameTopics() {
+        for (StompSession.Subscription sub : this.gameSubscriptions) {
+            sub.unsubscribe();
+        }
+        this.gameSubscriptions.clear();
+    }
 
+    public void subscribeToGameTopics() {
+        this.unsubscribeToGameTopics();
+
+        // Add lobby update subscription
+        this.gameSubscriptions.add(
+            this.lobbyScreen.messageSession.subscribe(
+                String.format("/topic/game-update/%s", this.lobbyScreen.gameCode),
+                new GameUpdate(this)
+            )
+        );
+
+        // Add game start subscription
+        this.gameSubscriptions.add(
+            this.lobbyScreen.messageSession.subscribe(
+                String.format("/topic/game-end/%s", this.lobbyScreen.gameCode),
+                new GameEnd(this)
+            )
+        );
     }
 
     public void toggleOptionsMenu() {

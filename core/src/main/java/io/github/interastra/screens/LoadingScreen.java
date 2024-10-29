@@ -27,8 +27,6 @@ public class LoadingScreen implements Screen {
 
     @Override
     public void show() {
-        // Prepare your screen here.
-
         this.viewport = new ScreenViewport();
         this.bitmapFont = new BitmapFont();
         this.bitmapFont.setColor(Color.WHITE);
