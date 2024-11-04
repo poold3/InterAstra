@@ -3,6 +3,9 @@ package io.github.interastra.models;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import io.github.interastra.message.models.PlanetMessageModel;
+import io.github.interastra.message.models.PlanetResourceMessageModel;
+
+import java.util.ArrayList;
 
 public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public static final float TWO_PI = (float) (2f * Math.PI);
@@ -14,12 +17,15 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public float orbitalSpeed;
     public float orbitalPosition;
     public Moon moon = null;
+    public int baseLimit;
+    public ArrayList<PlanetResource> resources = new ArrayList<>();
 
     public Planet(final TextureAtlas textureAtlas, PlanetMessageModel planetMessageModel) {
         this.index = planetMessageModel.index();
         this.name = planetMessageModel.name();
         this.planetSprite = new Sprite(textureAtlas.findRegion("planet", this.index));
         float size = planetMessageModel.size();
+        this.baseLimit = planetMessageModel.baseLimit();
         this.planetSprite.setSize(size, size);
         this.planetSprite.setOrigin(size / 2f, size / 2f);
         this.orbitalRadius = planetMessageModel.orbitalRadius();
@@ -28,6 +34,10 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
 
         if (planetMessageModel.moon() != null) {
             this.moon = new Moon(textureAtlas, this, planetMessageModel.moon());
+        }
+
+        for (PlanetResourceMessageModel planetResourceMessageModel : planetMessageModel.resources()) {
+            this.resources.add(new PlanetResource(planetResourceMessageModel));
         }
     }
 

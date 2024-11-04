@@ -11,9 +11,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
 import io.github.interastra.message.StompHandlers.GameEnd;
-import io.github.interastra.message.StompHandlers.GameStart;
 import io.github.interastra.message.StompHandlers.GameUpdate;
-import io.github.interastra.message.StompHandlers.LobbyUpdate;
 import io.github.interastra.message.messages.GameStartMessage;
 import io.github.interastra.message.models.PlanetMessageModel;
 import io.github.interastra.message.models.PlayerMessageModel;
@@ -26,7 +24,6 @@ import io.github.interastra.tables.PlanetsTable;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class GameScreen implements Screen {
     public static final float MIN_WORLD_SIZE = 1000f;
@@ -40,6 +37,7 @@ public class GameScreen implements Screen {
     public ScreenViewport stageViewport;
     public GameStage stage;
     public TextureAtlas iconsTextureAtlas;
+    public TextureAtlas spaceCraftTextureAtlas;
     public Skin skin;
     public Sound buttonSound;
     public Sound leaveSound;
@@ -50,6 +48,7 @@ public class GameScreen implements Screen {
     public OptionsTable optionsTable;
     public TextureAtlas planetsTextureAtlas;
 
+    public int basesToWin;
     public Star sol;
     public ArrayList<Planet> planets;
     public ArrayList<Player> players;
@@ -197,6 +196,7 @@ public class GameScreen implements Screen {
     }
 
     public void loadGameData(final GameStartMessage gameData) {
+        this.basesToWin = gameData.basesToWin();
         // Add Sol
         this.sol = new Star(this.planetsTextureAtlas, gameData.sol());
 

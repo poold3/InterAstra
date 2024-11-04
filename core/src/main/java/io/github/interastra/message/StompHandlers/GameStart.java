@@ -1,7 +1,6 @@
 package io.github.interastra.message.StompHandlers;
 
 import io.github.interastra.message.messages.GameStartMessage;
-import io.github.interastra.message.messages.LobbyUpdateMessage;
 import io.github.interastra.screens.LobbyScreen;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;

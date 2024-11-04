@@ -10,6 +10,7 @@ import io.github.interastra.models.Planet;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.CameraOperatorService;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.tooltips.PlanetToolTip;
 
 public class PlanetsTable extends Table {
     public static final float MAX_BUTTON_SIZE = 50f;
@@ -21,6 +22,8 @@ public class PlanetsTable extends Table {
     private final Container<ImageButton> arrowContainer;
     private final Drawable arrowDownDrawable;
     private final Drawable arrowUpDrawable;
+    public Drawable baseDrawable;
+    public Drawable moonDrawable;
     private float targetYPosition = 0f;
 
     public PlanetsTable(final GameScreen screen, final Skin skin) {
@@ -34,6 +37,8 @@ public class PlanetsTable extends Table {
         this.setFillParent(true);
         this.bottom();
 
+        this.baseDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("base"));
+        this.moonDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("moon"));
         this.arrowDownDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("arrow_drop_down"));
         this.arrowUpDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("arrow_drop_up"));
         this.arrowContainer = this.getArrowButton();
@@ -41,7 +46,7 @@ public class PlanetsTable extends Table {
         this.row();
 
         for (Planet planet : this.screen.planets) {
-            this.add(this.getContainer(this.getPlanetImageButton(planet), planet.name)).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
+            this.add(this.getContainer(this.getPlanetImageButton(planet), planet)).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
         }
         this.add(this.getContainer(this.getUndoImageButton(), null)).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
     }
@@ -78,24 +83,14 @@ public class PlanetsTable extends Table {
         return arrowContainer;
     }
 
-    public Container<ImageButton> getContainer(final ImageButton button, final String text) {
+    public Container<ImageButton> getContainer(final ImageButton button, final Planet planet) {
         Container<ImageButton> buttonContainer = new Container<>(button);
         buttonContainer.width(this.buttonSize);
         buttonContainer.height(this.buttonSize);
         buttonContainer.setBackground(this.skin.getDrawable("panel_square"));
 
-        if (text != null) {
-            TooltipManager tooltipManager = new TooltipManager();
-            tooltipManager.instant();
-            tooltipManager.initialTime = 0f;
-            tooltipManager.subsequentTime = 0f;
-
-            TextTooltip.TextTooltipStyle buttonNameStyle = new TextTooltip.TextTooltipStyle(
-                this.skin.get(TextTooltip.TextTooltipStyle.class)
-            );
-            buttonNameStyle.label.font = this.skin.getFont("Teko-32");
-            TextTooltip buttonName = new TextTooltip(text, tooltipManager, buttonNameStyle);
-            buttonContainer.addListener(buttonName);
+        if (planet != null) {
+            buttonContainer.addListener(new PlanetToolTip(this.screen, planet, this.baseDrawable, this.moonDrawable));
         }
 
         return buttonContainer;

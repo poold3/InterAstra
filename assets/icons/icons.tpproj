@@ -34,7 +34,7 @@ prettyPrint=false
 legacyOutput=false
 
 scaleFactors=[{suffix:"",factor:1,resampling:bicubic}]
-inputFiles=[{path:../../../../Downloads/copy.png,type:Input,regionName:null},{path:../../../../Downloads/undo.png,type:Input,regionName:null},{path:../../../../Downloads/arrow_drop_up.png,type:Input,regionName:null},{path:../../../../Downloads/arrow_drop_down.png,type:Input,regionName:null}]
+inputFiles=[{path:../../../../Downloads/copy.png,type:Input,regionName:null},{path:../../../../Downloads/undo.png,type:Input,regionName:null},{path:../../../../Downloads/arrow_drop_up.png,type:Input,regionName:null},{path:../../../../Downloads/arrow_drop_down.png,type:Input,regionName:null},{path:../../../../Downloads/moon.png,type:Input,regionName:null},{path:../../../../Downloads/base.png,type:Input,regionName:null}]
 keepInputFileExtensions=false
 
 
