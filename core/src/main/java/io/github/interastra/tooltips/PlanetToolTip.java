@@ -8,16 +8,17 @@ import io.github.interastra.models.PlanetResource;
 import io.github.interastra.screens.GameScreen;
 
 public class PlanetToolTip extends Tooltip<Table> {
-    public static final float FIRST_ROW_HEIGHT = 20f;
     public static final float FIRST_ROW_CELL_WIDTH = 30f;
     public static final float FIRST_ROW_IMAGE_SIZE = 20f;
 
+    public Drawable rocketDrawable;
     public Drawable baseDrawable;
     public Drawable moonDrawable;
 
-    public PlanetToolTip(final GameScreen screen, final Planet planet, final Drawable baseDrawable, final Drawable moonDrawable) {
+    public PlanetToolTip(final GameScreen screen, final Planet planet, final Drawable rocketDrawable, final Drawable baseDrawable, final Drawable moonDrawable) {
         super(new Table(), getInstantManager());
 
+        this.rocketDrawable = rocketDrawable;
         this.baseDrawable = baseDrawable;
         this.moonDrawable = moonDrawable;
 
@@ -34,13 +35,13 @@ public class PlanetToolTip extends Tooltip<Table> {
         );
         planetNameStyle.font = screen.skin.getFont("Teko-32");
         Label planetNameLabel = new Label(planet.name, planetNameStyle);
-        planetTable.add(planetNameLabel).colspan(3).expandX().center().pad(2f);
+        planetTable.add(planetNameLabel).colspan(4).expandX().center().pad(2f);
 
         planetTable.row();
 
         for (PlanetResource planetResource : planet.resources) {
             Label planetResourceLabel = new Label(String.format("%s: %f", planetResource.getPlanetResourceName(), planetResource.rate), screen.skin);
-            planetTable.add(planetResourceLabel).colspan(3).expandX().center().pad(2f);
+            planetTable.add(planetResourceLabel).colspan(4).expandX().center().pad(2f);
 
             planetTable.row();
         }
@@ -51,7 +52,13 @@ public class PlanetToolTip extends Tooltip<Table> {
         limitContainer.size(FIRST_ROW_IMAGE_SIZE);
         planetTable.add(limitContainer).minWidth(FIRST_ROW_CELL_WIDTH).maxWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
 
-        if (planet.name.equals("Terra Nova")) {
+        if (planet.hasMyRocket()) {
+            Container<Image> rocketContainer = new Container<>(new Image(this.rocketDrawable));
+            rocketContainer.size(FIRST_ROW_IMAGE_SIZE);
+            planetTable.add(rocketContainer).minWidth(FIRST_ROW_CELL_WIDTH).maxWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
+        }
+
+        if (planet.hasMyBase()) {
             Container<Image> baseContainer = new Container<>(new Image(this.baseDrawable));
             baseContainer.size(FIRST_ROW_IMAGE_SIZE);
             planetTable.add(baseContainer).minWidth(FIRST_ROW_CELL_WIDTH).maxWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);

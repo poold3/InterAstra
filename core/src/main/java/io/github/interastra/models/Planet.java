@@ -13,7 +13,7 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
 
     public int index;
     public String name;
-    public String visibleNameIdentifier;
+    public String myName;
     public boolean isVisible = false;
     public Sprite planetSprite;
     public float orbitalRadius;
@@ -28,10 +28,10 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public Planet(final TextureAtlas planetTextureAtlas,
                   PlanetMessageModel planetMessageModel,
                   final TextureAtlas rocketTextureAtlas,
-                  String visibleNameIdentifier) {
+                  String myName) {
         this.index = planetMessageModel.index();
         this.name = planetMessageModel.name();
-        this.visibleNameIdentifier = visibleNameIdentifier;
+        this.myName = myName;
         this.planetSprite = new Sprite(planetTextureAtlas.findRegion("planet", this.index));
         float size = planetMessageModel.size();
         this.baseLimit = planetMessageModel.baseLimit();
@@ -80,22 +80,26 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
         }
     }
 
-    public void setVisible() {
+    public boolean hasMyBase() {
         for (String base : this.bases) {
-            if (base.equals(this.visibleNameIdentifier)) {
-                this.isVisible = true;
-                return;
+            if (base.equals(this.myName)) {
+                return true;
             }
         }
+        return false;
+    }
 
+    public boolean hasMyRocket() {
         for (Rocket rocket : this.rocketsInOrbit) {
-            if (rocket.playerName.equals(this.visibleNameIdentifier)) {
-                this.isVisible = true;
-                return;
+            if (rocket.playerName.equals(this.myName)) {
+                return true;
             }
         }
+        return false;
+    }
 
-        this.isVisible = false;
+    public void setVisible() {
+        this.isVisible = this.hasMyBase() || this.hasMyRocket();
     }
 
     @Override

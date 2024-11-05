@@ -22,6 +22,7 @@ public class PlanetsTable extends Table {
     private final Container<ImageButton> arrowContainer;
     private final Drawable arrowDownDrawable;
     private final Drawable arrowUpDrawable;
+    public Drawable rocketDrawable;
     public Drawable baseDrawable;
     public Drawable moonDrawable;
     private float targetYPosition = 0f;
@@ -37,6 +38,7 @@ public class PlanetsTable extends Table {
         this.setFillParent(true);
         this.bottom();
 
+        this.rocketDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("rocket"));
         this.baseDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("base"));
         this.moonDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("moon"));
         this.arrowDownDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("arrow_drop_down"));
@@ -90,7 +92,7 @@ public class PlanetsTable extends Table {
         buttonContainer.setBackground(this.skin.getDrawable("panel_square"));
 
         if (planet != null) {
-            buttonContainer.addListener(new PlanetToolTip(this.screen, planet, this.baseDrawable, this.moonDrawable));
+            buttonContainer.addListener(new PlanetToolTip(this.screen, planet, this.rocketDrawable, this.baseDrawable, this.moonDrawable));
         }
 
         return buttonContainer;
