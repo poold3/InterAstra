@@ -11,6 +11,8 @@ public record PlanetMessageModel(
     float orbitalSpeed,
     float startingOrbitalPosition,
     MoonMessageModel moon,
-    ArrayList<PlanetResourceMessageModel> resources
+    ArrayList<PlanetResourceMessageModel> resources,
+    ArrayList<String> bases,
+    ArrayList<RocketMessageModel> rocketsInOrbit
 ) {
 }

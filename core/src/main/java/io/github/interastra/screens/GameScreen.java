@@ -52,7 +52,7 @@ public class GameScreen implements Screen {
     public Star sol;
     public ArrayList<Planet> planets;
     public ArrayList<Player> players;
-    public ArrayList<Rocket> rockets;
+    public ArrayList<Rocket> inFlightRockets;
     public float speedMultiplier;
     public boolean leaveGame = false;
     public boolean optionsMenuOpen = false;
@@ -64,6 +64,7 @@ public class GameScreen implements Screen {
         this.lobbyScreen = lobbyScreen;
 
         this.planetsTextureAtlas = this.game.assetManager.get("planets/planets.atlas", TextureAtlas.class);
+        this.spaceCraftTextureAtlas = this.game.assetManager.get("spacecraft/spacecraft.atlas", TextureAtlas.class);
 
         this.loadGameData(gameData);
 
@@ -162,6 +163,10 @@ public class GameScreen implements Screen {
             this.dispose();
         }
 
+        // Update resourceBalances
+
+
+
         // Move planets
         for (Planet planet : this.planets) {
             planet.move(this.gameViewport.getWorldWidth(), this.gameViewport.getWorldHeight(), Gdx.graphics.getDeltaTime(), speedMultiplier);
@@ -190,6 +195,11 @@ public class GameScreen implements Screen {
             if (planet.moon != null) {
                 planet.moon.moonSprite.draw(this.game.spriteBatch);
             }
+            if (planet.isVisible) {
+                for (Rocket rocket : planet.rocketsInOrbit) {
+                    rocket.rocketSprite.draw(this.game.spriteBatch);
+                }
+            }
         }
 
         this.game.spriteBatch.end();
@@ -203,7 +213,7 @@ public class GameScreen implements Screen {
         // Add Planets
         this.planets = new ArrayList<>();
         for (PlanetMessageModel planet : gameData.planets()) {
-            this.planets.add(new Planet(this.planetsTextureAtlas, planet));
+            this.planets.add(new Planet(this.planetsTextureAtlas, planet, this.spaceCraftTextureAtlas, this.lobbyScreen.myName));
         }
 
         // Add Players
@@ -213,7 +223,7 @@ public class GameScreen implements Screen {
         }
 
         // Add Rockets
-        this.rockets = new ArrayList<>();
+        this.inFlightRockets = new ArrayList<>();
     }
 
     public void unsubscribeToGameTopics() {

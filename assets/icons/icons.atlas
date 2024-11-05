@@ -11,5 +11,7 @@ copy
 bounds:2,2,96,96
 moon
 bounds:394,2,96,96
+rocket
+bounds:590,2,96,96
 undo
 bounds:198,2,96,96

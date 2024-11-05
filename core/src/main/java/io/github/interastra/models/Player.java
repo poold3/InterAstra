@@ -2,13 +2,22 @@ package io.github.interastra.models;
 
 import io.github.interastra.message.models.PlayerMessageModel;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 public class Player {
     public String name;
     public float balance;
+    public ConcurrentHashMap<PlanetResource.PLANET_RESOURCE, Float> resourceBalances;
 
     public Player(PlayerMessageModel playerMessageModel) {
         this.name = playerMessageModel.name();
         this.balance = playerMessageModel.balance();
+        this.resourceBalances = new ConcurrentHashMap<>();
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.IRON, 0f);
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.OIL, 0f);
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.SILICON, 0f);
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.LITHIUM, 0f);
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.HELIUM3, 0f);
     }
 
     @Override

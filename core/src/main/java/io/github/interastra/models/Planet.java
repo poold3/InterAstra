@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import io.github.interastra.message.models.PlanetMessageModel;
 import io.github.interastra.message.models.PlanetResourceMessageModel;
+import io.github.interastra.message.models.RocketMessageModel;
 
 import java.util.ArrayList;
 
@@ -12,6 +13,8 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
 
     public int index;
     public String name;
+    public String visibleNameIdentifier;
+    public boolean isVisible = false;
     public Sprite planetSprite;
     public float orbitalRadius;
     public float orbitalSpeed;
@@ -19,11 +22,17 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public Moon moon = null;
     public int baseLimit;
     public ArrayList<PlanetResource> resources = new ArrayList<>();
+    public ArrayList<String> bases = new ArrayList<>();
+    public ArrayList<Rocket> rocketsInOrbit = new ArrayList<>();
 
-    public Planet(final TextureAtlas textureAtlas, PlanetMessageModel planetMessageModel) {
+    public Planet(final TextureAtlas planetTextureAtlas,
+                  PlanetMessageModel planetMessageModel,
+                  final TextureAtlas rocketTextureAtlas,
+                  String visibleNameIdentifier) {
         this.index = planetMessageModel.index();
         this.name = planetMessageModel.name();
-        this.planetSprite = new Sprite(textureAtlas.findRegion("planet", this.index));
+        this.visibleNameIdentifier = visibleNameIdentifier;
+        this.planetSprite = new Sprite(planetTextureAtlas.findRegion("planet", this.index));
         float size = planetMessageModel.size();
         this.baseLimit = planetMessageModel.baseLimit();
         this.planetSprite.setSize(size, size);
@@ -33,12 +42,20 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
         this.orbitalPosition = planetMessageModel.startingOrbitalPosition();
 
         if (planetMessageModel.moon() != null) {
-            this.moon = new Moon(textureAtlas, this, planetMessageModel.moon());
+            this.moon = new Moon(planetTextureAtlas, this, planetMessageModel.moon());
         }
 
         for (PlanetResourceMessageModel planetResourceMessageModel : planetMessageModel.resources()) {
             this.resources.add(new PlanetResource(planetResourceMessageModel));
         }
+
+        this.bases.addAll(planetMessageModel.bases());
+
+        for (RocketMessageModel rocketMessageModel : planetMessageModel.rocketsInOrbit()) {
+            this.rocketsInOrbit.add(new Rocket(rocketTextureAtlas, this, rocketMessageModel));
+        }
+
+        this.setVisible();
     }
 
     public void move(float width, float height, float deltaTime, float speedMultiplier) {
@@ -54,6 +71,31 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
         if (this.moon != null) {
             this.moon.move(deltaTime, speedMultiplier);
         }
+
+        // Move rockets in orbit
+        if (this.isVisible) {
+            for (Rocket rocket : this.rocketsInOrbit) {
+                rocket.move(deltaTime, speedMultiplier);
+            }
+        }
+    }
+
+    public void setVisible() {
+        for (String base : this.bases) {
+            if (base.equals(this.visibleNameIdentifier)) {
+                this.isVisible = true;
+                return;
+            }
+        }
+
+        for (Rocket rocket : this.rocketsInOrbit) {
+            if (rocket.playerName.equals(this.visibleNameIdentifier)) {
+                this.isVisible = true;
+                return;
+            }
+        }
+
+        this.isVisible = false;
     }
 
     @Override
