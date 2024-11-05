@@ -52,22 +52,28 @@ public class PlanetToolTip extends Tooltip<Table> {
         limitContainer.size(FIRST_ROW_IMAGE_SIZE);
         planetTable.add(limitContainer).minWidth(FIRST_ROW_CELL_WIDTH).maxWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
 
-        if (planet.hasMyRocket()) {
-            Container<Image> rocketContainer = new Container<>(new Image(this.rocketDrawable));
-            rocketContainer.size(FIRST_ROW_IMAGE_SIZE);
-            planetTable.add(rocketContainer).minWidth(FIRST_ROW_CELL_WIDTH).maxWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
+        if (planet.moon != null) {
+            Container<Image> moonContainer = new Container<>(new Image(this.moonDrawable));
+            moonContainer.size(FIRST_ROW_IMAGE_SIZE);
+            planetTable.add(moonContainer).minWidth(FIRST_ROW_CELL_WIDTH).maxWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
+        } else {
+            planetTable.add().minWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
         }
 
         if (planet.hasMyBase()) {
             Container<Image> baseContainer = new Container<>(new Image(this.baseDrawable));
             baseContainer.size(FIRST_ROW_IMAGE_SIZE);
             planetTable.add(baseContainer).minWidth(FIRST_ROW_CELL_WIDTH).maxWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
+        } else {
+            planetTable.add().minWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
         }
 
-        if (planet.moon != null) {
-            Container<Image> moonContainer = new Container<>(new Image(this.moonDrawable));
-            moonContainer.size(FIRST_ROW_IMAGE_SIZE);
-            planetTable.add(moonContainer).minWidth(FIRST_ROW_CELL_WIDTH).maxWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
+        if (planet.hasMyRocket()) {
+            Container<Image> rocketContainer = new Container<>(new Image(this.rocketDrawable));
+            rocketContainer.size(FIRST_ROW_IMAGE_SIZE);
+            planetTable.add(rocketContainer).minWidth(FIRST_ROW_CELL_WIDTH).maxWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
+        } else {
+            planetTable.add().minWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
         }
 
         return planetTable;
