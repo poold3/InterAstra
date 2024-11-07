@@ -21,6 +21,7 @@ import io.github.interastra.stages.GameStage;
 import io.github.interastra.tables.NotificationTable;
 import io.github.interastra.tables.OptionsTable;
 import io.github.interastra.tables.PlanetsTable;
+import io.github.interastra.tables.ResourcesTable;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
@@ -46,18 +47,21 @@ public class GameScreen implements Screen {
     public NotificationTable notificationTable;
     public PlanetsTable planetsTable;
     public OptionsTable optionsTable;
+    public ResourcesTable resourcesTable;
     public TextureAtlas planetsTextureAtlas;
 
     public int basesToWin;
     public Star sol;
     public ArrayList<Planet> planets;
-    public ArrayList<Player> players;
+    public ArrayList<PlayerMessageModel> players;
+    public Player myPlayer;
     public ArrayList<Rocket> inFlightRockets;
     public float speedMultiplier;
     public boolean leaveGame = false;
     public boolean optionsMenuOpen = false;
     public ArrayList<StompSession.Subscription> gameSubscriptions;
     public boolean endGame = false;
+    public float resourceUpdateTimer = 0f;
 
     public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
         this.game = game;
@@ -88,9 +92,11 @@ public class GameScreen implements Screen {
         this.notificationTable = new NotificationTable(this.skin);
         this.planetsTable = new PlanetsTable(this, this.skin);
         this.optionsTable = new OptionsTable(this, this.skin);
+        this.resourcesTable = new ResourcesTable(this, this.skin);
 
         this.stage.addActor(this.notificationTable);
         this.stage.addActor(this.planetsTable);
+        this.stage.addActor(this.resourcesTable);
     }
 
     @Override
@@ -163,9 +169,19 @@ public class GameScreen implements Screen {
             this.dispose();
         }
 
-        // Update resourceBalances
-
-
+        // Update resource balances
+        this.resourceUpdateTimer += delta;
+        while (this.resourceUpdateTimer >= 1f) {
+            this.resourceUpdateTimer -= 1f;
+            for (Planet planet : this.planets) {
+                if (planet.isVisible) {
+                    final int resourceMultiplier = (planet.hasMyBase ? 2 : 0) + planet.numMyRockets;
+                    for (PlanetResource planetResource : planet.resources) {
+                        myPlayer.resourceBalances.computeIfPresent(planetResource.resource, (k, currentBalance) -> currentBalance + (planetResource.rate * resourceMultiplier));
+                    }
+                }
+            }
+        }
 
         // Move planets
         for (Planet planet : this.planets) {
@@ -217,9 +233,11 @@ public class GameScreen implements Screen {
         }
 
         // Add Players
-        this.players = new ArrayList<>();
-        for (PlayerMessageModel player : gameData.players()) {
-            this.players.add(new Player(player));
+        this.players = new ArrayList<>(gameData.players());
+        for (PlayerMessageModel player : this.players) {
+            if (player.name().equals(this.lobbyScreen.myName)) {
+                this.myPlayer = new Player(player);
+            }
         }
 
         // Add Rockets

@@ -60,7 +60,7 @@ public class PlanetToolTip extends Tooltip<Table> {
             planetTable.add().minWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
         }
 
-        if (planet.hasMyBase()) {
+        if (planet.hasMyBase) {
             Container<Image> baseContainer = new Container<>(new Image(this.baseDrawable));
             baseContainer.size(FIRST_ROW_IMAGE_SIZE);
             planetTable.add(baseContainer).minWidth(FIRST_ROW_CELL_WIDTH).maxWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
@@ -68,7 +68,7 @@ public class PlanetToolTip extends Tooltip<Table> {
             planetTable.add().minWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);
         }
 
-        if (planet.hasMyRocket()) {
+        if (planet.numMyRockets > 0) {
             Container<Image> rocketContainer = new Container<>(new Image(this.rocketDrawable));
             rocketContainer.size(FIRST_ROW_IMAGE_SIZE);
             planetTable.add(rocketContainer).minWidth(FIRST_ROW_CELL_WIDTH).maxWidth(FIRST_ROW_CELL_WIDTH).expandX().center().pad(2f);

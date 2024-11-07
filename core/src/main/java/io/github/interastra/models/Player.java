@@ -11,7 +11,7 @@ public class Player {
 
     public Player(PlayerMessageModel playerMessageModel) {
         this.name = playerMessageModel.name();
-        this.balance = playerMessageModel.balance();
+        this.balance = 0f;
         this.resourceBalances = new ConcurrentHashMap<>();
         this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.IRON, 0f);
         this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.OIL, 0f);

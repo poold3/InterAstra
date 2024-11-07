@@ -15,6 +15,8 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public String name;
     public String myName;
     public boolean isVisible = false;
+    public boolean hasMyBase = false;
+    public int numMyRockets = 0;
     public Sprite planetSprite;
     public float orbitalRadius;
     public float orbitalSpeed;
@@ -55,7 +57,8 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
             this.rocketsInOrbit.add(new Rocket(rocketTextureAtlas, this, rocketMessageModel));
         }
 
-        this.setVisible();
+        this.setHasMyBase();
+        this.setNumMyRockets();
     }
 
     public void move(float width, float height, float deltaTime, float speedMultiplier) {
@@ -80,26 +83,25 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
         }
     }
 
-    public boolean hasMyBase() {
+    public void setHasMyBase() {
+        this.hasMyBase = false;
         for (String base : this.bases) {
             if (base.equals(this.myName)) {
-                return true;
+                this.hasMyBase = true;
+                break;
             }
         }
-        return false;
+        this.isVisible = this.hasMyBase || this.numMyRockets > 0;
     }
 
-    public boolean hasMyRocket() {
+    public void setNumMyRockets() {
+        this.numMyRockets = 0;
         for (Rocket rocket : this.rocketsInOrbit) {
             if (rocket.playerName.equals(this.myName)) {
-                return true;
+                this.numMyRockets += 1;
             }
         }
-        return false;
-    }
-
-    public void setVisible() {
-        this.isVisible = this.hasMyBase() || this.hasMyRocket();
+        this.isVisible = this.hasMyBase || this.numMyRockets > 0;
     }
 
     @Override
