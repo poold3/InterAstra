@@ -18,10 +18,7 @@ import io.github.interastra.message.models.PlayerMessageModel;
 import io.github.interastra.models.*;
 import io.github.interastra.services.CameraOperatorService;
 import io.github.interastra.stages.GameStage;
-import io.github.interastra.tables.NotificationTable;
-import io.github.interastra.tables.OptionsTable;
-import io.github.interastra.tables.PlanetsTable;
-import io.github.interastra.tables.ResourcesTable;
+import io.github.interastra.tables.*;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
@@ -48,6 +45,8 @@ public class GameScreen implements Screen {
     public PlanetsTable planetsTable;
     public OptionsTable optionsTable;
     public ResourcesTable resourcesTable;
+    public PlanetDashboardButtonTable planetDashboardButtonTable;
+    public PlanetDashboardTable planetDashboardTable;
     public TextureAtlas planetsTextureAtlas;
 
     public int basesToWin;
@@ -58,7 +57,6 @@ public class GameScreen implements Screen {
     public ArrayList<Rocket> inFlightRockets;
     public float speedMultiplier;
     public boolean leaveGame = false;
-    public boolean optionsMenuOpen = false;
     public ArrayList<StompSession.Subscription> gameSubscriptions;
     public boolean endGame = false;
     public float resourceUpdateTimer = 0f;
@@ -93,6 +91,8 @@ public class GameScreen implements Screen {
         this.planetsTable = new PlanetsTable(this, this.skin);
         this.optionsTable = new OptionsTable(this, this.skin);
         this.resourcesTable = new ResourcesTable(this, this.skin);
+        this.planetDashboardButtonTable = new PlanetDashboardButtonTable(this, this.skin);
+        this.planetDashboardTable = new PlanetDashboardTable(this, this.skin);
 
         this.stage.addActor(this.notificationTable);
         this.stage.addActor(this.planetsTable);
@@ -272,11 +272,31 @@ public class GameScreen implements Screen {
     }
 
     public void toggleOptionsMenu() {
-        optionsMenuOpen = !optionsMenuOpen;
-        if (optionsMenuOpen) {
+        this.optionsTable.isVisible = !this.optionsTable.isVisible;
+        if (this.optionsTable.isVisible) {
             this.stage.addActor(this.optionsTable);
         } else {
             this.optionsTable.remove();
+        }
+    }
+
+    public void addPlanetDashboardButton() {
+        this.planetDashboardButtonTable.isVisible = true;
+        this.stage.addActor(this.planetDashboardButtonTable);
+    }
+
+    public void removePlanetDashboardButton() {
+        this.planetDashboardButtonTable.isVisible = false;
+        this.planetDashboardButtonTable.remove();
+    }
+
+    public void togglePlanetDashboard() {
+        this.planetDashboardTable.isVisible = !this.planetDashboardTable.isVisible;
+        if (this.planetDashboardTable.isVisible) {
+            this.planetDashboardTable.setPlanet((Planet) this.entityBeingFollowed);
+            this.stage.addActor(this.planetDashboardTable);
+        } else {
+            this.planetDashboardTable.remove();
         }
     }
 }

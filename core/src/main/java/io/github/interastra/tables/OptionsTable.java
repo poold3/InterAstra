@@ -13,6 +13,7 @@ public class OptionsTable extends Table {
     private final GameScreen screen;
     private final Skin skin;
     private final float size;
+    public boolean isVisible = false;
 
     public OptionsTable(final GameScreen screen, final Skin skin) {
         this.screen = screen;

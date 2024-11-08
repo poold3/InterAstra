@@ -103,26 +103,6 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/dalli/Downloads/kenney_ui-pack-space-expansion/PNG/Extra/Default/panel_glass.png
-			bgColor: {
-				r: 1
-				g: 1
-				b: 1
-				a: 1
-			}
-			tint: null
-			tintName: null
-			name: panel_glass
-			tiled: false
-			minWidth: -1
-			minHeight: -1
-			customized: false
-			tenPatchData: null
-			tvgData: null
-			type: TEXTURE
-			hidden: false
-		}
-		{
 			file: C:/Users/dalli/Downloads/kenney_ui-pack-space-expansion/PNG/Extra/Default/panel_glass_notch_bl.png
 			bgColor: {
 				r: 1
@@ -683,26 +663,6 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: C:/Users/dalli/Downloads/kenney_ui-pack-space-expansion/PNG/Extra/Default/bar_shadow_square_small.png
-			bgColor: {
-				r: 1
-				g: 1
-				b: 1
-				a: 1
-			}
-			tint: null
-			tintName: null
-			name: bar_shadow_square_small
-			tiled: false
-			minWidth: -1
-			minHeight: -1
-			customized: false
-			tenPatchData: null
-			tvgData: null
-			type: TEXTURE
-			hidden: false
-		}
-		{
 			file: C:/Users/dalli/Downloads/cursor-16.png
 			bgColor: {
 				r: 1
@@ -733,6 +693,86 @@ atlasData: {
 			tint: null
 			tintName: null
 			name: panel_square_screws
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: NINE_PATCH
+			hidden: false
+		}
+		{
+			file: C:/Users/dalli/Downloads/kenney_ui-pack-space-expansion/PNG/Extra/Default/bar_shadow_square_small.9.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: bar_shadow_square_small
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: NINE_PATCH
+			hidden: false
+		}
+		{
+			file: C:/Users/dalli/Downloads/kenney_ui-pack-space-expansion/PNG/Extra/Default/scroll_vertical.9.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: scroll_vertical
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: NINE_PATCH
+			hidden: false
+		}
+		{
+			file: C:/Users/dalli/Downloads/kenney_ui-pack-space-expansion/PNG/Extra/Default/panel_glass.9.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: panel_glass
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: NINE_PATCH
+			hidden: false
+		}
+		{
+			file: C:/Users/dalli/Downloads/kenney_ui-pack-space-expansion/PNG/Extra/Default/panel_glass_pad.9.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: panel_glass_pad
 			tiled: false
 			minWidth: -1
 			minHeight: -1
@@ -907,7 +947,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: vScrollKnob
 						optional: true
-						value: null
+						value: scroll_vertical
 					}
 				}
 				deletable: false
@@ -2383,7 +2423,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: true
-						value: panel_rectangle
+						value: panel_glass
 					}
 					wrapWidth: {
 						type: float
@@ -2463,6 +2503,10 @@ preferences: {
 		g: 1
 		b: 1
 		a: 1
+	}
+	last-import-export-path: {
+		class: java.lang.String
+		value: C:/Users/dalli/IdeaProjects/InterAstra/assets/spaceskin/spaceskin.json
 	}
 	resources-relative: {
 		class: java.lang.Boolean

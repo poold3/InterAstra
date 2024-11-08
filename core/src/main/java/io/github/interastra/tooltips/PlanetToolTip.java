@@ -1,8 +1,10 @@
 package io.github.interastra.tooltips;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import io.github.interastra.labels.ColorLabel;
 import io.github.interastra.models.Planet;
 import io.github.interastra.models.PlanetResource;
 import io.github.interastra.screens.GameScreen;
@@ -16,7 +18,7 @@ public class PlanetToolTip extends Tooltip<Table> {
     public Drawable moonDrawable;
 
     public PlanetToolTip(final GameScreen screen, final Planet planet, final Drawable rocketDrawable, final Drawable baseDrawable, final Drawable moonDrawable) {
-        super(new Table(), getInstantManager());
+        super(new Table(), new InstantTooltipManager());
 
         this.rocketDrawable = rocketDrawable;
         this.baseDrawable = baseDrawable;
@@ -24,7 +26,7 @@ public class PlanetToolTip extends Tooltip<Table> {
 
         Container<Table> toolTipContainer = this.getContainer();
         toolTipContainer.setActor(this.getPlanetTable(screen, planet));
-        toolTipContainer.setBackground(screen.skin.getDrawable("panel_rectangle"));
+        toolTipContainer.setBackground(screen.skin.getDrawable("panel_glass"));
     }
 
     public Table getPlanetTable(final GameScreen screen, Planet planet) {
@@ -34,19 +36,19 @@ public class PlanetToolTip extends Tooltip<Table> {
             screen.skin.get(Label.LabelStyle.class)
         );
         planetNameStyle.font = screen.skin.getFont("Teko-32");
-        Label planetNameLabel = new Label(planet.name, planetNameStyle);
+        ColorLabel planetNameLabel = new ColorLabel(planet.name, planetNameStyle, Color.BLACK);
         planetTable.add(planetNameLabel).colspan(4).expandX().center().pad(2f);
 
         planetTable.row();
 
         for (PlanetResource planetResource : planet.resources) {
-            Label planetResourceLabel = new Label(String.format("%s: %f", planetResource.getPlanetResourceName(), planetResource.rate), screen.skin);
+            ColorLabel planetResourceLabel = new ColorLabel(String.format("%s: %f", planetResource.getPlanetResourceName(), planetResource.rate), screen.skin, Color.BLACK);
             planetTable.add(planetResourceLabel).colspan(4).expandX().center().pad(2f);
 
             planetTable.row();
         }
 
-        Label limitLabel = new Label(String.format("%d", planet.baseLimit), screen.skin);
+        ColorLabel limitLabel = new ColorLabel(String.format("%d", planet.baseLimit), screen.skin, Color.BLACK);
         limitLabel.setAlignment(Align.center);
         Container<Label> limitContainer = new Container<>(limitLabel);
         limitContainer.size(FIRST_ROW_IMAGE_SIZE);
@@ -77,13 +79,5 @@ public class PlanetToolTip extends Tooltip<Table> {
         }
 
         return planetTable;
-    }
-
-    public static TooltipManager getInstantManager() {
-        TooltipManager tooltipManager = new TooltipManager();
-        tooltipManager.instant();
-        tooltipManager.initialTime = 0f;
-        tooltipManager.subsequentTime = 0f;
-        return tooltipManager;
     }
 }

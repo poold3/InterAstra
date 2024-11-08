@@ -79,6 +79,19 @@ com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
 		background: bar_shadow_round_large
 	}
 }
+com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
+	default: {
+		vScrollKnob: scroll_vertical
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
+	default: {
+		font: Teko-16
+		fontColor: WHITE
+		scrollStyle: default
+		listStyle: default
+	}
+}
 com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 	default-horizontal: {
 		background: bar_shadow_round_large
@@ -108,7 +121,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
 	default: {
 		label: default
-		background: panel_rectangle
+		background: panel_glass
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {

@@ -18,40 +18,53 @@ public class GameStage extends Stage {
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-        this.touchDownMousePosition.x = screenX;
-        this.touchDownMousePosition.y = screenY;
-        this.touchDownMousePosition.z = 0;
-        this.screen.gameViewport.unproject(this.touchDownMousePosition);
-
-        return super.touchDown(screenX, screenY, pointer, button);
+        boolean result = super.touchDown(screenX, screenY, pointer, button);
+        if (!result) {
+            this.touchDownMousePosition.x = screenX;
+            this.touchDownMousePosition.y = screenY;
+            this.touchDownMousePosition.z = 0;
+            this.screen.gameViewport.unproject(this.touchDownMousePosition);
+        }
+        return result;
     }
 
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
-        this.screen.entityBeingFollowed = null;
-        Vector3 mousePosition = new Vector3(screenX, screenY, 0);
-        this.screen.gameViewport.unproject(mousePosition);
-        Vector3 diff = mousePosition.sub(this.touchDownMousePosition);
-        this.screen.camera.targetPosition.sub(diff);
-        this.screen.camera.targetPosition.x = MathUtils.clamp(
-            this.screen.camera.targetPosition.x,
-            0f,
-            this.screen.gameViewport.getWorldWidth()
-        );
-        this.screen.camera.targetPosition.y = MathUtils.clamp(
-            this.screen.camera.targetPosition.y,
-            0f,
-            this.screen.gameViewport.getWorldHeight()
-        );
-        this.screen.camera.forceCameraPosition();
+        boolean result = super.touchDragged(screenX, screenY, pointer);
+        if (!result) {
+            if (this.screen.entityBeingFollowed != null) {
+                if (this.screen.planetDashboardButtonTable.isVisible) {
+                    this.screen.removePlanetDashboardButton();
+                }
+                this.screen.entityBeingFollowed = null;
+            }
 
-        return super.touchDragged(screenX, screenY, pointer);
+            Vector3 mousePosition = new Vector3(screenX, screenY, 0);
+            this.screen.gameViewport.unproject(mousePosition);
+            Vector3 diff = mousePosition.sub(this.touchDownMousePosition);
+            this.screen.camera.targetPosition.sub(diff);
+            this.screen.camera.targetPosition.x = MathUtils.clamp(
+                this.screen.camera.targetPosition.x,
+                0f,
+                this.screen.gameViewport.getWorldWidth()
+            );
+            this.screen.camera.targetPosition.y = MathUtils.clamp(
+                this.screen.camera.targetPosition.y,
+                0f,
+                this.screen.gameViewport.getWorldHeight()
+            );
+            this.screen.camera.forceCameraPosition();
+        }
+        return result;
     }
 
     @Override
     public boolean scrolled (float amountX, float amountY) {
-        this.screen.camera.targetZoom += amountY * 0.1f * this.screen.camera.zoom;
-        this.screen.camera.targetZoom = MathUtils.clamp(this.screen.camera.targetZoom, 0.001f, 1f);
-        return super.scrolled(amountX, amountY);
+        boolean result = super.scrolled(amountX, amountY);
+        if (!result) {
+            this.screen.camera.targetZoom += amountY * 0.1f * this.screen.camera.zoom;
+            this.screen.camera.targetZoom = MathUtils.clamp(this.screen.camera.targetZoom, 0.001f, 1f);
+        }
+        return result;
     }
 }

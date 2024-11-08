@@ -33,9 +33,9 @@ public class PlanetsTable extends Table {
         this.setFillParent(true);
         this.bottom();
 
-        this.rocketDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("rocket"));
-        this.baseDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("base"));
-        this.moonDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("moon"));
+        this.rocketDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("rocket_black"));
+        this.baseDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("base_black"));
+        this.moonDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("moon_black"));
 
         for (Planet planet : this.screen.planets) {
             this.add(this.getContainer(this.getPlanetImageButton(planet), planet)).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
@@ -73,7 +73,9 @@ public class PlanetsTable extends Table {
                 } else {
                     screen.camera.targetZoom = screen.camera.getZoomForSize(planet.getWidth());
                 }
-
+                if (!screen.planetDashboardButtonTable.isVisible) {
+                    screen.addPlanetDashboardButton();
+                }
             }
         });
 
@@ -91,6 +93,9 @@ public class PlanetsTable extends Table {
         undoImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                if (screen.planetDashboardButtonTable.isVisible) {
+                    screen.removePlanetDashboardButton();
+                }
                 screen.entityBeingFollowed = null;
                 screen.camera.reset();
             }
