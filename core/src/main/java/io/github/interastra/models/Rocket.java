@@ -12,8 +12,21 @@ public class Rocket implements CameraEnabledEntity {
         CLOCKWISE
     }
 
-    public static final float[] ROCKET_TIER_HEIGHTS = {0.197f, 0.2f, 0.236f, 0.239f};
+    public static final float[] ROCKET_TIER_HEIGHT = {0.197f, 0.2f, 0.236f, 0.239f};
     public static final float[] ROCKET_TIER_WIDTH = {0.1f, 0.075f, 0.087f, 0.078f};
+    public static final Price[] ROCKET_TIER_PRICE = {
+        new Price(250f, 500f, 0f, 0f, 0f, 0f),
+        new Price(500f, 500f, 0f, 100f, 0f, 0f),
+        new Price(750f, 500f, 0f, 100f, 100f, 0f),
+        new Price(1000f, 500f, 0f, 100f, 100f, 0f)
+    };
+    public static final Price[] ROCKET_TIER_FUEL_PRICE = {
+        new Price(0f, 0f, 250f, 0f, 0f, 0f),
+        new Price(0f, 0f, 500f, 0f, 0f, 0f),
+        new Price(0f, 0f, 0f, 0f, 0f, 125f),
+        new Price(0f, 0f, 0f, 0f, 0f, 250f)
+    };
+    public static final String[] ROCKET_TIER_STRING = {"I", "II", "III", "IV"};
     public static final float ROCKET_ORBITAL_RADIUS = 1f;
     public static final float ROCKET_ORBITAL_SPEED = 0.1f;
     public static final float TWO_PI = (float) (2f * Math.PI);
@@ -34,8 +47,8 @@ public class Rocket implements CameraEnabledEntity {
         this.orbitingPlanet = orbitingPlanet;
 
         this.rocketSprite = new Sprite(textureAtlas.findRegion("spaceRockets", this.tier));
-        this.rocketSprite.setSize(ROCKET_TIER_WIDTH[this.tier - 1], ROCKET_TIER_HEIGHTS[this.tier - 1]);
-        this.rocketSprite.setOrigin(ROCKET_TIER_WIDTH[this.tier - 1] / 2f, ROCKET_TIER_HEIGHTS[this.tier - 1] / 2f);
+        this.rocketSprite.setSize(ROCKET_TIER_WIDTH[this.tier - 1], ROCKET_TIER_HEIGHT[this.tier - 1]);
+        this.rocketSprite.setOrigin(ROCKET_TIER_WIDTH[this.tier - 1] / 2f, ROCKET_TIER_HEIGHT[this.tier - 1] / 2f);
         Random rand = new Random();
         this.orbitalRadius = (this.orbitingPlanet.planetSprite.getWidth() / 2f) + rand.nextFloat(ROCKET_ORBITAL_RADIUS);
         this.orbitalPosition = rand.nextFloat(TWO_PI);

@@ -149,7 +149,11 @@ public class GameScreen implements Screen {
     public void input() {
         // Escape key to exit
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            this.toggleOptionsMenu();
+            if (this.planetDashboardTable.isVisible) {
+                this.togglePlanetDashboard();
+            } else {
+                this.toggleOptionsMenu();
+            }
         }
 
     }

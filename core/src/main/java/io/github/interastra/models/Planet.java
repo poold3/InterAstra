@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public static final float TWO_PI = (float) (2f * Math.PI);
+    public static final Price BASE_PRICE = new Price(1000f, 1000f, 0f, 250f, 250f, 0f);
 
     public int index;
     public String name;

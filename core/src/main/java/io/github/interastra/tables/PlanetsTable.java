@@ -76,6 +76,9 @@ public class PlanetsTable extends Table {
                 if (!screen.planetDashboardButtonTable.isVisible) {
                     screen.addPlanetDashboardButton();
                 }
+                if (screen.planetDashboardTable.isVisible) {
+                    screen.planetDashboardTable.setPlanet(planet);
+                }
             }
         });
 
@@ -95,6 +98,9 @@ public class PlanetsTable extends Table {
             public void clicked(InputEvent event, float x, float y) {
                 if (screen.planetDashboardButtonTable.isVisible) {
                     screen.removePlanetDashboardButton();
+                }
+                if (screen.planetDashboardTable.isVisible) {
+                    screen.togglePlanetDashboard();
                 }
                 screen.entityBeingFollowed = null;
                 screen.camera.reset();
