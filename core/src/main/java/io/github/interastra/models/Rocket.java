@@ -98,21 +98,21 @@ public class Rocket implements CameraEnabledEntity {
 
     @Override
     public float getX() {
-        return 0;
+        return this.rocketSprite.getX() + this.rocketSprite.getOriginX();
     }
 
     @Override
     public float getY() {
-        return 0;
+        return this.rocketSprite.getY() + this.rocketSprite.getOriginY();
     }
 
     @Override
     public float getWidth() {
-        return 0;
+        return this.rocketSprite.getWidth();
     }
 
     @Override
     public float getHeight() {
-        return 0;
+        return this.rocketSprite.getHeight();
     }
 }

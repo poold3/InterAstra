@@ -7,18 +7,21 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import io.github.interastra.models.Planet;
 import io.github.interastra.models.Rocket;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
 import io.github.interastra.tooltips.ColorTextTooltip;
 import io.github.interastra.tooltips.InstantTooltipManager;
+import io.github.interastra.tooltips.RocketToolTip;
 
 import java.util.ArrayList;
 
 public class PlanetDashboardTable extends Table {
     public static final float DASHBOARD_BUTTON_WIDTH = 100f;
     public static final float DASHBOARD_BUTTON_HEIGHT = 40f;
+    public static final float ROCKET_ROW_ICON_SIZE = 30f;
 
     private final GameScreen screen;
     private final Skin skin;
@@ -26,18 +29,20 @@ public class PlanetDashboardTable extends Table {
     public Planet planet;
 
     public Label titleLabel;
-    public ScrollPane scrollPane;
-    public TextButton buildBaseTextButton;
-    public TextButton[] buildRocketTextButtons = new TextButton[4];
     public ArrayList<String> bases = new ArrayList<>();
     public ArrayList<Rocket> rockets = new ArrayList<>();
     public Label basesLabel;
     public Table rocketsTable;
+    public Drawable viewDrawable;
+    public Drawable sendDrawable;
 
     public PlanetDashboardTable(final GameScreen screen, final Skin skin) {
         super();
         this.screen = screen;
         this.skin = skin;
+
+        this.viewDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("view"));
+        this.sendDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("send"));
 
         this.setWidth(this.screen.stageViewport.getWorldWidth() / 2f);
         this.setHeight(this.screen.stageViewport.getWorldHeight() - PlanetsTable.MAX_BUTTON_SIZE - (PlanetsTable.BUTTON_PAD) * 2f);
@@ -56,8 +61,8 @@ public class PlanetDashboardTable extends Table {
         this.add(titleLabel).expandX().center().pad(5f);
         this.row();
 
-        this.scrollPane = new ScrollPane(this.getPlanetDetailsTable(), this.skin);
-        this.scrollPane.addListener(new InputListener() {
+        ScrollPane scrollPane = new ScrollPane(this.getPlanetDetailsTable(), this.skin);
+        scrollPane.addListener(new InputListener() {
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 if (getStage() != null) {
                     getStage().setScrollFocus(scrollPane);
@@ -70,12 +75,12 @@ public class PlanetDashboardTable extends Table {
                 }
             }
         });
-        this.add(this.scrollPane).grow().padTop(10f);
+        this.add(scrollPane).grow().padTop(10f);
     }
 
     public Table getPlanetDetailsTable() {
         Table planetDetailsTable = new Table();
-        planetDetailsTable.center().top();
+        planetDetailsTable.top();
 
         Label.LabelStyle titleLabelStyle = new Label.LabelStyle(this.skin.get(Label.LabelStyle.class));
         titleLabelStyle.font = this.skin.getFont("Teko-32");
@@ -83,18 +88,7 @@ public class PlanetDashboardTable extends Table {
         planetDetailsTable.add(new Label("Build Actions", titleLabelStyle)).colspan(2).expandX().center().pad(5f);
         planetDetailsTable.row();
 
-        this.setBuildBaseTextButton();
-        planetDetailsTable.add(this.buildBaseTextButton).colspan(2).maxWidth(DASHBOARD_BUTTON_WIDTH).maxHeight(DASHBOARD_BUTTON_HEIGHT);
-        planetDetailsTable.row();
-
-        this.setBuildRocketTextButtons();
-        for (int i = 0; i < 3; i += 2) {
-            planetDetailsTable.add(this.buildRocketTextButtons[i]).maxWidth(DASHBOARD_BUTTON_WIDTH).maxHeight(DASHBOARD_BUTTON_HEIGHT);
-        }
-        planetDetailsTable.row();
-        for (int i = 1; i < 4; i += 2) {
-            planetDetailsTable.add(this.buildRocketTextButtons[i]).maxWidth(DASHBOARD_BUTTON_WIDTH).maxHeight(DASHBOARD_BUTTON_HEIGHT);
-        }
+        planetDetailsTable.add(this.getBuildTextButtons()).expandX().center();
         planetDetailsTable.row();
 
         planetDetailsTable.add(new Label("Bases Built", titleLabelStyle)).colspan(2).expandX().center().pad(5f);
@@ -116,19 +110,18 @@ public class PlanetDashboardTable extends Table {
         return planetDetailsTable;
     }
 
-    public void setBuildBaseTextButton() {
-        this.buildBaseTextButton = new TextButton("Base", this.skin);
-        this.buildBaseTextButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
+    public Table getBuildTextButtons() {
+        TextButton buildBaseTextButton = new TextButton("Base", this.skin);
+        buildBaseTextButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 
             }
         });
-        this.buildBaseTextButton.addListener(new ColorTextTooltip(Planet.BASE_PRICE.toString(), new InstantTooltipManager(), this.skin, Color.BLACK));
-    }
+        buildBaseTextButton.addListener(new ColorTextTooltip(Planet.BASE_PRICE.toString(), new InstantTooltipManager(), this.skin, Color.BLACK));
 
-    public void setBuildRocketTextButtons() {
-        for (int i = 0; i < this.buildRocketTextButtons.length; ++i) {
+        TextButton[] rocketButtons = new TextButton[4];
+        for (int i = 0; i < rocketButtons.length; ++i) {
             TextButton buildRocketTextButton = new TextButton("Rocket " + Rocket.ROCKET_TIER_STRING[i], this.skin);
             buildRocketTextButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
                 @Override
@@ -136,9 +129,22 @@ public class PlanetDashboardTable extends Table {
 
                 }
             });
-            buildRocketTextButton.addListener(new ColorTextTooltip(Rocket.ROCKET_TIER_PRICE[i].toString(), new InstantTooltipManager(), this.skin, Color.BLACK));
-            this.buildRocketTextButtons[i] = buildRocketTextButton;
+            buildRocketTextButton.addListener(new RocketToolTip(screen, i + 1));
+            rocketButtons[i] = buildRocketTextButton;
         }
+
+        Table buildRocketTextButtonsTable = new Table();
+        buildRocketTextButtonsTable.add(buildBaseTextButton).colspan(2).size(DASHBOARD_BUTTON_WIDTH, DASHBOARD_BUTTON_HEIGHT).pad(5f);
+        buildRocketTextButtonsTable.row();
+
+        for (int i = 0; i < 2; ++i) {
+            buildRocketTextButtonsTable.add(rocketButtons[i]).size(DASHBOARD_BUTTON_WIDTH, DASHBOARD_BUTTON_HEIGHT).pad(5f);
+        }
+        buildRocketTextButtonsTable.row();
+        for (int i = 2; i < 4; ++i) {
+            buildRocketTextButtonsTable.add(rocketButtons[i]).size(DASHBOARD_BUTTON_WIDTH, DASHBOARD_BUTTON_HEIGHT).pad(5f);
+        }
+        return buildRocketTextButtonsTable;
     }
 
     public void setPlanet(final Planet planet) {
@@ -162,29 +168,33 @@ public class PlanetDashboardTable extends Table {
         Label.LabelStyle rocketRowLabelStyle = new Label.LabelStyle(this.skin.get(Label.LabelStyle.class));
         rocketRowLabelStyle.font = this.skin.getFont("Teko-32");
 
-        this.rocketsTable.add(new Label(String.format("%s - %s", rocket.playerName, Rocket.ROCKET_TIER_STRING[rocket.tier - 1]), rocketRowLabelStyle)).padLeft(10f).padRight(10f);
+        this.rocketsTable.add(new Label(String.format("%s %s", rocket.playerName, Rocket.ROCKET_TIER_STRING[rocket.tier - 1]), rocketRowLabelStyle)).padLeft(10f).padRight(10f);
 
-        TextButton viewRocketTextButton = new TextButton("View", this.skin);
-        viewRocketTextButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
+        ImageButton viewRocketButton = new ImageButton(this.viewDrawable);
+        viewRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
+                screen.entityBeingFollowed = rocket;
+                screen.camera.targetZoom = screen.camera.getZoomForSize(5f);
+                screen.removePlanetDashboardButton();
+                screen.togglePlanetDashboard();
             }
         });
-        this.rocketsTable.add(viewRocketTextButton).maxWidth(DASHBOARD_BUTTON_WIDTH).maxHeight(DASHBOARD_BUTTON_HEIGHT).pad(2f);
+        viewRocketButton.addListener(new ColorTextTooltip("View", new InstantTooltipManager(), this.skin, Color.BLACK));
+        this.rocketsTable.add(viewRocketButton).size(ROCKET_ROW_ICON_SIZE).pad(2f);
 
         if (rocket.playerName.equals(this.screen.myPlayer.name)) {
-            TextButton sendRocketTextButton = new TextButton("Send To", this.skin);
-            sendRocketTextButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
+            ImageButton sendRocketButton = new ImageButton(this.sendDrawable);
+            sendRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
 
                 }
             });
-            sendRocketTextButton.addListener(new ColorTextTooltip(Rocket.ROCKET_TIER_FUEL_PRICE[rocket.tier - 1].toString(), new InstantTooltipManager(), this.skin, Color.BLACK));
-            this.rocketsTable.add(sendRocketTextButton).maxWidth(DASHBOARD_BUTTON_WIDTH).maxHeight(DASHBOARD_BUTTON_HEIGHT).pad(2f);
+            sendRocketButton.addListener(new ColorTextTooltip(Rocket.ROCKET_TIER_FUEL_PRICE[rocket.tier - 1].toString(), new InstantTooltipManager(), this.skin, Color.BLACK));
+            this.rocketsTable.add(sendRocketButton).size(ROCKET_ROW_ICON_SIZE).pad(2f);
         } else {
-            this.rocketsTable.add().minWidth(DASHBOARD_BUTTON_WIDTH).pad(2f);
+            this.rocketsTable.add().minWidth(ROCKET_ROW_ICON_SIZE);
         }
 
         this.rocketsTable.row();
