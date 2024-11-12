@@ -71,6 +71,15 @@ panel_glass
   orig: 64, 64
   offset: 0, 0
   index: -1
+panel_glass_pad
+  rotate: false
+  xy: 199, 339
+  size: 64, 64
+  split: 20, 20, 15, 15
+  pad: 0, 0, 0, 0
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 panel_glass_notch_bl
   rotate: false
   xy: 1, 339
@@ -217,6 +226,8 @@ button_square_header_notch_rectangle
   rotate: false
   xy: 195, 471
   size: 192, 64
+  split: 15, 14, 36, 14
+  pad: 0, 0, 0, 0
   orig: 192, 64
   offset: 0, 0
   index: -1

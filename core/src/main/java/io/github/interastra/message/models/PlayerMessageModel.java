@@ -1,4 +1,4 @@
 package io.github.interastra.message.models;
 
-public record PlayerMessageModel(String name) {
+public record PlayerMessageModel(String name, int bases) {
 }

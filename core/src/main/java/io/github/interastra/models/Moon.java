@@ -7,6 +7,7 @@ import io.github.interastra.message.models.MoonMessageModel;
 
 public class Moon implements CameraEnabledEntity {
     public static final float TWO_PI = (float) (2f * Math.PI);
+    public static final float RANGE_INCREASE = 100f;
 
     public final Planet planet;
     public String name;

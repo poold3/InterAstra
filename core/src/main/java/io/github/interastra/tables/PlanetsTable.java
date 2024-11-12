@@ -6,7 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import io.github.interastra.models.Moon;
 import io.github.interastra.models.Planet;
+import io.github.interastra.models.Rocket;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
 import io.github.interastra.tooltips.PlanetToolTip;
@@ -21,6 +23,9 @@ public class PlanetsTable extends Table {
     public Drawable rocketDrawable;
     public Drawable baseDrawable;
     public Drawable moonDrawable;
+    public Drawable blockDrawable;
+    public Rocket rocketToSend = null;
+    public ImageButton[] planetButtons;
 
     public PlanetsTable(final GameScreen screen, final Skin skin) {
         super();
@@ -36,9 +41,13 @@ public class PlanetsTable extends Table {
         this.rocketDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("rocket_black"));
         this.baseDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("base_black"));
         this.moonDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("moon_black"));
+        this.blockDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("block"));
 
-        for (Planet planet : this.screen.planets) {
-            this.add(this.getContainer(this.getPlanetImageButton(planet), planet)).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
+        this.planetButtons = new ImageButton[this.screen.planets.size()];
+        for (int i = 0; i < this.screen.planets.size(); ++i) {
+            ImageButton planetImageButton = this.getPlanetImageButton(this.screen.planets.get(i));
+            this.planetButtons[i] = planetImageButton;
+            this.add(this.getContainer(planetImageButton, this.screen.planets.get(i))).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
         }
         this.add(this.getContainer(this.getUndoImageButton(), null)).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
     }
@@ -57,28 +66,30 @@ public class PlanetsTable extends Table {
     }
 
     public ImageButton getPlanetImageButton(Planet planet) {
-        TextureRegion planetTextureRegion = this.screen.planetsTextureAtlas.findRegion("planet", planet.index);
-        Drawable planetDrawable = new TextureRegionDrawable(planetTextureRegion);
+        Drawable planetDrawable = new TextureRegionDrawable(this.screen.planetsTextureAtlas.findRegion("planet", planet.index));
 
         ImageButton.ImageButtonStyle planetButtonStyle = new ImageButton.ImageButtonStyle();
         planetButtonStyle.imageUp = planetDrawable;
         planetButtonStyle.imageDown = planetDrawable;
+        planetButtonStyle.imageDisabled = this.blockDrawable;
         ImageButton planetImageButton = new ImageButton(planetButtonStyle);
         planetImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.entityBeingFollowed = planet;
-                if (planet.moon != null) {
-                    screen.camera.targetZoom = screen.camera.getZoomForSize((planet.moon.orbitalRadius * 2f) + planet.moon.getWidth());
-                } else {
-                    screen.camera.targetZoom = screen.camera.getZoomForSize(planet.getWidth());
+                if (planetImageButton.isDisabled()) {
+                    screen.badSound.play(0.5f);
+                    screen.notificationTable.setMessage("Out of range.");
+                    return;
                 }
-                if (!screen.planetDashboardButtonTable.isVisible) {
-                    screen.addPlanetDashboardButton();
+
+                if (rocketToSend != null) {
+
+                    rocketToSend = null;
+                    resetPlanetImageButtons();
+                    return;
                 }
-                if (screen.planetDashboardTable.isVisible) {
-                    screen.planetDashboardTable.setPlanet(planet);
-                }
+
+                trackPlanet(planet);
             }
         });
 
@@ -96,17 +107,69 @@ public class PlanetsTable extends Table {
         undoImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (screen.planetDashboardButtonTable.isVisible) {
-                    screen.removePlanetDashboardButton();
+                if (rocketToSend != null) {
+                    rocketToSend = null;
+                    resetPlanetImageButtons();
+                    return;
                 }
+
                 if (screen.planetDashboardTable.isVisible) {
                     screen.togglePlanetDashboard();
                 }
-                screen.entityBeingFollowed = null;
-                screen.camera.reset();
+                else if (screen.entityBeingFollowed != null && screen.entityBeingFollowed.getClass() == Rocket.class && ((Rocket) screen.entityBeingFollowed).inOrbit()) {
+                    trackPlanet(((Rocket) screen.entityBeingFollowed).orbitingPlanet);
+                } else {
+                    screen.removePlanetDashboardButton();
+                    screen.entityBeingFollowed = null;
+                    screen.camera.reset();
+                }
             }
         });
 
         return undoImageButton;
+    }
+
+    public void trackPlanet(final Planet planet) {
+        screen.entityBeingFollowed = planet;
+        if (planet.moon != null) {
+            screen.camera.targetZoom = screen.camera.getZoomForSize((planet.moon.orbitalRadius * 2f) + planet.moon.getWidth());
+        } else {
+            screen.camera.targetZoom = screen.camera.getZoomForSize(planet.getWidth());
+        }
+        if (!screen.planetDashboardButtonTable.isVisible) {
+            screen.addPlanetDashboardButton();
+        }
+        if (screen.planetDashboardTable.isVisible) {
+            screen.planetDashboardTable.setPlanet(planet);
+        }
+    }
+
+    public void resetPlanetImageButtons() {
+        for (ImageButton planetImageButton : this.planetButtons) {
+            planetImageButton.setDisabled(false);
+        }
+    }
+
+    public float distanceBetweenPlanets(final Planet planetOne, final Planet planetTwo) {
+        return (float) Math.sqrt(Math.pow(planetOne.getX() - planetTwo.getX(), 2) + Math.pow(planetOne.getY() - planetTwo.getY(), 2));
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+
+        if (this.rocketToSend == null) {
+            return;
+        }
+
+        float range = Rocket.ROCKET_TIER_STATS[this.rocketToSend.tier - 1].range;
+        if (this.rocketToSend.orbitingPlanet.moon != null) {
+            range += Moon.RANGE_INCREASE;
+        }
+
+        for (int i = 0; i < this.planetButtons.length; ++i) {
+            ImageButton planetButton = this.planetButtons[i];
+            planetButton.setDisabled(this.distanceBetweenPlanets(this.rocketToSend.orbitingPlanet, this.screen.planets.get(i)) > range);
+        }
     }
 }

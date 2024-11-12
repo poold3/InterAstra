@@ -6,11 +6,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Player {
     public String name;
+    public int bases;
     public float balance;
     public ConcurrentHashMap<PlanetResource.PLANET_RESOURCE, Float> resourceBalances;
 
     public Player(PlayerMessageModel playerMessageModel) {
         this.name = playerMessageModel.name();
+        this.bases = playerMessageModel.bases();
         this.balance = 0f;
         this.resourceBalances = new ConcurrentHashMap<>();
         this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.IRON, 0f);

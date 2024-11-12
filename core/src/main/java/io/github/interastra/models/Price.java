@@ -65,7 +65,7 @@ public class Price {
     @Override
     public String toString() {
         boolean first = true;
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder("Price: ");
         if (this.balance > 0f) {
             first = false;
             stringBuilder.append(String.format("$%.2f", this.balance));

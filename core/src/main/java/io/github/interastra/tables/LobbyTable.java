@@ -1,13 +1,16 @@
 package io.github.interastra.tables;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Clipboard;
+import io.github.interastra.labels.ColorLabel;
 import io.github.interastra.message.models.LobbyPlayerMessageModel;
 import io.github.interastra.rest.RestService;
 import io.github.interastra.screens.LobbyScreen;
@@ -16,7 +19,7 @@ import io.github.interastra.services.ClickListenerService;
 
 public class LobbyTable extends Table {
     public static final float PLAYER_LABEL_WIDTH = 120f;
-    public static final float PLAYER_LABEL_HEIGHT = 50f;
+    public static final float PLAYER_LABEL_HEIGHT = 70f;
     public static final float BUTTON_WIDTH = 100f;
     public static final float BUTTON_HEIGHT = 42f;
 
@@ -100,8 +103,7 @@ public class LobbyTable extends Table {
         this.playerReadyButton.setDisabled(true);
         this.screen.players.lock();
         for (LobbyPlayerMessageModel player : this.screen.players.getData()) {
-            this.playersTable.add(this.getPlayerTable(player.name(), player.ready()))
-                .maxWidth(PLAYER_LABEL_WIDTH).maxHeight(PLAYER_LABEL_HEIGHT).padLeft(10f).padRight(10f);
+            this.playersTable.add(this.getPlayerContainer(player.name(), player.ready())).padLeft(10f).padRight(10f);
 
             if (player.name().equals(this.screen.myName)) {
                 this.playerReadyButton.setText(player.ready() ? "Ready Down" : "Ready Up");
@@ -111,22 +113,26 @@ public class LobbyTable extends Table {
         this.screen.players.unlock();
     }
 
-    public Table getPlayerTable(final String name, final boolean ready) {
+    public Container<Table> getPlayerContainer(final String name, final boolean ready) {
         Table playerTable = new Table();
-        playerTable.setBackground(this.skin.getDrawable("button_square_header_notch_rectangle"));
 
         Label playerReadyLabel = new Label(ready ? "Ready" : "Not Ready", this.skin);
-        playerTable.add(playerReadyLabel).maxWidth(PLAYER_LABEL_WIDTH / 2f - 8f).uniform().growX().right();
-        playerTable.add().maxWidth(PLAYER_LABEL_WIDTH / 2f).uniform().expandX();
+        playerReadyLabel.setAlignment(Align.center);
+        playerTable.add(playerReadyLabel).height(PLAYER_LABEL_HEIGHT / 2f).width(PLAYER_LABEL_WIDTH / 2f);
+        playerTable.add().height(PLAYER_LABEL_HEIGHT / 2f).width(PLAYER_LABEL_WIDTH / 2f);
 
         playerTable.row();
 
-        Label playerNameLabel = new Label(name, this.skin);
-        playerNameLabel.setColor(0f, 0f, 0f, 1f);
+        ColorLabel playerNameLabel = new ColorLabel(name, this.skin, Color.BLACK);
         playerNameLabel.setEllipsis(true);
-        playerTable.add(playerNameLabel).colspan(2).maxWidth(PLAYER_LABEL_WIDTH - 16f).expandX().center().padTop(10f);
+        playerNameLabel.setAlignment(Align.center);
+        playerTable.add(playerNameLabel).colspan(2).height(PLAYER_LABEL_HEIGHT / 2).width(PLAYER_LABEL_WIDTH);
 
-        return playerTable;
+        Container<Table> playerContainer = new Container<>(playerTable);
+        playerContainer.size(PLAYER_LABEL_WIDTH, PLAYER_LABEL_HEIGHT);
+        playerContainer.setBackground(this.skin.getDrawable("button_square_header_notch_rectangle"));
+
+        return playerContainer;
     }
 
     public TextButton getPlayerReadyButton() {

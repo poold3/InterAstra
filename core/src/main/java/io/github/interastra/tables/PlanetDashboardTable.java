@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
+import io.github.interastra.labels.ColorLabel;
 import io.github.interastra.models.Planet;
 import io.github.interastra.models.Rocket;
 import io.github.interastra.screens.GameScreen;
@@ -22,6 +24,8 @@ public class PlanetDashboardTable extends Table {
     public static final float DASHBOARD_BUTTON_WIDTH = 100f;
     public static final float DASHBOARD_BUTTON_HEIGHT = 40f;
     public static final float ROCKET_ROW_ICON_SIZE = 30f;
+    public static final float ROCKET_LABEL_WIDTH = 120f;
+    public static final float ROCKET_LABEL_HEIGHT = 70f;
 
     private final GameScreen screen;
     private final Skin skin;
@@ -165,10 +169,11 @@ public class PlanetDashboardTable extends Table {
     }
 
     public void addRocketRow(final Rocket rocket) {
-        Label.LabelStyle rocketRowLabelStyle = new Label.LabelStyle(this.skin.get(Label.LabelStyle.class));
-        rocketRowLabelStyle.font = this.skin.getFont("Teko-32");
+        Table rocketTable = new Table();
 
-        this.rocketsTable.add(new Label(String.format("%s %s", rocket.playerName, Rocket.ROCKET_TIER_STRING[rocket.tier - 1]), rocketRowLabelStyle)).padLeft(10f).padRight(10f);
+        Label rocketLabel = new Label(String.format("Tier %s", Rocket.ROCKET_TIER_STRING[rocket.tier - 1]), this.skin);
+        rocketLabel.setAlignment(Align.center);
+        rocketTable.add(rocketLabel).colspan(2).height(ROCKET_LABEL_HEIGHT / 2).width(ROCKET_LABEL_WIDTH / 2f);
 
         ImageButton viewRocketButton = new ImageButton(this.viewDrawable);
         viewRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
@@ -181,23 +186,34 @@ public class PlanetDashboardTable extends Table {
             }
         });
         viewRocketButton.addListener(new ColorTextTooltip("View", new InstantTooltipManager(), this.skin, Color.BLACK));
-        this.rocketsTable.add(viewRocketButton).size(ROCKET_ROW_ICON_SIZE).pad(2f);
+        rocketTable.add(viewRocketButton).size(ROCKET_LABEL_WIDTH / 4f);
 
         if (rocket.playerName.equals(this.screen.myPlayer.name)) {
             ImageButton sendRocketButton = new ImageButton(this.sendDrawable);
             sendRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-
+                    screen.planetsTable.rocketToSend = rocket;
                 }
             });
             sendRocketButton.addListener(new ColorTextTooltip(Rocket.ROCKET_TIER_FUEL_PRICE[rocket.tier - 1].toString(), new InstantTooltipManager(), this.skin, Color.BLACK));
-            this.rocketsTable.add(sendRocketButton).size(ROCKET_ROW_ICON_SIZE).pad(2f);
+            rocketTable.add(sendRocketButton).size(ROCKET_LABEL_WIDTH / 4f);
         } else {
-            this.rocketsTable.add().minWidth(ROCKET_ROW_ICON_SIZE);
+            rocketTable.add().size(ROCKET_LABEL_WIDTH / 4f);
         }
 
-        this.rocketsTable.row();
+        rocketTable.row();
+
+        ColorLabel playerLabel = new ColorLabel(rocket.playerName, this.skin, Color.BLACK);
+        playerLabel.setAlignment(Align.center);
+        playerLabel.setEllipsis(true);
+        rocketTable.add(playerLabel).colspan(4).height(ROCKET_LABEL_HEIGHT / 2f).width(ROCKET_LABEL_WIDTH);
+
+        Container<Table> rocketContainer = new Container<>(rocketTable);
+        rocketContainer.size(ROCKET_LABEL_WIDTH, ROCKET_LABEL_HEIGHT);
+        rocketContainer.setBackground(this.skin.getDrawable("button_square_header_notch_rectangle"));
+
+        this.rocketsTable.add(rocketContainer).pad(5f);
     }
 
     @Override
@@ -214,14 +230,17 @@ public class PlanetDashboardTable extends Table {
                 for (String base : this.bases) {
                     builder.append(base).append(" ");
                 }
-                this.basesLabel.setText(builder);
+                this.basesLabel.setText(this.bases.toString());
             }
             if (this.needToUpdateRockets()) {
                 this.rockets.clear();
                 this.rocketsTable.clear();
                 this.rockets = new ArrayList<>(this.planet.rocketsInOrbit);
-                for (Rocket rocket : this.rockets) {
-                    this.addRocketRow(rocket);
+                for (int i = 0; i < this.rockets.size(); ++i) {
+                    this.addRocketRow(this.rockets.get(i));
+                    if (i % 2 == 1) {
+                        this.rocketsTable.row();
+                    }
                 }
             }
 

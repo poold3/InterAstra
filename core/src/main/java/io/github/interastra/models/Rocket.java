@@ -4,9 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import io.github.interastra.message.models.RocketMessageModel;
 
-import java.util.Random;
-
-public class Rocket implements CameraEnabledEntity {
+public abstract class Rocket implements CameraEnabledEntity {
     public enum ORBITAL_DIRECTION {
         COUNTER_CLOCKWISE,
         CLOCKWISE
@@ -27,6 +25,12 @@ public class Rocket implements CameraEnabledEntity {
         new Price(0f, 0f, 0f, 0f, 0f, 250f)
     };
     public static final String[] ROCKET_TIER_STRING = {"I", "II", "III", "IV"};
+    public static final RocketStats[] ROCKET_TIER_STATS = {
+        new RocketStats(250f, 0.01f),
+        new RocketStats(350f, 0.02f),
+        new RocketStats(450f, 0.03f),
+        new RocketStats(550f, 0.04f)
+    };
     public static final float ROCKET_ORBITAL_RADIUS = 1f;
     public static final float ROCKET_ORBITAL_SPEED = 0.1f;
     public static final float TWO_PI = (float) (2f * Math.PI);
@@ -40,42 +44,14 @@ public class Rocket implements CameraEnabledEntity {
     public float orbitalPosition;
     public ORBITAL_DIRECTION orbitalDirection;
 
-    public Rocket(final TextureAtlas textureAtlas, final Planet orbitingPlanet, RocketMessageModel rocketMessageModel) {
+    public Rocket(final TextureAtlas textureAtlas, RocketMessageModel rocketMessageModel) {
         this.id = rocketMessageModel.id();
         this.playerName = rocketMessageModel.playerName();
         this.tier = rocketMessageModel.tier();
-        this.orbitingPlanet = orbitingPlanet;
 
         this.rocketSprite = new Sprite(textureAtlas.findRegion("spaceRockets", this.tier));
         this.rocketSprite.setSize(ROCKET_TIER_WIDTH[this.tier - 1], ROCKET_TIER_HEIGHT[this.tier - 1]);
         this.rocketSprite.setOrigin(ROCKET_TIER_WIDTH[this.tier - 1] / 2f, ROCKET_TIER_HEIGHT[this.tier - 1] / 2f);
-        Random rand = new Random();
-        this.orbitalRadius = (this.orbitingPlanet.planetSprite.getWidth() / 2f) + rand.nextFloat(ROCKET_ORBITAL_RADIUS);
-        this.orbitalPosition = rand.nextFloat(TWO_PI);
-
-        this.orbitalDirection = rand.nextInt(2) == 0 ? ORBITAL_DIRECTION.COUNTER_CLOCKWISE : ORBITAL_DIRECTION.CLOCKWISE;
-    }
-
-    public void move(float deltaTime, float speedMultiplier) {
-        if (this.inOrbit()) {
-            if (this.orbitalDirection == ORBITAL_DIRECTION.COUNTER_CLOCKWISE) {
-                this.orbitalPosition += (ROCKET_ORBITAL_SPEED * deltaTime * speedMultiplier);
-                if (this.orbitalPosition >= TWO_PI) {
-                    this.orbitalPosition -= TWO_PI;
-                }
-                this.rocketSprite.setRotation((float) (this.orbitalPosition / Math.PI * 180f));
-            } else {
-                this.orbitalPosition -= (ROCKET_ORBITAL_SPEED * deltaTime * speedMultiplier);
-                if (this.orbitalPosition < 0f) {
-                    this.orbitalPosition += TWO_PI;
-                }
-                this.rocketSprite.setRotation((float) ((this.orbitalPosition / Math.PI * 180f) + 180f));
-            }
-
-            float x = this.orbitalRadius * (float) Math.cos(this.orbitalPosition) + this.orbitingPlanet.getX();
-            float y = this.orbitalRadius * (float) Math.sin(this.orbitalPosition) + this.orbitingPlanet.getY();
-            this.rocketSprite.setCenter(x, y);
-        }
     }
 
     public boolean inOrbit() {
@@ -88,12 +64,17 @@ public class Rocket implements CameraEnabledEntity {
             return false;
         }
 
-        if (o.getClass() != Rocket.class) {
-            return false;
+        if (o.getClass() == RocketMessageModel.class) {
+            RocketMessageModel otherRocket = (RocketMessageModel) o;
+            return this.id.equals(otherRocket.id());
+        } else if (o.getClass() == RocketInOrbit.class) {
+            RocketInOrbit otherRocket = (RocketInOrbit) o;
+            return this.id.equals(otherRocket.id);
+        } else if (o.getClass() == RocketInFlight.class) {
+            RocketInFlight otherRocket = (RocketInFlight) o;
+            return this.id.equals(otherRocket.id);
         }
-
-        Rocket otherRocket = (Rocket) o;
-        return this.id.equals(otherRocket.id);
+        return false;
     }
 
     @Override

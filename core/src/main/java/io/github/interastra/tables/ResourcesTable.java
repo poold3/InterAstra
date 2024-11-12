@@ -12,6 +12,7 @@ public class ResourcesTable extends Table {
 
     private final GameScreen screen;
     private final Skin skin;
+    public Label basesLabel;
     public Label balanceLabel;
     public Label ironLabel;
     public Label oilLabel;
@@ -27,6 +28,10 @@ public class ResourcesTable extends Table {
 
         this.setFillParent(true);
         this.right();
+
+        this.addResourceTextLabel("Bases");
+        this.basesLabel = new Label("", this.skin);
+        this.addResourceLabel(this.basesLabel);
 
         this.addResourceTextLabel("Balance");
         this.balanceLabel = new Label("", this.skin);
@@ -70,6 +75,7 @@ public class ResourcesTable extends Table {
     public void act(float delta) {
         super.act(delta);
 
+        this.basesLabel.setText(String.format("%d / %d", this.screen.myPlayer.bases, this.screen.basesToWin));
         this.balanceLabel.setText(String.format("$%.2f", this.screen.myPlayer.balance));
         this.ironLabel.setText(String.format("%.3f", this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.IRON)));
         this.oilLabel.setText(String.format("%.3f", this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.OIL)));
