@@ -15,6 +15,7 @@ import io.github.interastra.message.StompHandlers.GameUpdate;
 import io.github.interastra.message.messages.GameStartMessage;
 import io.github.interastra.message.models.PlanetMessageModel;
 import io.github.interastra.message.models.PlayerMessageModel;
+import io.github.interastra.message.models.RocketMessageModel;
 import io.github.interastra.models.*;
 import io.github.interastra.services.CameraOperatorService;
 import io.github.interastra.stages.GameStage;
@@ -54,12 +55,13 @@ public class GameScreen implements Screen {
     public ArrayList<Planet> planets;
     public ArrayList<PlayerMessageModel> players;
     public Player myPlayer;
-    public ArrayList<Rocket> inFlightRockets;
+    public ArrayList<RocketInFlight> rocketsInFlight;
     public float speedMultiplier;
     public boolean leaveGame = false;
     public ArrayList<StompSession.Subscription> gameSubscriptions;
     public boolean endGame = false;
     public float resourceUpdateTimer = 0f;
+    public boolean testBoolean = false;
 
     public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
         this.game = game;
@@ -108,6 +110,22 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if (!testBoolean) {
+            testBoolean = true;
+            RocketInFlight newRocket =  new RocketInFlight(
+                this.spaceCraftTextureAtlas,
+                new RocketMessageModel("testingtesting", "test", 1),
+                this.gameViewport.getWorldWidth(),
+                this.gameViewport.getWorldHeight(),
+                speedMultiplier,
+                this.planets.get(0),
+                this.planets.get(1)
+            );
+            this.rocketsInFlight.add(newRocket);
+            System.out.println(this.rocketsInFlight.size());
+        }
+
+
         ScreenUtils.clear(new Color(0.004f, 0f, 0.03f, 1f));
 
         this.input();
@@ -189,7 +207,12 @@ public class GameScreen implements Screen {
 
         // Move planets
         for (Planet planet : this.planets) {
-            planet.move(this.gameViewport.getWorldWidth(), this.gameViewport.getWorldHeight(), Gdx.graphics.getDeltaTime(), speedMultiplier);
+            planet.move(this.gameViewport.getWorldWidth(), this.gameViewport.getWorldHeight(), delta, speedMultiplier);
+        }
+
+        // Move rockets in flight
+        for (RocketInFlight rocket : this.rocketsInFlight) {
+            rocket.move(delta, speedMultiplier);
         }
 
         // If following an entity, tell the camera operator to do so.
@@ -222,6 +245,10 @@ public class GameScreen implements Screen {
             }
         }
 
+        for (RocketInFlight rocket : this.rocketsInFlight) {
+            rocket.rocketSprite.draw(this.game.spriteBatch);
+        }
+
         this.game.spriteBatch.end();
     }
 
@@ -245,7 +272,7 @@ public class GameScreen implements Screen {
         }
 
         // Add Rockets
-        this.inFlightRockets = new ArrayList<>();
+        this.rocketsInFlight = new ArrayList<>();
     }
 
     public void unsubscribeToGameTopics() {

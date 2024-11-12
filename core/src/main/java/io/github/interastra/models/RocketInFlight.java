@@ -5,7 +5,9 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.interastra.message.models.RocketMessageModel;
 
 public class RocketInFlight extends Rocket {
-    public Vector2 destination;
+    public Vector2 destination = new Vector2();
+    public float dx;
+    public float dy;
 
     public RocketInFlight(
         final TextureAtlas textureAtlas,
@@ -29,11 +31,20 @@ public class RocketInFlight extends Rocket {
             newTargetPosition = destinationPlanet.getPositionInTime(worldWidth, worldHeight, timeToTarget, speedMultiplier);
         } while (this.getDistance(targetPosition, newTargetPosition) > 1f);
 
+        this.destination.x = newTargetPosition.x;
+        this.destination.y = newTargetPosition.y;
+        float rotationRadians = (float) Math.atan((newTargetPosition.y - originPlanet.getY()) / (newTargetPosition.x - originPlanet.getX()));
+        if (newTargetPosition.x - originPlanet.getX() <= 0f) {
+            rotationRadians += (float) Math.PI;
+        }
 
+        this.rocketSprite.setRotation((float) (rotationRadians * 180f / Math.PI));
+        this.dx = (float) (Rocket.ROCKET_TIER_STATS[this.tier - 1].speed * Math.cos(rotationRadians));
+        this.dy = (float) (Rocket.ROCKET_TIER_STATS[this.tier - 1].speed * Math.sin(rotationRadians));
     }
 
     public void move(float deltaTime, float speedMultiplier) {
-
+        this.rocketSprite.setCenter(this.dx * deltaTime * speedMultiplier, this.dy * deltaTime * speedMultiplier);
     }
 
     public float getDistance(final Vector2 positionOne, final Vector2 positionTwo) {
@@ -43,5 +54,10 @@ public class RocketInFlight extends Rocket {
     public float timeToPosition(final Vector2 position) {
         float distance = (float) Math.sqrt(Math.pow(this.rocketSprite.getX() - position.x, 2) + Math.pow(this.rocketSprite.getY() - position.y, 2));
         return distance / Rocket.ROCKET_TIER_STATS[this.tier - 1].speed;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 }

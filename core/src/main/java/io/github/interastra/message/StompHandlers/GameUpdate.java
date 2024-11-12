@@ -5,6 +5,7 @@ import io.github.interastra.message.models.GameUpdatePlanetMessageModel;
 import io.github.interastra.message.models.RocketMessageModel;
 import io.github.interastra.models.Planet;
 import io.github.interastra.models.Rocket;
+import io.github.interastra.models.RocketInOrbit;
 import io.github.interastra.screens.GameScreen;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -38,7 +39,7 @@ public class GameUpdate implements StompFrameHandler {
             planet.rocketsInOrbit.removeIf(rocket -> !messagePlanet.rocketsInOrbit().contains(rocket));
             for (RocketMessageModel rocket : messagePlanet.rocketsInOrbit()) {
                 if (!planet.rocketsInOrbit.contains(rocket)) {
-                    planet.rocketsInOrbit.add(new Rocket(gameScreen.spaceCraftTextureAtlas, planet, rocket));
+                    //planet.rocketsInOrbit.add(new RocketInOrbit(gameScreen.spaceCraftTextureAtlas, rocket, planet));
                 }
             }
         }
