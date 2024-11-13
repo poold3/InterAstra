@@ -6,9 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import io.github.interastra.models.Moon;
-import io.github.interastra.models.Planet;
-import io.github.interastra.models.Rocket;
+import io.github.interastra.message.messages.RemoveRocketMessage;
+import io.github.interastra.message.models.RocketMessageModel;
+import io.github.interastra.models.*;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
 import io.github.interastra.tooltips.PlanetToolTip;
@@ -24,7 +24,7 @@ public class PlanetsTable extends Table {
     public Drawable baseDrawable;
     public Drawable moonDrawable;
     public Drawable blockDrawable;
-    public Rocket rocketToSend = null;
+    public RocketInOrbit rocketToSend = null;
     public ImageButton[] planetButtons;
 
     public PlanetsTable(final GameScreen screen, final Skin skin) {
@@ -83,6 +83,24 @@ public class PlanetsTable extends Table {
                 }
 
                 if (rocketToSend != null) {
+                    for (RocketInFlight rocket : screen.rocketsInFlight) {
+                        if (rocket.id.equals(rocketToSend.id)) {
+                            return;
+                        }
+                    }
+
+                    // Remove rocket
+                    screen.removeRocket(new RemoveRocketMessage(new RocketMessageModel(rocketToSend), rocketToSend.orbitingPlanet.name));
+
+                    // Add flight rocket
+                    RocketInFlight rocketInFlight = new RocketInFlight(
+                        screen,
+                        new RocketMessageModel(rocketToSend),
+                        rocketToSend.orbitingPlanet,
+                        planet
+                    );
+
+                    screen.rocketsInFlight.add(rocketInFlight);
 
                     rocketToSend = null;
                     resetPlanetImageButtons();
@@ -116,8 +134,8 @@ public class PlanetsTable extends Table {
                 if (screen.planetDashboardTable.isVisible) {
                     screen.togglePlanetDashboard();
                 }
-                else if (screen.entityBeingFollowed != null && screen.entityBeingFollowed.getClass() == Rocket.class && ((Rocket) screen.entityBeingFollowed).inOrbit()) {
-                    trackPlanet(((Rocket) screen.entityBeingFollowed).orbitingPlanet);
+                else if (screen.entityBeingFollowed != null && screen.entityBeingFollowed.getClass() == RocketInOrbit.class && ((RocketInOrbit) screen.entityBeingFollowed).inOrbit()) {
+                    trackPlanet(((RocketInOrbit) screen.entityBeingFollowed).orbitingPlanet);
                 } else {
                     screen.removePlanetDashboardButton();
                     screen.entityBeingFollowed = null;
@@ -131,11 +149,7 @@ public class PlanetsTable extends Table {
 
     public void trackPlanet(final Planet planet) {
         screen.entityBeingFollowed = planet;
-        if (planet.moon != null) {
-            screen.camera.targetZoom = screen.camera.getZoomForSize((planet.moon.orbitalRadius * 2f) + planet.moon.getWidth());
-        } else {
-            screen.camera.targetZoom = screen.camera.getZoomForSize(planet.getWidth());
-        }
+        screen.camera.targetZoom = screen.camera.getZoomForSize(planet.getWidth() * 3f);
         if (!screen.planetDashboardButtonTable.isVisible) {
             screen.addPlanetDashboardButton();
         }
@@ -169,7 +183,10 @@ public class PlanetsTable extends Table {
 
         for (int i = 0; i < this.planetButtons.length; ++i) {
             ImageButton planetButton = this.planetButtons[i];
-            planetButton.setDisabled(this.distanceBetweenPlanets(this.rocketToSend.orbitingPlanet, this.screen.planets.get(i)) > range);
+            planetButton.setDisabled(
+                this.distanceBetweenPlanets(this.rocketToSend.orbitingPlanet, this.screen.planets.get(i)) > range
+                    || this.rocketToSend.orbitingPlanet.equals(this.screen.planets.get(i))
+            );
         }
     }
 }

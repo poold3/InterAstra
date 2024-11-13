@@ -37,9 +37,4 @@ public class RocketInOrbit extends Rocket {
             this.rocketSprite.setCenter(x, y);
         }
     }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
 }

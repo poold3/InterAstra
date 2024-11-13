@@ -12,10 +12,12 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
 import io.github.interastra.message.StompHandlers.GameEnd;
 import io.github.interastra.message.StompHandlers.GameUpdate;
+import io.github.interastra.message.messages.AddBaseMessage;
+import io.github.interastra.message.messages.AddRocketMessage;
 import io.github.interastra.message.messages.GameStartMessage;
+import io.github.interastra.message.messages.RemoveRocketMessage;
 import io.github.interastra.message.models.PlanetMessageModel;
 import io.github.interastra.message.models.PlayerMessageModel;
-import io.github.interastra.message.models.RocketMessageModel;
 import io.github.interastra.models.*;
 import io.github.interastra.services.CameraOperatorService;
 import io.github.interastra.stages.GameStage;
@@ -23,6 +25,7 @@ import io.github.interastra.tables.*;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameScreen implements Screen {
     public static final float MIN_WORLD_SIZE = 1000f;
@@ -55,13 +58,12 @@ public class GameScreen implements Screen {
     public ArrayList<Planet> planets;
     public ArrayList<PlayerMessageModel> players;
     public Player myPlayer;
-    public ArrayList<RocketInFlight> rocketsInFlight;
+    public CopyOnWriteArrayList<RocketInFlight> rocketsInFlight;
     public float speedMultiplier;
     public boolean leaveGame = false;
     public ArrayList<StompSession.Subscription> gameSubscriptions;
     public boolean endGame = false;
     public float resourceUpdateTimer = 0f;
-    public boolean testBoolean = false;
 
     public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
         this.game = game;
@@ -110,27 +112,11 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        if (!testBoolean) {
-            testBoolean = true;
-            RocketInFlight newRocket =  new RocketInFlight(
-                this.spaceCraftTextureAtlas,
-                new RocketMessageModel("testingtesting", "test", 1),
-                this.gameViewport.getWorldWidth(),
-                this.gameViewport.getWorldHeight(),
-                speedMultiplier,
-                this.planets.get(0),
-                this.planets.get(1)
-            );
-            this.rocketsInFlight.add(newRocket);
-            System.out.println(this.rocketsInFlight.size());
-        }
-
-
-        ScreenUtils.clear(new Color(0.004f, 0f, 0.03f, 1f));
+                ScreenUtils.clear(new Color(0.004f, 0f, 0.03f, 1f));
 
         this.input();
         this.logic(delta);
-        this.draw();
+        this.draw(delta);
 
         stage.act(delta);
         stage.draw();
@@ -210,11 +196,6 @@ public class GameScreen implements Screen {
             planet.move(this.gameViewport.getWorldWidth(), this.gameViewport.getWorldHeight(), delta, speedMultiplier);
         }
 
-        // Move rockets in flight
-        for (RocketInFlight rocket : this.rocketsInFlight) {
-            rocket.move(delta, speedMultiplier);
-        }
-
         // If following an entity, tell the camera operator to do so.
         if (this.entityBeingFollowed != null) {
             this.camera.followCameraEnabledEntity(this.entityBeingFollowed);
@@ -224,7 +205,7 @@ public class GameScreen implements Screen {
         this.camera.move();
     }
 
-    public void draw() {
+    public void draw(float delta) {
         this.gameViewport.apply();
         this.game.spriteBatch.setProjectionMatrix(this.camera.combined);
 
@@ -239,13 +220,15 @@ public class GameScreen implements Screen {
                 planet.moon.moonSprite.draw(this.game.spriteBatch);
             }
             if (planet.isVisible) {
-                for (Rocket rocket : planet.rocketsInOrbit) {
+                for (RocketInOrbit rocket : planet.rocketsInOrbit) {
                     rocket.rocketSprite.draw(this.game.spriteBatch);
                 }
             }
         }
 
+
         for (RocketInFlight rocket : this.rocketsInFlight) {
+            rocket.move(delta, speedMultiplier);
             rocket.rocketSprite.draw(this.game.spriteBatch);
         }
 
@@ -272,7 +255,7 @@ public class GameScreen implements Screen {
         }
 
         // Add Rockets
-        this.rocketsInFlight = new ArrayList<>();
+        this.rocketsInFlight = new CopyOnWriteArrayList<>();
     }
 
     public void unsubscribeToGameTopics() {
@@ -329,5 +312,29 @@ public class GameScreen implements Screen {
         } else {
             this.planetDashboardTable.remove();
         }
+    }
+
+    public void addBase(final AddBaseMessage message) {
+        if (!this.lobbyScreen.messageSession.isConnected()) {
+            return;
+        }
+        String url = String.format("/ia-ws/add-base/%s", this.lobbyScreen.gameCode);
+        this.lobbyScreen.messageSession.send(url, message);
+    }
+
+    public void addRocket(final AddRocketMessage message) {
+        if (!this.lobbyScreen.messageSession.isConnected()) {
+            return;
+        }
+        String url = String.format("/ia-ws/add-rocket/%s", this.lobbyScreen.gameCode);
+        this.lobbyScreen.messageSession.send(url, message);
+    }
+
+    public void removeRocket(final RemoveRocketMessage message) {
+        if (!this.lobbyScreen.messageSession.isConnected()) {
+            return;
+        }
+        String url = String.format("/ia-ws/remove-rocket/%s", this.lobbyScreen.gameCode);
+        this.lobbyScreen.messageSession.send(url, message);
     }
 }

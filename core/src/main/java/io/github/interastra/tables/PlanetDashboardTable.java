@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Align;
 import io.github.interastra.labels.ColorLabel;
 import io.github.interastra.models.Planet;
 import io.github.interastra.models.Rocket;
+import io.github.interastra.models.RocketInOrbit;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
 import io.github.interastra.tooltips.ColorTextTooltip;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 public class PlanetDashboardTable extends Table {
     public static final float DASHBOARD_BUTTON_WIDTH = 100f;
     public static final float DASHBOARD_BUTTON_HEIGHT = 40f;
-    public static final float ROCKET_ROW_ICON_SIZE = 30f;
     public static final float ROCKET_LABEL_WIDTH = 120f;
     public static final float ROCKET_LABEL_HEIGHT = 70f;
 
@@ -34,7 +34,7 @@ public class PlanetDashboardTable extends Table {
 
     public Label titleLabel;
     public ArrayList<String> bases = new ArrayList<>();
-    public ArrayList<Rocket> rockets = new ArrayList<>();
+    public ArrayList<RocketInOrbit> rockets = new ArrayList<>();
     public Label basesLabel;
     public Table rocketsTable;
     public Drawable viewDrawable;
@@ -168,7 +168,7 @@ public class PlanetDashboardTable extends Table {
         return false;
     }
 
-    public void addRocketRow(final Rocket rocket) {
+    public void addRocketRow(final RocketInOrbit rocket) {
         Table rocketTable = new Table();
 
         Label rocketLabel = new Label(String.format("Tier %s", Rocket.ROCKET_TIER_STRING[rocket.tier - 1]), this.skin);
@@ -226,10 +226,6 @@ public class PlanetDashboardTable extends Table {
         if (this.planet.isVisible) {
             if (this.bases.size() != this.planet.bases.size()) {
                 this.bases = new ArrayList<>(this.planet.bases);
-                StringBuilder builder = new StringBuilder();
-                for (String base : this.bases) {
-                    builder.append(base).append(" ");
-                }
                 this.basesLabel.setText(this.bases.toString());
             }
             if (this.needToUpdateRockets()) {
@@ -247,13 +243,13 @@ public class PlanetDashboardTable extends Table {
         } else {
             if (!this.bases.isEmpty()) {
                 this.bases.clear();
-                this.basesLabel.setText("Unknown");
             }
+            this.basesLabel.setText("Unknown");
             if (!this.rockets.isEmpty()) {
                 this.rockets.clear();
-                this.rocketsTable.clear();
-                this.rocketsTable.add(new Label("Unknown", this.skin)).expandX().center().pad(5f);
             }
+            this.rocketsTable.clear();
+            this.rocketsTable.add(new Label("Unknown", this.skin)).expandX().center().pad(5f);
         }
     }
 }

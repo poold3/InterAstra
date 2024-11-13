@@ -4,7 +4,6 @@ import io.github.interastra.message.messages.GameUpdateMessage;
 import io.github.interastra.message.models.GameUpdatePlanetMessageModel;
 import io.github.interastra.message.models.RocketMessageModel;
 import io.github.interastra.models.Planet;
-import io.github.interastra.models.Rocket;
 import io.github.interastra.models.RocketInOrbit;
 import io.github.interastra.screens.GameScreen;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,7 @@ import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameUpdate implements StompFrameHandler {
     public GameScreen gameScreen;
@@ -34,12 +33,14 @@ public class GameUpdate implements StompFrameHandler {
             GameUpdatePlanetMessageModel messagePlanet = message.planets().get(i);
             Planet planet = gameScreen.planets.get(i);
             if (planet.bases.size() != messagePlanet.bases().size()) {
-                planet.bases = new ArrayList<>(messagePlanet.bases());
+                planet.bases = new CopyOnWriteArrayList<>(messagePlanet.bases());
+                planet.setHasMyBase();
             }
             planet.rocketsInOrbit.removeIf(rocket -> !messagePlanet.rocketsInOrbit().contains(rocket));
             for (RocketMessageModel rocket : messagePlanet.rocketsInOrbit()) {
                 if (!planet.rocketsInOrbit.contains(rocket)) {
-                    //planet.rocketsInOrbit.add(new RocketInOrbit(gameScreen.spaceCraftTextureAtlas, rocket, planet));
+                    planet.rocketsInOrbit.add(new RocketInOrbit(gameScreen.spaceCraftTextureAtlas, rocket, planet));
+                    planet.setNumMyRockets();
                 }
             }
         }

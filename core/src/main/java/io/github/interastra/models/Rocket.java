@@ -26,10 +26,10 @@ public abstract class Rocket implements CameraEnabledEntity {
     };
     public static final String[] ROCKET_TIER_STRING = {"I", "II", "III", "IV"};
     public static final RocketStats[] ROCKET_TIER_STATS = {
-        new RocketStats(250f, 0.01f),
-        new RocketStats(350f, 0.02f),
-        new RocketStats(450f, 0.03f),
-        new RocketStats(550f, 0.04f)
+        new RocketStats(250f, 2f),
+        new RocketStats(350f, 2.5f),
+        new RocketStats(450f, 3f),
+        new RocketStats(550f, 4f)
     };
     public static final float ROCKET_ORBITAL_RADIUS = 1f;
     public static final float ROCKET_ORBITAL_SPEED = 0.1f;

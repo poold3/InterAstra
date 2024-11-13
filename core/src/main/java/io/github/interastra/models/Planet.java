@@ -8,6 +8,7 @@ import io.github.interastra.message.models.PlanetResourceMessageModel;
 import io.github.interastra.message.models.RocketMessageModel;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public static final float TWO_PI = (float) (2f * Math.PI);
@@ -26,8 +27,8 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public Moon moon = null;
     public int baseLimit;
     public ArrayList<PlanetResource> resources = new ArrayList<>();
-    public ArrayList<String> bases = new ArrayList<>();
-    public ArrayList<RocketInOrbit> rocketsInOrbit = new ArrayList<>();
+    public CopyOnWriteArrayList<String> bases = new CopyOnWriteArrayList<>();
+    public CopyOnWriteArrayList<RocketInOrbit> rocketsInOrbit = new CopyOnWriteArrayList<>();
 
     public Planet(final TextureAtlas planetTextureAtlas,
                   PlanetMessageModel planetMessageModel,
@@ -64,7 +65,7 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     }
 
     public void move(float worldWidth, float worldHeight, float deltaTime, float speedMultiplier) {
-        Vector2 newPosition = this.getPositionInTime(worldWidth, worldHeight, deltaTime, speedMultiplier);
+        Vector2 newPosition = this.getPositionInTime(worldWidth, worldHeight, deltaTime, speedMultiplier, true);
         this.planetSprite.setCenter(newPosition.x, newPosition.y);
 
         // Move moon as well
@@ -80,14 +81,17 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
         }
     }
 
-    public Vector2 getPositionInTime(float worldWidth, float worldHeight, float deltaTime, float speedMultiplier) {
+    public Vector2 getPositionInTime(final float worldWidth, final float worldHeight, final float deltaTime, final float speedMultiplier, final boolean editOrbitalPosition) {
         Vector2 position = new Vector2();
-        this.orbitalPosition += (this.orbitalSpeed * deltaTime * speedMultiplier);
-        if (this.orbitalPosition >= TWO_PI) {
-            this.orbitalPosition -= TWO_PI;
+        float newOrbitalPosition = this.orbitalPosition + (this.orbitalSpeed * deltaTime * speedMultiplier);
+        if (newOrbitalPosition >= TWO_PI) {
+            newOrbitalPosition -= TWO_PI;
         }
-        position.x = this.orbitalRadius * (float) Math.cos(this.orbitalPosition) + (worldWidth / 2f);
-        position.y = this.orbitalRadius * (float) Math.sin(this.orbitalPosition) + (worldHeight / 2f);
+        position.x = this.orbitalRadius * (float) Math.cos(newOrbitalPosition) + (worldWidth / 2f);
+        position.y = this.orbitalRadius * (float) Math.sin(newOrbitalPosition) + (worldHeight / 2f);
+        if (editOrbitalPosition) {
+            this.orbitalPosition = newOrbitalPosition;
+        }
         return position;
     }
 
@@ -104,7 +108,7 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
 
     public void setNumMyRockets() {
         this.numMyRockets = 0;
-        for (Rocket rocket : this.rocketsInOrbit) {
+        for (RocketInOrbit rocket : this.rocketsInOrbit) {
             if (rocket.playerName.equals(this.myName)) {
                 this.numMyRockets += 1;
             }
