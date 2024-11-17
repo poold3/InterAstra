@@ -66,12 +66,23 @@ public class ResourcesTable extends Table {
         this.helium3Label = new Label("", this.skin);
         this.addResourceLabel(this.helium3Label);
 
+        ImageButton buySellImageButton = new ImageButton(new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("money-white")));
+        buySellImageButton.addListener(new ColorTextTooltip("Buy/Sell Resources", new InstantTooltipManager(), this.skin, Color.BLACK));
+        buySellImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                screen.toggleBuySellTable();
+            }
+        });
+        this.add(buySellImageButton).size(TRADE_ICON_SIZE).pad(2f).right();
+        this.row();
+
         ImageButton transferImageButton = new ImageButton(new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("transfer")));
         transferImageButton.addListener(new ColorTextTooltip("Transfer Resources", new InstantTooltipManager(), this.skin, Color.BLACK));
         transferImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.toggleTradeTable();
+                screen.toggleTransferTable();
             }
         });
         this.add(transferImageButton).size(TRADE_ICON_SIZE).pad(2f).right();

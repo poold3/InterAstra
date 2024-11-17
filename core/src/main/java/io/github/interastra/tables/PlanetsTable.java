@@ -143,8 +143,12 @@ public class PlanetsTable extends Table {
                     resetPlanetImageButtons();
                 }
                 // Are we viewing the trade table?
-                else if (screen.tradeTable.isVisible) {
-                    screen.toggleTradeTable();
+                else if (screen.transferTable.isVisible) {
+                    screen.toggleTransferTable();
+                }
+                // Are we viewing the buy/sell table?
+                else if (screen.buySellTable.isVisible) {
+                    screen.toggleBuySellTable();
                 }
                 // Are we viewing a planet dashboard?
                 else if (screen.planetDashboardTable.isVisible) {

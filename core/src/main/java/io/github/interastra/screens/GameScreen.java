@@ -53,7 +53,8 @@ public class GameScreen implements Screen {
     public ResourcesTable resourcesTable;
     public PlanetDashboardButtonTable planetDashboardButtonTable;
     public PlanetDashboardTable planetDashboardTable;
-    public TransferTable tradeTable;
+    public TransferTable transferTable;
+    public BuySellResourcesTable buySellTable;
     public TextureAtlas planetsTextureAtlas;
 
     public int basesToWin;
@@ -103,7 +104,8 @@ public class GameScreen implements Screen {
         this.resourcesTable = new ResourcesTable(this, this.skin);
         this.planetDashboardButtonTable = new PlanetDashboardButtonTable(this, this.skin);
         this.planetDashboardTable = new PlanetDashboardTable(this, this.skin);
-        this.tradeTable = new TransferTable(this, this.skin);
+        this.transferTable = new TransferTable(this, this.skin);
+        this.buySellTable = new BuySellResourcesTable(this, this.skin);
 
         this.stage.addActor(this.notificationTable);
         this.stage.addActor(this.coordinatesTable);
@@ -163,8 +165,10 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             if (this.planetDashboardTable.isVisible) {
                 this.togglePlanetDashboard();
-            } else if (this.tradeTable.isVisible) {
-                this.toggleTradeTable();
+            } else if (this.transferTable.isVisible) {
+                this.toggleTransferTable();
+            } else if (this.buySellTable.isVisible) {
+                this.toggleBuySellTable();
             } else {
                 this.toggleOptionsMenu();
             }
@@ -326,8 +330,10 @@ public class GameScreen implements Screen {
     }
 
     public void togglePlanetDashboard() {
-        if (this.tradeTable.isVisible) {
-            this.toggleTradeTable();
+        if (this.transferTable.isVisible) {
+            this.toggleTransferTable();
+        } else if (this.buySellTable.isVisible) {
+            this.toggleBuySellTable();
         }
         this.planetDashboardTable.isVisible = !this.planetDashboardTable.isVisible;
         if (this.planetDashboardTable.isVisible) {
@@ -338,15 +344,31 @@ public class GameScreen implements Screen {
         }
     }
 
-    public void toggleTradeTable() {
+    public void toggleTransferTable() {
         if (this.planetDashboardTable.isVisible) {
             this.togglePlanetDashboard();
+        } else if (this.buySellTable.isVisible) {
+            this.toggleBuySellTable();
         }
-        this.tradeTable.isVisible = !this.tradeTable.isVisible;
-        if (this.tradeTable.isVisible) {
-            this.stage.addActor(this.tradeTable);
+        this.transferTable.isVisible = !this.transferTable.isVisible;
+        if (this.transferTable.isVisible) {
+            this.stage.addActor(this.transferTable);
         } else {
-            this.tradeTable.remove();
+            this.transferTable.remove();
+        }
+    }
+
+    public void toggleBuySellTable() {
+        if (this.planetDashboardTable.isVisible) {
+            this.togglePlanetDashboard();
+        } else if (this.transferTable.isVisible) {
+            this.toggleTransferTable();
+        }
+        this.buySellTable.isVisible = !this.buySellTable.isVisible;
+        if (this.buySellTable.isVisible) {
+            this.stage.addActor(this.buySellTable);
+        } else {
+            this.buySellTable.remove();
         }
     }
 
