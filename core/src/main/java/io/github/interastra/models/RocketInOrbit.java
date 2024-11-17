@@ -6,14 +6,23 @@ import io.github.interastra.message.models.RocketMessageModel;
 import java.util.Random;
 
 public class RocketInOrbit extends Rocket {
+    public float cooldown;
+
+    public RocketInOrbit(final TextureAtlas textureAtlas, RocketMessageModel rocketMessageModel, final Planet orbitingPlanet, final float cooldown) {
+        this(textureAtlas, rocketMessageModel, orbitingPlanet);
+        this.cooldown = cooldown;
+    }
+
     public RocketInOrbit(final TextureAtlas textureAtlas, RocketMessageModel rocketMessageModel, final Planet orbitingPlanet) {
         super(textureAtlas, rocketMessageModel);
         this.orbitingPlanet = orbitingPlanet;
+
 
         Random rand = new Random();
         this.orbitalRadius = (this.orbitingPlanet.planetSprite.getWidth() / 2f) + rand.nextFloat(ROCKET_ORBITAL_RADIUS);
         this.orbitalPosition = rand.nextFloat(TWO_PI);
         this.orbitalDirection = rand.nextInt(2) == 0 ? ORBITAL_DIRECTION.COUNTER_CLOCKWISE : ORBITAL_DIRECTION.CLOCKWISE;
+        this.cooldown = 0f;
     }
 
     public void move(float deltaTime, float speedMultiplier) {
@@ -35,6 +44,10 @@ public class RocketInOrbit extends Rocket {
             float x = this.orbitalRadius * (float) Math.cos(this.orbitalPosition) + this.orbitingPlanet.getX();
             float y = this.orbitalRadius * (float) Math.sin(this.orbitalPosition) + this.orbitingPlanet.getY();
             this.rocketSprite.setCenter(x, y);
+
+            if (this.cooldown > 0f) {
+                this.cooldown -= (deltaTime * speedMultiplier);
+            }
         }
     }
 }

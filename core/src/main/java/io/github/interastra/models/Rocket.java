@@ -12,6 +12,8 @@ public abstract class Rocket implements CameraEnabledEntity {
 
     public static final float[] ROCKET_TIER_HEIGHT = {0.197f, 0.2f, 0.236f, 0.239f};
     public static final float[] ROCKET_TIER_WIDTH = {0.1f, 0.075f, 0.087f, 0.078f};
+    public static final float ROCKET_PROPULSION_WIDTH = 0.02f;
+    public static final float ROCKET_PROPULSION_HEIGHT = 0.1f;
     public static final Price[] ROCKET_TIER_PRICE = {
         new Price(250f, 500f, 0f, 0f, 0f, 0f),
         new Price(500f, 500f, 0f, 100f, 0f, 0f),
@@ -19,17 +21,17 @@ public abstract class Rocket implements CameraEnabledEntity {
         new Price(1000f, 500f, 0f, 100f, 100f, 0f)
     };
     public static final Price[] ROCKET_TIER_FUEL_PRICE = {
+        new Price(0f, 0f, 150f, 0f, 0f, 0f),
         new Price(0f, 0f, 250f, 0f, 0f, 0f),
-        new Price(0f, 0f, 500f, 0f, 0f, 0f),
-        new Price(0f, 0f, 0f, 0f, 0f, 125f),
-        new Price(0f, 0f, 0f, 0f, 0f, 250f)
+        new Price(0f, 0f, 100f, 0f, 0f, 125f),
+        new Price(0f, 0f, 100f, 0f, 0f, 250f)
     };
     public static final String[] ROCKET_TIER_STRING = {"I", "II", "III", "IV"};
     public static final RocketStats[] ROCKET_TIER_STATS = {
-        new RocketStats(250f, 2f),
-        new RocketStats(350f, 2.5f),
-        new RocketStats(450f, 3f),
-        new RocketStats(550f, 4f)
+        new RocketStats(250f, 2f, 60f, ROCKET_TIER_PRICE[0].balance / 2f),
+        new RocketStats(350f, 2.5f, 120f, ROCKET_TIER_PRICE[1].balance / 2f),
+        new RocketStats(450f, 3f, 180f, ROCKET_TIER_PRICE[2].balance / 2f),
+        new RocketStats(550f, 4f, 240f, ROCKET_TIER_PRICE[3].balance / 2f)
     };
     public static final float ROCKET_ORBITAL_RADIUS = 1f;
     public static final float ROCKET_ORBITAL_SPEED = 0.1f;

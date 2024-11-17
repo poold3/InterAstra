@@ -13,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public static final float TWO_PI = (float) (2f * Math.PI);
     public static final Price BASE_PRICE = new Price(1000f, 1000f, 0f, 250f, 250f, 0f);
+    public static final float BASE_COOLDOWN = 120f;
 
     public int index;
     public String name;
@@ -29,6 +30,7 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public ArrayList<PlanetResource> resources = new ArrayList<>();
     public CopyOnWriteArrayList<String> bases = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<RocketInOrbit> rocketsInOrbit = new CopyOnWriteArrayList<>();
+    public float baseCooldown = 0f;
 
     public Planet(final TextureAtlas planetTextureAtlas,
                   PlanetMessageModel planetMessageModel,
@@ -78,6 +80,10 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
             for (RocketInOrbit rocket : this.rocketsInOrbit) {
                 rocket.move(deltaTime, speedMultiplier);
             }
+        }
+
+        if (this.baseCooldown > 0f) {
+            this.baseCooldown -= (deltaTime * speedMultiplier);
         }
     }
 

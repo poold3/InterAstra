@@ -83,11 +83,22 @@ public class PlanetsTable extends Table {
                 }
 
                 if (rocketToSend != null) {
+                    // Make sure rocket is not already in flight
                     for (RocketInFlight rocket : screen.rocketsInFlight) {
                         if (rocket.id.equals(rocketToSend.id)) {
                             return;
                         }
                     }
+
+                    // Check rocket limit
+                    if (screen.getNumRocketsInFlightToPlanet(planet) + planet.numMyRockets >= planet.baseLimit) {
+                        screen.badSound.play(0.5f);
+                        screen.notificationTable.setMessage("Too many rockets at this planet.");
+                        return;
+                    }
+
+                    // Purchase flight
+                    Rocket.ROCKET_TIER_FUEL_PRICE[rocketToSend.tier - 1].purchase(screen.myPlayer);
 
                     // Remove rocket
                     screen.removeRocket(new RemoveRocketMessage(new RocketMessageModel(rocketToSend), rocketToSend.orbitingPlanet.name));
@@ -125,18 +136,30 @@ public class PlanetsTable extends Table {
         undoImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                screen.notificationTable.clearNotification();
+                // Are we in send rocket mode?
                 if (rocketToSend != null) {
                     rocketToSend = null;
                     resetPlanetImageButtons();
-                    return;
                 }
-
-                if (screen.planetDashboardTable.isVisible) {
+                // Are we viewing the trade table?
+                else if (screen.tradeTable.isVisible) {
+                    screen.toggleTradeTable();
+                }
+                // Are we viewing a planet dashboard?
+                else if (screen.planetDashboardTable.isVisible) {
                     screen.togglePlanetDashboard();
                 }
+                // Are we viewing a rocket in orbit?
                 else if (screen.entityBeingFollowed != null && screen.entityBeingFollowed.getClass() == RocketInOrbit.class && ((RocketInOrbit) screen.entityBeingFollowed).inOrbit()) {
                     trackPlanet(((RocketInOrbit) screen.entityBeingFollowed).orbitingPlanet);
-                } else {
+                }
+                // Are we viewing a rocket in flight?
+                else if (screen.entityBeingFollowed != null && screen.entityBeingFollowed.getClass() == RocketInFlight.class && (!((RocketInFlight) screen.entityBeingFollowed).arrived)) {
+                    trackPlanet(((RocketInFlight) screen.entityBeingFollowed).destinationPlanet);
+                }
+                // Reset camera. Make sure planet dashboard button is removed.
+                else {
                     screen.removePlanetDashboardButton();
                     screen.entityBeingFollowed = null;
                     screen.camera.reset();

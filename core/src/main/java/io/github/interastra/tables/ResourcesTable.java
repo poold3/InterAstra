@@ -1,14 +1,23 @@
 package io.github.interastra.tables;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import io.github.interastra.models.PlanetResource;
 import io.github.interastra.screens.GameScreen;
+import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.tooltips.ColorTextTooltip;
+import io.github.interastra.tooltips.InstantTooltipManager;
 
 public class ResourcesTable extends Table {
     public final float RESOURCE_CELL_WIDTH = 80f;
+    public final float TRADE_ICON_SIZE = 30f;
 
     private final GameScreen screen;
     private final Skin skin;
@@ -56,6 +65,16 @@ public class ResourcesTable extends Table {
         this.addResourceTextLabel("Helium3");
         this.helium3Label = new Label("", this.skin);
         this.addResourceLabel(this.helium3Label);
+
+        ImageButton transferImageButton = new ImageButton(new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("transfer")));
+        transferImageButton.addListener(new ColorTextTooltip("Transfer Resources", new InstantTooltipManager(), this.skin, Color.BLACK));
+        transferImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                screen.toggleTradeTable();
+            }
+        });
+        this.add(transferImageButton).size(TRADE_ICON_SIZE).pad(2f).right();
     }
 
     public void addResourceTextLabel(final String text) {

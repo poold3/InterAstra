@@ -11,6 +11,13 @@ cursor-16
   orig: 2, 16
   offset: 0, 0
   index: -1
+cursor-16-black
+  rotate: false
+  xy: 487, 651
+  size: 2, 16
+  orig: 2, 16
+  offset: 0, 0
+  index: -1
 bar_shadow_round_large
   rotate: false
   xy: 389, 643

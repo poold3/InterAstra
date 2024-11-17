@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.stomp.StompHeaders;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameUpdate implements StompFrameHandler {
     public GameScreen gameScreen;
@@ -36,12 +37,26 @@ public class GameUpdate implements StompFrameHandler {
                 planet.bases = new CopyOnWriteArrayList<>(messagePlanet.bases());
                 planet.setHasMyBase();
             }
-            planet.rocketsInOrbit.removeIf(rocket -> !messagePlanet.rocketsInOrbit().contains(rocket));
+
+            AtomicBoolean recalculateMyRockets = new AtomicBoolean(false);
+            planet.rocketsInOrbit.removeIf(rocket -> {
+                if (!messagePlanet.rocketsInOrbit().contains(rocket)) {
+                    recalculateMyRockets.set(true);
+                    return true;
+                } else {
+                    return false;
+                }
+            });
             for (RocketMessageModel rocket : messagePlanet.rocketsInOrbit()) {
                 if (!planet.rocketsInOrbit.contains(rocket)) {
-                    planet.rocketsInOrbit.add(new RocketInOrbit(gameScreen.spaceCraftTextureAtlas, rocket, planet));
-                    planet.setNumMyRockets();
+                    gameScreen.rocketsInFlight.remove(rocket);
+                    planet.rocketsInOrbit.add(new RocketInOrbit(gameScreen.spaceCraftTextureAtlas, rocket, planet, RocketInOrbit.ROCKET_TIER_STATS[rocket.tier() - 1].cooldown));
+                    recalculateMyRockets.set(true);
+                    gameScreen.planetDashboardTable.updateRocketsInFlight();
                 }
+            }
+            if (recalculateMyRockets.get()) {
+                planet.setNumMyRockets();
             }
         }
     }

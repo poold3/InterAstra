@@ -12,10 +12,11 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
 import io.github.interastra.message.StompHandlers.GameEnd;
 import io.github.interastra.message.StompHandlers.GameUpdate;
-import io.github.interastra.message.messages.AddBaseMessage;
+import io.github.interastra.message.StompHandlers.Transfer;
 import io.github.interastra.message.messages.AddRocketMessage;
 import io.github.interastra.message.messages.GameStartMessage;
 import io.github.interastra.message.messages.RemoveRocketMessage;
+import io.github.interastra.message.messages.TransferMessage;
 import io.github.interastra.message.models.PlanetMessageModel;
 import io.github.interastra.message.models.PlayerMessageModel;
 import io.github.interastra.models.*;
@@ -46,11 +47,13 @@ public class GameScreen implements Screen {
     public Sound goodSound;
     public Sound badSound;
     public NotificationTable notificationTable;
+    public CoordinatesTable coordinatesTable;
     public PlanetsTable planetsTable;
     public OptionsTable optionsTable;
     public ResourcesTable resourcesTable;
     public PlanetDashboardButtonTable planetDashboardButtonTable;
     public PlanetDashboardTable planetDashboardTable;
+    public TransferTable tradeTable;
     public TextureAtlas planetsTextureAtlas;
 
     public int basesToWin;
@@ -64,6 +67,7 @@ public class GameScreen implements Screen {
     public ArrayList<StompSession.Subscription> gameSubscriptions;
     public boolean endGame = false;
     public float resourceUpdateTimer = 0f;
+    public boolean noCostMode;
 
     public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
         this.game = game;
@@ -78,6 +82,7 @@ public class GameScreen implements Screen {
         this.subscribeToGameTopics();
 
         this.speedMultiplier = 1f;
+        this.noCostMode = true;
 
         this.camera = new CameraOperatorService();
         this.gameViewport = new ExtendViewport(MIN_WORLD_SIZE, MIN_WORLD_SIZE, camera);
@@ -92,13 +97,16 @@ public class GameScreen implements Screen {
         this.goodSound = this.game.assetManager.get("audio/good.mp3", Sound.class);
         this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
         this.notificationTable = new NotificationTable(this.skin);
+        this.coordinatesTable = new CoordinatesTable(this.camera, this.skin);
         this.planetsTable = new PlanetsTable(this, this.skin);
         this.optionsTable = new OptionsTable(this, this.skin);
         this.resourcesTable = new ResourcesTable(this, this.skin);
         this.planetDashboardButtonTable = new PlanetDashboardButtonTable(this, this.skin);
         this.planetDashboardTable = new PlanetDashboardTable(this, this.skin);
+        this.tradeTable = new TransferTable(this, this.skin);
 
         this.stage.addActor(this.notificationTable);
+        this.stage.addActor(this.coordinatesTable);
         this.stage.addActor(this.planetsTable);
         this.stage.addActor(this.resourcesTable);
     }
@@ -155,6 +163,8 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             if (this.planetDashboardTable.isVisible) {
                 this.togglePlanetDashboard();
+            } else if (this.tradeTable.isVisible) {
+                this.toggleTradeTable();
             } else {
                 this.toggleOptionsMenu();
             }
@@ -226,9 +236,12 @@ public class GameScreen implements Screen {
             }
         }
 
-
         for (RocketInFlight rocket : this.rocketsInFlight) {
             rocket.move(delta, speedMultiplier);
+            if (rocket.arrived) {
+                continue;
+            }
+            rocket.propulsionSprite.draw(this.game.spriteBatch);
             rocket.rocketSprite.draw(this.game.spriteBatch);
         }
 
@@ -283,6 +296,14 @@ public class GameScreen implements Screen {
                 new GameEnd(this)
             )
         );
+
+        // Add transfer subscriptions
+        this.gameSubscriptions.add(
+            this.lobbyScreen.messageSession.subscribe(
+                String.format("/topic/transfer/%s", this.lobbyScreen.gameCode),
+                new Transfer(this)
+            )
+        );
     }
 
     public void toggleOptionsMenu() {
@@ -305,6 +326,9 @@ public class GameScreen implements Screen {
     }
 
     public void togglePlanetDashboard() {
+        if (this.tradeTable.isVisible) {
+            this.toggleTradeTable();
+        }
         this.planetDashboardTable.isVisible = !this.planetDashboardTable.isVisible;
         if (this.planetDashboardTable.isVisible) {
             this.planetDashboardTable.setPlanet((Planet) this.entityBeingFollowed);
@@ -314,12 +338,16 @@ public class GameScreen implements Screen {
         }
     }
 
-    public void addBase(final AddBaseMessage message) {
-        if (!this.lobbyScreen.messageSession.isConnected()) {
-            return;
+    public void toggleTradeTable() {
+        if (this.planetDashboardTable.isVisible) {
+            this.togglePlanetDashboard();
         }
-        String url = String.format("/ia-ws/add-base/%s", this.lobbyScreen.gameCode);
-        this.lobbyScreen.messageSession.send(url, message);
+        this.tradeTable.isVisible = !this.tradeTable.isVisible;
+        if (this.tradeTable.isVisible) {
+            this.stage.addActor(this.tradeTable);
+        } else {
+            this.tradeTable.remove();
+        }
     }
 
     public void addRocket(final AddRocketMessage message) {
@@ -335,6 +363,24 @@ public class GameScreen implements Screen {
             return;
         }
         String url = String.format("/ia-ws/remove-rocket/%s", this.lobbyScreen.gameCode);
+        this.lobbyScreen.messageSession.send(url, message);
+    }
+
+    public int getNumRocketsInFlightToPlanet(final Planet planet) {
+        int rocketCount = 0;
+        for (RocketInFlight rocket : this.rocketsInFlight) {
+            if (rocket.destinationPlanet.equals(planet) && rocket.playerName.equals(this.myPlayer.name)) {
+                rocketCount += 1;
+            }
+        }
+        return rocketCount;
+    }
+
+    public void sendTransfer(final TransferMessage message) {
+        if (!this.lobbyScreen.messageSession.isConnected()) {
+            return;
+        }
+        String url = String.format("/ia-ws/transfer/%s", this.lobbyScreen.gameCode);
         this.lobbyScreen.messageSession.send(url, message);
     }
 }
