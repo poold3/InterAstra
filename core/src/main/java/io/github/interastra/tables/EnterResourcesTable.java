@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.utils.Align;
 import io.github.interastra.models.Price;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.stages.GameStage;
 
 public class EnterResourcesTable extends Table {
     public static final float TEXTFIELD_WIDTH = 150f;
@@ -23,9 +24,11 @@ public class EnterResourcesTable extends Table {
     public final TextField siliconTextField;
     public final TextField lithiumTextField;
     public final TextField helium3TextField;
+    public final GameStage stage;
 
-    public EnterResourcesTable(final Skin skin, boolean includeBalance) {
+    public EnterResourcesTable(final GameStage stage, final Skin skin, boolean includeBalance) {
         super();
+        this.stage = stage;
         this.skin = skin;
 
         Label.LabelStyle headerLabelStyle = new Label.LabelStyle(this.skin.get(Label.LabelStyle.class));
@@ -73,11 +76,17 @@ public class EnterResourcesTable extends Table {
 
     public void resetUI() {
         this.balanceTextField.setText("0.0");
+        this.stage.unfocus(this.balanceTextField);
         this.ironTextField.setText("0.0");
+        this.stage.unfocus(this.ironTextField);
         this.oilTextField.setText("0.0");
+        this.stage.unfocus(this.oilTextField);
         this.siliconTextField.setText("0.0");
+        this.stage.unfocus(this.siliconTextField);
         this.lithiumTextField.setText("0.0");
+        this.stage.unfocus(this.lithiumTextField);
         this.helium3TextField.setText("0.0");
+        this.stage.unfocus(this.helium3TextField);
     }
 
     public Label getAmountLabel(final String text) {

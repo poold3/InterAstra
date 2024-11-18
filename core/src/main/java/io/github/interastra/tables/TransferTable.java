@@ -25,9 +25,8 @@ public class TransferTable extends Dashboard {
         Label.LabelStyle headerLabelStyle = new Label.LabelStyle(this.skin.get(Label.LabelStyle.class));
         headerLabelStyle.font = this.skin.getFont("Teko-32");
 
-        this.enterResourcesTable = new EnterResourcesTable(this.skin, true);
+        this.enterResourcesTable = new EnterResourcesTable(this.screen.stage, this.skin, true);
 
-        this.contentTable.setDebug(true);
         this.contentTable.add(this.enterResourcesTable).colspan(2);
         this.contentTable.row();
 

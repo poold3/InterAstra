@@ -1,5 +1,6 @@
 package io.github.interastra.models;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -11,9 +12,11 @@ import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Planet implements CameraEnabledEntity, Comparable<Planet> {
+    public static final String HOME_PLANET = "Terra Nova";
     public static final float TWO_PI = (float) (2f * Math.PI);
     public static final Price BASE_PRICE = new Price(1000f, 1000f, 0f, 250f, 250f, 0f);
     public static final float BASE_COOLDOWN = 120f;
+    public static final int BASE_RESOURCE_MULTIPLIER = 3;
 
     public int index;
     public String name;
@@ -21,6 +24,7 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public boolean isVisible = false;
     public boolean hasMyBase = false;
     public int numMyRockets = 0;
+    public int numMyRocketsGettingResources = 0;
     public Sprite planetSprite;
     public float orbitalRadius;
     public float orbitalSpeed;
@@ -31,11 +35,13 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public CopyOnWriteArrayList<String> bases = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<RocketInOrbit> rocketsInOrbit = new CopyOnWriteArrayList<>();
     public float baseCooldown = 0f;
+    private final Sound cooldownSound;
 
     public Planet(final TextureAtlas planetTextureAtlas,
                   PlanetMessageModel planetMessageModel,
                   final TextureAtlas rocketTextureAtlas,
-                  String myName) {
+                  String myName,
+                  final Sound cooldownSound) {
         this.index = planetMessageModel.index();
         this.name = planetMessageModel.name();
         this.myName = myName;
@@ -47,6 +53,7 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
         this.orbitalRadius = planetMessageModel.orbitalRadius();
         this.orbitalSpeed =  planetMessageModel.orbitalSpeed();
         this.orbitalPosition = planetMessageModel.startingOrbitalPosition();
+        this.cooldownSound = cooldownSound;
 
         if (planetMessageModel.moon() != null) {
             this.moon = new Moon(planetTextureAtlas, this, planetMessageModel.moon());
@@ -59,7 +66,7 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
         this.bases.addAll(planetMessageModel.bases());
 
         for (RocketMessageModel rocketMessageModel : planetMessageModel.rocketsInOrbit()) {
-            this.rocketsInOrbit.add(new RocketInOrbit(rocketTextureAtlas, rocketMessageModel, this));
+            this.rocketsInOrbit.add(new RocketInOrbit(rocketTextureAtlas, rocketMessageModel, this, this.cooldownSound));
         }
 
         this.setHasMyBase();
@@ -84,6 +91,9 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
 
         if (this.baseCooldown > 0f) {
             this.baseCooldown -= (deltaTime * speedMultiplier);
+            if (this.baseCooldown <= 0f) {
+                this.cooldownSound.play(0.3f);
+            }
         }
     }
 
@@ -114,9 +124,13 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
 
     public void setNumMyRockets() {
         this.numMyRockets = 0;
-        for (RocketInOrbit rocket : this.rocketsInOrbit) {
-            if (rocket.playerName.equals(this.myName)) {
+        this.numMyRocketsGettingResources = 0;
+        for (int i = 0; i < this.rocketsInOrbit.size(); ++i) {
+            if (this.rocketsInOrbit.get(i).playerName.equals(this.myName)) {
                 this.numMyRockets += 1;
+                if (i < this.baseLimit && !this.name.equals(HOME_PLANET)) {
+                    this.numMyRocketsGettingResources += 1;
+                }
             }
         }
         this.isVisible = this.hasMyBase || this.numMyRockets > 0;

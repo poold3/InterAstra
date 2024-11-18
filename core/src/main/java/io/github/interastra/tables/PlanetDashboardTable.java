@@ -113,6 +113,7 @@ public class PlanetDashboardTable extends Dashboard {
                         return;
                     }
 
+                    screen.buildSound.play(0.05f);
                     RocketInFlight newRocket = new RocketInFlight(
                         screen,
                         new RocketMessageModel(UUID.randomUUID().toString(), screen.myPlayer.name, finalI + 1),
@@ -155,6 +156,7 @@ public class PlanetDashboardTable extends Dashboard {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         if (rocketToSell.equals(rocket.id)) {
+                            screen.moneySound.play();
                             screen.myPlayer.balance += Rocket.ROCKET_TIER_STATS[rocket.tier - 1].sellPrice;
                             screen.removeRocket(new RemoveRocketMessage(new RocketMessageModel(rocket), planet.name));
                         } else {

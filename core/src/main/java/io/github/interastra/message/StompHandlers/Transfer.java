@@ -28,9 +28,11 @@ public class Transfer implements StompFrameHandler {
         TransferMessage message = (TransferMessage) payload;
 
         if (gameScreen.myPlayer.name.equals(message.from())) {
+            gameScreen.moneySound.play();
             Price transferAmount = new Price(message.amount());
             transferAmount.purchase(gameScreen.myPlayer);
         } else if (gameScreen.myPlayer.name.equals(message.to())) {
+            gameScreen.moneySound.play();
             Price transferAmount = new Price(message.amount());
             transferAmount.sell(gameScreen.myPlayer);
         }

@@ -29,9 +29,9 @@ public abstract class Rocket implements CameraEnabledEntity {
     public static final String[] ROCKET_TIER_STRING = {"I", "II", "III", "IV"};
     public static final RocketStats[] ROCKET_TIER_STATS = {
         new RocketStats(250f, 2f, 60f, ROCKET_TIER_PRICE[0].balance / 2f),
-        new RocketStats(350f, 2.5f, 120f, ROCKET_TIER_PRICE[1].balance / 2f),
-        new RocketStats(450f, 3f, 180f, ROCKET_TIER_PRICE[2].balance / 2f),
-        new RocketStats(550f, 4f, 240f, ROCKET_TIER_PRICE[3].balance / 2f)
+        new RocketStats(350f, 2.5f, 90f, ROCKET_TIER_PRICE[1].balance / 2f),
+        new RocketStats(450f, 3f, 120f, ROCKET_TIER_PRICE[2].balance / 2f),
+        new RocketStats(550f, 4f, 150f, ROCKET_TIER_PRICE[3].balance / 2f)
     };
     public static final float ROCKET_ORBITAL_RADIUS = 1f;
     public static final float ROCKET_ORBITAL_SPEED = 0.1f;

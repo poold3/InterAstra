@@ -1,5 +1,6 @@
 package io.github.interastra.models;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import io.github.interastra.message.models.RocketMessageModel;
 
@@ -7,15 +8,17 @@ import java.util.Random;
 
 public class RocketInOrbit extends Rocket {
     public float cooldown;
+    private final Sound cooldownSound;
 
-    public RocketInOrbit(final TextureAtlas textureAtlas, RocketMessageModel rocketMessageModel, final Planet orbitingPlanet, final float cooldown) {
-        this(textureAtlas, rocketMessageModel, orbitingPlanet);
+    public RocketInOrbit(final TextureAtlas textureAtlas, RocketMessageModel rocketMessageModel, final Planet orbitingPlanet, final Sound cooldownSound, final float cooldown) {
+        this(textureAtlas, rocketMessageModel, orbitingPlanet, cooldownSound);
         this.cooldown = cooldown;
     }
 
-    public RocketInOrbit(final TextureAtlas textureAtlas, RocketMessageModel rocketMessageModel, final Planet orbitingPlanet) {
+    public RocketInOrbit(final TextureAtlas textureAtlas, RocketMessageModel rocketMessageModel, final Planet orbitingPlanet, final Sound cooldownSound) {
         super(textureAtlas, rocketMessageModel);
         this.orbitingPlanet = orbitingPlanet;
+        this.cooldownSound = cooldownSound;
 
 
         Random rand = new Random();
@@ -47,6 +50,9 @@ public class RocketInOrbit extends Rocket {
 
             if (this.cooldown > 0f) {
                 this.cooldown -= (deltaTime * speedMultiplier);
+                if (this.cooldown <= 0f) {
+                    this.cooldownSound.play(0.3f);
+                }
             }
         }
     }

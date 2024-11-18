@@ -138,4 +138,45 @@ public class Price {
         }
         return stringBuilder.toString();
     }
+
+    public float getBuyAmount() {
+        float buyAmount = 0f;
+        buyAmount += (this.ironBalance * PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.IRON.ordinal()]);
+        buyAmount += (this.oilBalance * PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.OIL.ordinal()]);
+        buyAmount += (this.siliconBalance * PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()]);
+        buyAmount += (this.lithiumBalance * PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()]);
+        buyAmount += (this.helium3Balance * PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]);
+        return buyAmount;
+    }
+
+    public float getSellAmount() {
+        float sellAmount = 0f;
+        sellAmount += (this.ironBalance * PlanetResource.PLANET_RESOURCE_SELL_RATE[PlanetResource.PLANET_RESOURCE.IRON.ordinal()]);
+        sellAmount += (this.oilBalance * PlanetResource.PLANET_RESOURCE_SELL_RATE[PlanetResource.PLANET_RESOURCE.OIL.ordinal()]);
+        sellAmount += (this.siliconBalance * PlanetResource.PLANET_RESOURCE_SELL_RATE[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()]);
+        sellAmount += (this.lithiumBalance * PlanetResource.PLANET_RESOURCE_SELL_RATE[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()]);
+        sellAmount += (this.helium3Balance * PlanetResource.PLANET_RESOURCE_SELL_RATE[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]);
+        return sellAmount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+
+        if (o.getClass() != Price.class) {
+            return false;
+        }
+
+        Price otherPrice = (Price) o;
+        return (
+            otherPrice.balance == this.balance
+            && otherPrice.ironBalance == this.ironBalance
+            && otherPrice.oilBalance == this.oilBalance
+            && otherPrice.siliconBalance == this.siliconBalance
+            && otherPrice.lithiumBalance == this.lithiumBalance
+            && otherPrice.helium3Balance == this.helium3Balance
+            );
+    }
 }

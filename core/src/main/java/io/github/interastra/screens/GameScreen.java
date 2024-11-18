@@ -44,8 +44,10 @@ public class GameScreen implements Screen {
     public Skin skin;
     public Sound buttonSound;
     public Sound leaveSound;
-    public Sound goodSound;
+    public Sound cooldownSound;
     public Sound badSound;
+    public Sound moneySound;
+    public Sound buildSound;
     public NotificationTable notificationTable;
     public CoordinatesTable coordinatesTable;
     public PlanetsTable planetsTable;
@@ -68,7 +70,7 @@ public class GameScreen implements Screen {
     public ArrayList<StompSession.Subscription> gameSubscriptions;
     public boolean endGame = false;
     public float resourceUpdateTimer = 0f;
-    public boolean noCostMode;
+    public boolean noCostMode = false;
 
     public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
         this.game = game;
@@ -77,13 +79,20 @@ public class GameScreen implements Screen {
         this.planetsTextureAtlas = this.game.assetManager.get("planets/planets.atlas", TextureAtlas.class);
         this.spaceCraftTextureAtlas = this.game.assetManager.get("spacecraft/spacecraft.atlas", TextureAtlas.class);
 
+        this.buttonSound = this.game.assetManager.get("audio/button.mp3", Sound.class);
+        this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
+        this.cooldownSound = this.game.assetManager.get("audio/good.mp3", Sound.class);
+        this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
+        this.moneySound = this.game.assetManager.get("audio/money.mp3", Sound.class);
+        this.buildSound = this.game.assetManager.get("audio/build.mp3", Sound.class);
+
         this.loadGameData(gameData);
 
         this.gameSubscriptions = new ArrayList<>();
         this.subscribeToGameTopics();
 
         this.speedMultiplier = 1f;
-        this.noCostMode = true;
+        this.noCostMode = false;
 
         this.camera = new CameraOperatorService();
         this.gameViewport = new ExtendViewport(MIN_WORLD_SIZE, MIN_WORLD_SIZE, camera);
@@ -93,10 +102,6 @@ public class GameScreen implements Screen {
         this.stage = new GameStage(this.stageViewport, this);
         this.iconsTextureAtlas = this.game.assetManager.get("icons/icons.atlas", TextureAtlas.class);
         this.skin = this.game.assetManager.get("spaceskin/spaceskin.json", Skin.class);
-        this.buttonSound = this.game.assetManager.get("audio/button.mp3", Sound.class);
-        this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
-        this.goodSound = this.game.assetManager.get("audio/good.mp3", Sound.class);
-        this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
         this.notificationTable = new NotificationTable(this.skin);
         this.coordinatesTable = new CoordinatesTable(this.camera, this.skin);
         this.planetsTable = new PlanetsTable(this, this.skin);
@@ -197,7 +202,7 @@ public class GameScreen implements Screen {
             this.resourceUpdateTimer -= 1f;
             for (Planet planet : this.planets) {
                 if (planet.isVisible) {
-                    final int resourceMultiplier = (planet.hasMyBase ? 2 : 0) + planet.numMyRockets;
+                    final int resourceMultiplier = (planet.hasMyBase ? Planet.BASE_RESOURCE_MULTIPLIER : 0) + planet.numMyRocketsGettingResources;
                     for (PlanetResource planetResource : planet.resources) {
                         myPlayer.resourceBalances.computeIfPresent(planetResource.resource, (k, currentBalance) -> currentBalance + (planetResource.rate * resourceMultiplier));
                     }
@@ -260,7 +265,7 @@ public class GameScreen implements Screen {
         // Add Planets
         this.planets = new ArrayList<>();
         for (PlanetMessageModel planet : gameData.planets()) {
-            this.planets.add(new Planet(this.planetsTextureAtlas, planet, this.spaceCraftTextureAtlas, this.lobbyScreen.myName));
+            this.planets.add(new Planet(this.planetsTextureAtlas, planet, this.spaceCraftTextureAtlas, this.lobbyScreen.myName, cooldownSound));
         }
 
         // Add Players
