@@ -175,6 +175,11 @@ public class PlanetsTable extends Table {
     }
 
     public void trackPlanet(final Planet planet) {
+        if (screen.transferTable.isVisible) {
+            screen.toggleTransferTable();
+        } else if (screen.buySellTable.isVisible) {
+            screen.toggleBuySellTable();
+        }
         screen.entityBeingFollowed = planet;
         screen.camera.targetZoom = screen.camera.getZoomForSize(planet.getWidth() * 3f);
         if (!screen.planetDashboardButtonTable.isVisible) {

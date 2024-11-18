@@ -24,7 +24,7 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public boolean isVisible = false;
     public boolean hasMyBase = false;
     public int numMyRockets = 0;
-    public int numMyRocketsGettingResources = 0;
+    public float myResourceMultiplier = 0f;
     public Sprite planetSprite;
     public float orbitalRadius;
     public float orbitalSpeed;
@@ -124,12 +124,13 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
 
     public void setNumMyRockets() {
         this.numMyRockets = 0;
-        this.numMyRocketsGettingResources = 0;
+        this.myResourceMultiplier = 0;
         for (int i = 0; i < this.rocketsInOrbit.size(); ++i) {
-            if (this.rocketsInOrbit.get(i).playerName.equals(this.myName)) {
+            RocketInOrbit rocket = this.rocketsInOrbit.get(i);
+            if (rocket.playerName.equals(this.myName)) {
                 this.numMyRockets += 1;
                 if (i < this.baseLimit && !this.name.equals(HOME_PLANET)) {
-                    this.numMyRocketsGettingResources += 1;
+                    this.myResourceMultiplier += Rocket.ROCKET_TIER_STATS[rocket.tier - 1].resourceMultiplier;
                 }
             }
         }

@@ -92,7 +92,7 @@ public class GameScreen implements Screen {
         this.subscribeToGameTopics();
 
         this.speedMultiplier = 1f;
-        this.noCostMode = false;
+        this.noCostMode = true;
 
         this.camera = new CameraOperatorService();
         this.gameViewport = new ExtendViewport(MIN_WORLD_SIZE, MIN_WORLD_SIZE, camera);
@@ -202,7 +202,7 @@ public class GameScreen implements Screen {
             this.resourceUpdateTimer -= 1f;
             for (Planet planet : this.planets) {
                 if (planet.isVisible) {
-                    final int resourceMultiplier = (planet.hasMyBase ? Planet.BASE_RESOURCE_MULTIPLIER : 0) + planet.numMyRocketsGettingResources;
+                    final float resourceMultiplier = (planet.hasMyBase ? Planet.BASE_RESOURCE_MULTIPLIER : 0) + planet.myResourceMultiplier;
                     for (PlanetResource planetResource : planet.resources) {
                         myPlayer.resourceBalances.computeIfPresent(planetResource.resource, (k, currentBalance) -> currentBalance + (planetResource.rate * resourceMultiplier));
                     }
