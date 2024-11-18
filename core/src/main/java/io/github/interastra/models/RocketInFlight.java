@@ -55,8 +55,8 @@ public class RocketInFlight extends Rocket {
         do {
             targetPosition.x = newTargetPosition.x;
             targetPosition.y = newTargetPosition.y;
-            float timeToTarget = this.timeToPosition(targetPosition, this.screen.speedMultiplier);
-            newTargetPosition = destinationPlanet.getPositionInTime(this.screen.gameViewport.getWorldWidth(), this.screen.gameViewport.getWorldHeight(), timeToTarget, this.screen.speedMultiplier, false);
+            float timeToTarget = this.timeToPosition(targetPosition);
+            newTargetPosition = destinationPlanet.getPositionInTime(this.screen.gameViewport.getWorldWidth(), this.screen.gameViewport.getWorldHeight(), timeToTarget, false);
         } while (this.getDistance(targetPosition, newTargetPosition) > destinationPlanet.getWidth() / 2f);
 
         this.destination = newTargetPosition;
@@ -77,21 +77,21 @@ public class RocketInFlight extends Rocket {
         this.dx = (float) (Rocket.ROCKET_TIER_STATS[this.tier - 1].speed * Math.cos(rotationRadians));
         this.dy = (float) (Rocket.ROCKET_TIER_STATS[this.tier - 1].speed * Math.sin(rotationRadians));
 
-        this.arrivalTimer = this.timeToPosition(this.destination, this.screen.speedMultiplier);
+        this.arrivalTimer = this.timeToPosition(this.destination);
     }
 
-    public void move(final float deltaTime, final float speedMultiplier) {
+    public void move(final float deltaTime) {
         if (!this.arrived) {
-            float currentDx = this.dx * deltaTime * speedMultiplier;
-            float currentDy = this.dy * deltaTime * speedMultiplier;
+            float currentDx = this.dx * deltaTime;
+            float currentDy = this.dy * deltaTime;
             this.rocketSprite.translate(currentDx, currentDy);
             this.propulsionSprite.translate(currentDx, currentDy);
-            this.arrivalTimer -= (deltaTime * speedMultiplier);
+            this.arrivalTimer -= (deltaTime);
             if (this.arrivalTimer <= 0f) {
                 this.arrival();
             }
         } else {
-            this.arrivalTimer += (deltaTime * speedMultiplier);
+            this.arrivalTimer += (deltaTime);
             if (this.arrivalTimer > 5f) {
                 this.arrival();
             }
@@ -102,9 +102,9 @@ public class RocketInFlight extends Rocket {
         return (float) Math.sqrt(Math.pow(positionOne.x - positionTwo.x, 2) + Math.pow(positionOne.y - positionTwo.y, 2));
     }
 
-    public float timeToPosition(final Vector2 position, final float speedMultiplier) {
+    public float timeToPosition(final Vector2 position) {
         float distance = (float) Math.sqrt(Math.pow(this.rocketSprite.getX() - position.x, 2) + Math.pow(this.rocketSprite.getY() - position.y, 2));
-        return distance / (Rocket.ROCKET_TIER_STATS[this.tier - 1].speed * speedMultiplier);
+        return distance / (Rocket.ROCKET_TIER_STATS[this.tier - 1].speed);
     }
 
     public void arrival() {

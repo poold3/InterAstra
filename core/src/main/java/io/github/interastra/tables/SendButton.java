@@ -42,7 +42,7 @@ public class SendButton extends Table {
                 }
 
                 screen.notificationTable.setMessage("Select an available planet.");
-                screen.planetsTable.rocketToSend = rocket;
+                screen.planetsTable.setRocketToSend(rocket);
             }
         });
         sendRocketButton.addListener(new ColorTextTooltip(Rocket.ROCKET_TIER_FUEL_PRICE[rocket.tier - 1].toString(), new InstantTooltipManager(), skin, Color.BLACK));

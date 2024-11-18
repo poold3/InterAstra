@@ -25,6 +25,9 @@ public class PlanetsTable extends Table {
     public Drawable moonDrawable;
     public Drawable blockDrawable;
     public RocketInOrbit rocketToSend = null;
+
+    public Planet rangeFinderOrigin = null;
+    public Float rangeFinderRange = null;
     public ImageButton[] planetButtons;
 
     public PlanetsTable(final GameScreen screen, final Skin skin) {
@@ -114,7 +117,7 @@ public class PlanetsTable extends Table {
                     screen.rocketsInFlight.add(rocketInFlight);
 
                     rocketToSend = null;
-                    resetPlanetImageButtons();
+                    resetRangeFinder();
                     return;
                 }
 
@@ -140,7 +143,7 @@ public class PlanetsTable extends Table {
                 // Are we in send rocket mode?
                 if (rocketToSend != null) {
                     rocketToSend = null;
-                    resetPlanetImageButtons();
+                    resetRangeFinder();
                 }
                 // Are we viewing the trade table?
                 else if (screen.transferTable.isVisible) {
@@ -200,24 +203,39 @@ public class PlanetsTable extends Table {
         return (float) Math.sqrt(Math.pow(planetOne.getX() - planetTwo.getX(), 2) + Math.pow(planetOne.getY() - planetTwo.getY(), 2));
     }
 
+    public void setRocketToSend(final RocketInOrbit rocketToSend) {
+        this.rocketToSend = rocketToSend;
+        float newRange = Rocket.ROCKET_TIER_STATS[this.rocketToSend.tier - 1].range;
+        if (this.rocketToSend.orbitingPlanet.moon != null) {
+            newRange += Moon.RANGE_INCREASE;
+        }
+        this.setRangeFinder(this.rocketToSend.orbitingPlanet, newRange);
+    }
+
+    public void setRangeFinder(final Planet origin, final float range) {
+        this.rangeFinderOrigin = origin;
+        this.rangeFinderRange = range;
+    }
+
+    public void resetRangeFinder() {
+        this.rangeFinderOrigin = null;
+        this.rangeFinderRange = null;
+        this.resetPlanetImageButtons();
+    }
+
     @Override
     public void act(float delta) {
         super.act(delta);
 
-        if (this.rocketToSend == null) {
+        if (this.rangeFinderOrigin == null || this.rangeFinderRange == null) {
             return;
-        }
-
-        float range = Rocket.ROCKET_TIER_STATS[this.rocketToSend.tier - 1].range;
-        if (this.rocketToSend.orbitingPlanet.moon != null) {
-            range += Moon.RANGE_INCREASE;
         }
 
         for (int i = 0; i < this.planetButtons.length; ++i) {
             ImageButton planetButton = this.planetButtons[i];
             planetButton.setDisabled(
-                this.distanceBetweenPlanets(this.rocketToSend.orbitingPlanet, this.screen.planets.get(i)) > range
-                    || this.rocketToSend.orbitingPlanet.equals(this.screen.planets.get(i))
+                this.distanceBetweenPlanets(this.rangeFinderOrigin, this.screen.planets.get(i)) > this.rangeFinderRange
+                    || this.rangeFinderOrigin.equals(this.screen.planets.get(i))
             );
         }
     }

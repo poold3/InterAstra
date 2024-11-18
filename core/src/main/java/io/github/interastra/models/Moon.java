@@ -28,8 +28,8 @@ public class Moon implements CameraEnabledEntity {
         this.orbitalPosition = moonMessageModel.startingOrbitalPosition();
     }
 
-    public void move(float deltaTime, float speedMultiplier) {
-        this.orbitalPosition += (this.orbitalSpeed * deltaTime * speedMultiplier);
+    public void move(float deltaTime) {
+        this.orbitalPosition += (this.orbitalSpeed * deltaTime);
         if (this.orbitalPosition >= TWO_PI) {
             this.orbitalPosition -= TWO_PI;
         }

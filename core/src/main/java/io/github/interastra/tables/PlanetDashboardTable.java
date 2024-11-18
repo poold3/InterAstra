@@ -1,19 +1,19 @@
 package io.github.interastra.tables;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Null;
 import io.github.interastra.labels.ColorLabel;
 import io.github.interastra.message.messages.RemoveRocketMessage;
 import io.github.interastra.message.models.RocketMessageModel;
-import io.github.interastra.models.Planet;
-import io.github.interastra.models.Rocket;
-import io.github.interastra.models.RocketInFlight;
-import io.github.interastra.models.RocketInOrbit;
+import io.github.interastra.models.*;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
 import io.github.interastra.tooltips.ColorTextTooltip;
@@ -91,6 +91,26 @@ public class PlanetDashboardTable extends Dashboard {
             TextButton buildRocketTextButton = new TextButton("Rocket " + Rocket.ROCKET_TIER_STRING[i], this.skin);
             int finalI = i;
             buildRocketTextButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
+                @Override
+                public void enter (InputEvent event, float x, float y, int pointer, @Null Actor fromActor) {
+                    super.enter(event, x, y, pointer, fromActor);
+                    if (cursor != null && screen.planetsTable.rocketToSend == null) {
+                        float range = Rocket.ROCKET_TIER_STATS[finalI].range;
+                        if (planet.moon != null) {
+                            range += Moon.RANGE_INCREASE;
+                        }
+                        screen.planetsTable.setRangeFinder(planet, range);
+                    }
+                }
+
+                @Override
+                public void exit (InputEvent event, float x, float y, int pointer, @Null Actor toActor) {
+                    super.exit(event, x, y, pointer, toActor);
+                    if (pointer == -1 && cursor != null && screen.planetsTable.rocketToSend == null) {
+                        screen.planetsTable.resetRangeFinder();
+                    }
+                }
+
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!planet.hasMyBase) {

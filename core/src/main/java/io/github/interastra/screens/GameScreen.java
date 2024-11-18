@@ -65,7 +65,6 @@ public class GameScreen implements Screen {
     public ArrayList<PlayerMessageModel> players;
     public Player myPlayer;
     public CopyOnWriteArrayList<RocketInFlight> rocketsInFlight;
-    public float speedMultiplier;
     public boolean leaveGame = false;
     public ArrayList<StompSession.Subscription> gameSubscriptions;
     public boolean endGame = false;
@@ -91,8 +90,7 @@ public class GameScreen implements Screen {
         this.gameSubscriptions = new ArrayList<>();
         this.subscribeToGameTopics();
 
-        this.speedMultiplier = 1f;
-        this.noCostMode = true;
+        this.noCostMode = false;
 
         this.camera = new CameraOperatorService();
         this.gameViewport = new ExtendViewport(MIN_WORLD_SIZE, MIN_WORLD_SIZE, camera);
@@ -212,7 +210,7 @@ public class GameScreen implements Screen {
 
         // Move planets
         for (Planet planet : this.planets) {
-            planet.move(this.gameViewport.getWorldWidth(), this.gameViewport.getWorldHeight(), delta, speedMultiplier);
+            planet.move(this.gameViewport.getWorldWidth(), this.gameViewport.getWorldHeight(), delta);
         }
 
         // If following an entity, tell the camera operator to do so.
@@ -246,7 +244,7 @@ public class GameScreen implements Screen {
         }
 
         for (RocketInFlight rocket : this.rocketsInFlight) {
-            rocket.move(delta, speedMultiplier);
+            rocket.move(delta);
             if (rocket.arrived) {
                 continue;
             }

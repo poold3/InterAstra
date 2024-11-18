@@ -73,33 +73,33 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
         this.setNumMyRockets();
     }
 
-    public void move(float worldWidth, float worldHeight, float deltaTime, float speedMultiplier) {
-        Vector2 newPosition = this.getPositionInTime(worldWidth, worldHeight, deltaTime, speedMultiplier, true);
+    public void move(float worldWidth, float worldHeight, float deltaTime) {
+        Vector2 newPosition = this.getPositionInTime(worldWidth, worldHeight, deltaTime, true);
         this.planetSprite.setCenter(newPosition.x, newPosition.y);
 
         // Move moon as well
         if (this.moon != null) {
-            this.moon.move(deltaTime, speedMultiplier);
+            this.moon.move(deltaTime);
         }
 
         // Move rockets in orbit
         if (this.isVisible) {
             for (RocketInOrbit rocket : this.rocketsInOrbit) {
-                rocket.move(deltaTime, speedMultiplier);
+                rocket.move(deltaTime);
             }
         }
 
         if (this.baseCooldown > 0f) {
-            this.baseCooldown -= (deltaTime * speedMultiplier);
+            this.baseCooldown -= (deltaTime);
             if (this.baseCooldown <= 0f) {
                 this.cooldownSound.play(0.3f);
             }
         }
     }
 
-    public Vector2 getPositionInTime(final float worldWidth, final float worldHeight, final float deltaTime, final float speedMultiplier, final boolean editOrbitalPosition) {
+    public Vector2 getPositionInTime(final float worldWidth, final float worldHeight, final float deltaTime, final boolean editOrbitalPosition) {
         Vector2 position = new Vector2();
-        float newOrbitalPosition = this.orbitalPosition + (this.orbitalSpeed * deltaTime * speedMultiplier);
+        float newOrbitalPosition = this.orbitalPosition + (this.orbitalSpeed * deltaTime);
         if (newOrbitalPosition >= TWO_PI) {
             newOrbitalPosition -= TWO_PI;
         }

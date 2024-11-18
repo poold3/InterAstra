@@ -34,6 +34,7 @@ public class ClickListenerService extends ClickListener {
         }
     }
 
+    @Override
     public void exit (InputEvent event, float x, float y, int pointer, @Null Actor toActor) {
         super.exit(event, x, y, pointer, toActor);
         if (pointer == -1 && cursor != null) {

@@ -28,16 +28,16 @@ public class RocketInOrbit extends Rocket {
         this.cooldown = 0f;
     }
 
-    public void move(float deltaTime, float speedMultiplier) {
+    public void move(float deltaTime) {
         if (this.inOrbit()) {
             if (this.orbitalDirection == ORBITAL_DIRECTION.COUNTER_CLOCKWISE) {
-                this.orbitalPosition += (ROCKET_ORBITAL_SPEED * deltaTime * speedMultiplier);
+                this.orbitalPosition += (ROCKET_ORBITAL_SPEED * deltaTime);
                 if (this.orbitalPosition >= TWO_PI) {
                     this.orbitalPosition -= TWO_PI;
                 }
                 this.rocketSprite.setRotation((float) (this.orbitalPosition / Math.PI * 180f));
             } else {
-                this.orbitalPosition -= (ROCKET_ORBITAL_SPEED * deltaTime * speedMultiplier);
+                this.orbitalPosition -= (ROCKET_ORBITAL_SPEED * deltaTime);
                 if (this.orbitalPosition < 0f) {
                     this.orbitalPosition += TWO_PI;
                 }
@@ -49,7 +49,7 @@ public class RocketInOrbit extends Rocket {
             this.rocketSprite.setCenter(x, y);
 
             if (this.cooldown > 0f) {
-                this.cooldown -= (deltaTime * speedMultiplier);
+                this.cooldown -= (deltaTime);
                 if (this.cooldown <= 0f) {
                     this.cooldownSound.play(0.3f);
                 }
