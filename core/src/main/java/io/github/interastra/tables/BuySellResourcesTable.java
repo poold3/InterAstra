@@ -25,7 +25,7 @@ public class BuySellResourcesTable extends Dashboard {
     public BuySellResourcesTable(final GameScreen screen, final Skin skin) {
         super(screen, skin);
 
-        this.titleLabel.setText("Transfer Resources");
+        this.titleLabel.setText("Buy/Sell Resources");
 
         Label.LabelStyle headerLabelStyle = new Label.LabelStyle(this.skin.get(Label.LabelStyle.class));
         headerLabelStyle.font = this.skin.getFont("Teko-32");
