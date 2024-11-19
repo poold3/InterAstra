@@ -46,7 +46,6 @@ public class PlanetsTable extends Table {
 
             Container<PlanetImageButton> planetImageButtonContainer = new Container<>(planetImageButton);
             planetImageButtonContainer.size(buttonSize);
-            planetImageButtonContainer.setTouchable(Touchable.enabled);
             planetImageButtonContainer.setBackground(skin.getDrawable("panel_square"));
             planetImageButtonContainer.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
                 @Override

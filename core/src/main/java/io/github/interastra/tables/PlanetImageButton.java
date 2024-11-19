@@ -8,8 +8,8 @@ import io.github.interastra.labels.ColorLabel;
 import io.github.interastra.models.Planet;
 import io.github.interastra.screens.GameScreen;
 
-public class PlanetImageButton extends Table {
-    public static float PLANET_SIZE = 50f;
+public class PlanetImageButton extends Stack {
+    public static float PLANET_SIZE = 70f;
     public static float BASE_SIZE = 23;
 
     private final GameScreen screen;
@@ -35,15 +35,16 @@ public class PlanetImageButton extends Table {
         this.planetImageButton = new ImageButton(planetButtonStyle);
         Container<ImageButton> planetImageButtonContainer = new Container<>(this.planetImageButton);
         planetImageButtonContainer.size(PLANET_SIZE);
-        this.add(planetImageButtonContainer).colspan(2).expandX();
-        this.row();
+        this.add(planetImageButtonContainer);
 
+        Table indicatorTable = new Table();
         this.baseIndicator = new Container<>();
         this.baseIndicator.size(BASE_SIZE);
-        this.add(this.baseIndicator).expandX().center();
+        indicatorTable.add(this.baseIndicator).expand().center().bottom();
 
         this.rocketIndicator = new ColorLabel("0", this.screen.skin, Color.WHITE);
-        this.add(this.rocketIndicator).expandX().center();
+        indicatorTable.add(this.rocketIndicator).expand().center().bottom();
+        this.add(indicatorTable);
     }
 
     public boolean isDisabled() {
