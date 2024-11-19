@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.utils.Align;
+import io.github.interastra.message.MessageService;
 import io.github.interastra.screens.MainMenuScreen;
 import io.github.interastra.rest.RestService;
 import io.github.interastra.services.ClickListenerService;
@@ -20,6 +20,7 @@ public class MainMenuTable extends Table {
 
     private final MainMenuScreen screen;
     private final Skin skin;
+    private final TextField ipAddressTextField;
     private final TextField usernameTextField;
     private final TextField gameCodeTextField;
 
@@ -36,8 +37,12 @@ public class MainMenuTable extends Table {
         this.add(gameTitleLabel).expandX().center().padTop(20);
         this.row();
 
+        this.ipAddressTextField = this.getMenuTextField("IP Address");
+        this.add(this.ipAddressTextField).center().padTop(30f).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
+        this.row();
+
         this.usernameTextField = this.getMenuTextField("Enter Name");
-        this.add(usernameTextField).center().padTop(30f).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
+        this.add(usernameTextField).center().padTop(10f).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
         this.row();
 
         TextButton newGameButton = this.getNewGameButton();
@@ -99,6 +104,7 @@ public class MainMenuTable extends Table {
                 }
 
                 screen.notificationTable.startLoading("Connecting");
+                setIPAddress();
                 RestService.newGame(screen, name);
             }
         });
@@ -125,6 +131,7 @@ public class MainMenuTable extends Table {
                 }
 
                 screen.notificationTable.startLoading("Connecting");
+                setIPAddress();
                 RestService.joinGame(screen, name, gameCode);
             }
         });
@@ -143,5 +150,15 @@ public class MainMenuTable extends Table {
             }
         });
         return exitButton;
+    }
+
+    public void setIPAddress() {
+        String ipAddress = this.ipAddressTextField.getText();
+        if (ipAddress.isBlank()) {
+            return;
+        }
+
+        RestService.BASE_URL = String.format("http://%s:8080", ipAddress);
+        MessageService.BASE_URL = String.format("ws://%s:8080", ipAddress);
     }
 }

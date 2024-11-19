@@ -9,7 +9,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 public class MessageService {
-    public static final String BASE_URL = "ws://localhost:8080";
+    public static String BASE_URL = "ws://localhost:8080";
     public WebSocketClient webSocketClient;
     public WebSocketStompClient stompClient;
     public MessageSessionHandler sessionHandler;
