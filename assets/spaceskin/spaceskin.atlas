@@ -6,28 +6,28 @@ filter: Linear, Linear
 repeat: none
 cursor-16
   rotate: false
-  xy: 1016, 1000
+  xy: 1017, 1005
   size: 2, 16
   orig: 2, 16
   offset: 0, 0
   index: -1
 cursor-16-black
   rotate: false
-  xy: 487, 651
+  xy: 1021, 1005
   size: 2, 16
   orig: 2, 16
   offset: 0, 0
   index: -1
 bar_shadow_round_large
   rotate: false
-  xy: 389, 643
+  xy: 897, 921
   size: 96, 24
   orig: 96, 24
   offset: 0, 0
   index: -1
 bar_shadow_square_small
   rotate: false
-  xy: 897, 954
+  xy: 389, 610
   size: 96, 16
   split: 4, 4, 4, 4
   pad: 0, 0, 0, 0
@@ -36,42 +36,42 @@ bar_shadow_square_small
   index: -1
 button_rectangle
   rotate: false
-  xy: 1, 603
+  xy: 509, 881
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 button_rectangle_depth
   rotate: false
-  xy: 509, 906
+  xy: 1, 562
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 button_square
   rotate: false
-  xy: 703, 774
+  xy: 195, 430
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 panel_glass_screws
   rotate: false
-  xy: 703, 774
+  xy: 195, 430
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_depth
   rotate: false
-  xy: 509, 708
+  xy: 1, 364
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 panel_glass
   rotate: false
-  xy: 199, 339
+  xy: 199, 298
   size: 64, 64
   split: 9, 7, 6, 6
   pad: 0, 0, 0, 0
@@ -80,7 +80,7 @@ panel_glass
   index: -1
 panel_glass_pad
   rotate: false
-  xy: 199, 339
+  xy: 199, 298
   size: 64, 64
   split: 20, 20, 15, 15
   pad: 0, 0, 0, 0
@@ -89,84 +89,84 @@ panel_glass_pad
   index: -1
 panel_glass_notch_bl
   rotate: false
-  xy: 1, 339
+  xy: 703, 683
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 panel_glass_notch_br
   rotate: false
-  xy: 195, 405
+  xy: 897, 855
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 panel_glass_notch_tl
   rotate: false
-  xy: 389, 577
+  xy: 389, 544
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 panel_glass_notch_tr
   rotate: false
-  xy: 897, 888
+  xy: 1, 298
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 panel_glass_notches
   rotate: false
-  xy: 575, 708
+  xy: 67, 364
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 panel_glass_notches_top
   rotate: false
-  xy: 769, 774
+  xy: 261, 430
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 panel_glass_tab
   rotate: false
-  xy: 1, 273
+  xy: 769, 683
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 panel_glass_tab_blade
   rotate: false
-  xy: 67, 339
+  xy: 897, 789
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 panel_rectangle
   rotate: false
-  xy: 1, 537
+  xy: 509, 815
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 panel_rectangle_screws
   rotate: false
-  xy: 195, 603
+  xy: 703, 881
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 panel_square
   rotate: false
-  xy: 261, 405
+  xy: 1, 232
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 scroll_vertical
   rotate: false
-  xy: 455, 545
+  xy: 963, 823
   size: 16, 96
   split: 3, 3, 3, 3
   pad: 0, 0, 0, 0
@@ -175,63 +175,63 @@ scroll_vertical
   index: -1
 button_square_header_blade_rectangle
   rotate: false
-  xy: 195, 537
+  xy: 703, 815
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 button_square_header_blade_rectangle_screws
   rotate: false
-  xy: 509, 774
+  xy: 1, 430
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 button_square_header_blade_square
   rotate: false
-  xy: 133, 339
+  xy: 133, 298
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_header_blade_square_screws
   rotate: false
-  xy: 707, 708
+  xy: 199, 364
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_header_large_rectangle
   rotate: false
-  xy: 703, 840
+  xy: 195, 496
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 button_square_header_large_rectangle_screws
   rotate: false
-  xy: 1, 405
+  xy: 509, 683
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 button_square_header_large_square
   rotate: false
-  xy: 1, 141
+  xy: 1, 100
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_header_large_square_screws
   rotate: false
-  xy: 67, 207
+  xy: 67, 166
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_header_notch_rectangle
   rotate: false
-  xy: 195, 471
+  xy: 703, 749
   size: 192, 64
   split: 15, 14, 36, 14
   pad: 0, 0, 0, 0
@@ -240,56 +240,56 @@ button_square_header_notch_rectangle
   index: -1
 button_square_header_notch_rectangle_screws
   rotate: false
-  xy: 509, 840
+  xy: 1, 496
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 button_square_header_notch_square
   rotate: false
-  xy: 389, 511
+  xy: 67, 298
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_header_notch_square_screws
   rotate: false
-  xy: 641, 708
+  xy: 133, 364
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_header_small_rectangle
   rotate: false
-  xy: 703, 906
+  xy: 195, 562
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 button_square_header_small_rectangle_screws
   rotate: false
-  xy: 1, 471
+  xy: 509, 749
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 button_square_header_small_square
   rotate: false
-  xy: 1, 207
+  xy: 1, 166
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_square_header_small_square_screws
   rotate: false
-  xy: 67, 273
+  xy: 67, 232
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 panel_square_screws
   rotate: false
-  xy: 133, 273
+  xy: 133, 232
   size: 64, 64
   split: 13, 13, 15, 13
   pad: 0, 0, 0, 0
@@ -298,21 +298,28 @@ panel_square_screws
   index: -1
 Teko-16
   rotate: false
-  xy: 509, 972
+  xy: 1, 628
   size: 505, 44
   orig: 505, 44
   offset: 0, 0
   index: -1
+Teko-24
+  rotate: false
+  xy: 509, 947
+  size: 506, 74
+  orig: 506, 74
+  offset: 0, 0
+  index: -1
 Teko-32
   rotate: false
-  xy: 1, 897
+  xy: 1, 902
   size: 506, 119
   orig: 506, 119
   offset: 0, 0
   index: -1
 Teko-48
   rotate: false
-  xy: 1, 669
+  xy: 1, 674
   size: 506, 226
   orig: 506, 226
   offset: 0, 0

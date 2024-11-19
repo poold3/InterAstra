@@ -11,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import io.github.interastra.screens.GameScreen;
 
 public class Dashboard extends Table {
-    public static final float DASHBOARD_BUTTON_WIDTH = 100f;
-    public static final float DASHBOARD_BUTTON_HEIGHT = 40f;
+    public static final float DASHBOARD_BUTTON_WIDTH = 150f;
+    public static final float DASHBOARD_BUTTON_HEIGHT = 60f;
 
     public final GameScreen screen;
     public final Skin skin;

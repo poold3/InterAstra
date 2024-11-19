@@ -1,6 +1,5 @@
 package io.github.interastra.tables;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -194,9 +193,7 @@ public class PlanetDashboardTable extends Dashboard {
                 rocketTable.add().size(ROCKET_LABEL_WIDTH / 6f);
             }
         } else {
-            ColorLabel inFlightLabel = new ColorLabel("In flight", this.skin, Color.BLACK);
-            inFlightLabel.setAlignment(Align.center);
-            rocketTable.add(inFlightLabel).colspan(2).size(ROCKET_LABEL_WIDTH / 3f, ROCKET_LABEL_HEIGHT / 2f);
+            rocketTable.add().colspan(2).size(ROCKET_LABEL_WIDTH / 3f, ROCKET_LABEL_HEIGHT / 2f);
         }
 
         ImageButton viewRocketButton = new ImageButton(this.viewDrawable);

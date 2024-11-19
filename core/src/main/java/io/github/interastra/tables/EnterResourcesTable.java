@@ -15,7 +15,7 @@ import io.github.interastra.stages.GameStage;
 
 public class EnterResourcesTable extends Table {
     public static final float TEXTFIELD_WIDTH = 150f;
-    public static final float TEXTFIELD_HEIGHT = 30f;
+    public static final float TEXTFIELD_HEIGHT = 50f;
 
     private final Skin skin;
     public final TextField balanceTextField;

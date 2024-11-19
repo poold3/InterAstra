@@ -3,6 +3,7 @@ package io.github.interastra.tables;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -14,118 +15,94 @@ import io.github.interastra.services.ClickListenerService;
 import io.github.interastra.tooltips.PlanetToolTip;
 
 public class PlanetsTable extends Table {
-    public static final float MAX_BUTTON_SIZE = 50f;
+    public static final float MAX_BUTTON_SIZE = 70f;
     public static final float BUTTON_PAD = 1f;
 
     private final GameScreen screen;
-    private final Skin skin;
-    private final float buttonSize;
-    public Drawable rocketDrawable;
-    public Drawable baseDrawable;
     public Drawable moonDrawable;
-    public Drawable blockDrawable;
     public RocketInOrbit rocketToSend = null;
 
     public Planet rangeFinderOrigin = null;
     public Float rangeFinderRange = null;
-    public ImageButton[] planetButtons;
+    public PlanetImageButton[] planetButtons;
 
     public PlanetsTable(final GameScreen screen, final Skin skin) {
         super();
 
         this.screen = screen;
-        this.skin = skin;
         int numButtons = screen.planets.size() + 1;
-        this.buttonSize = Math.min(((this.screen.stageViewport.getWorldWidth() / 2f) - (numButtons * 2f * BUTTON_PAD)) / numButtons, MAX_BUTTON_SIZE);
+        float buttonSize = Math.min(((this.screen.stageViewport.getWorldWidth() / 2f) - (numButtons * 2f * BUTTON_PAD)) / numButtons, MAX_BUTTON_SIZE);
 
         this.setFillParent(true);
         this.bottom();
 
-        this.rocketDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("rocket_black"));
-        this.baseDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("base_black"));
         this.moonDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("moon_black"));
-        this.blockDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("block"));
 
-        this.planetButtons = new ImageButton[this.screen.planets.size()];
+        this.planetButtons = new PlanetImageButton[this.screen.planets.size()];
         for (int i = 0; i < this.screen.planets.size(); ++i) {
-            ImageButton planetImageButton = this.getPlanetImageButton(this.screen.planets.get(i));
+            Planet planet = this.screen.planets.get(i);
+            PlanetImageButton planetImageButton = new PlanetImageButton(this.screen, planet);
             this.planetButtons[i] = planetImageButton;
-            this.add(this.getContainer(planetImageButton, this.screen.planets.get(i))).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
-        }
-        this.add(this.getContainer(this.getUndoImageButton(), null)).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
-    }
 
-    public Container<ImageButton> getContainer(final ImageButton button, final Planet planet) {
-        Container<ImageButton> buttonContainer = new Container<>(button);
-        buttonContainer.width(this.buttonSize);
-        buttonContainer.height(this.buttonSize);
-        buttonContainer.setBackground(this.skin.getDrawable("panel_square"));
-
-        if (planet != null) {
-            buttonContainer.addListener(new PlanetToolTip(this.screen, planet, this.rocketDrawable, this.baseDrawable, this.moonDrawable));
-        }
-
-        return buttonContainer;
-    }
-
-    public ImageButton getPlanetImageButton(Planet planet) {
-        Drawable planetDrawable = new TextureRegionDrawable(this.screen.planetsTextureAtlas.findRegion("planet", planet.index));
-
-        ImageButton.ImageButtonStyle planetButtonStyle = new ImageButton.ImageButtonStyle();
-        planetButtonStyle.imageUp = planetDrawable;
-        planetButtonStyle.imageDown = planetDrawable;
-        planetButtonStyle.imageDisabled = this.blockDrawable;
-        ImageButton planetImageButton = new ImageButton(planetButtonStyle);
-        planetImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (planetImageButton.isDisabled()) {
-                    screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage("Out of range.");
-                    return;
-                }
-
-                if (rocketToSend != null) {
-                    // Make sure rocket is not already in flight
-                    for (RocketInFlight rocket : screen.rocketsInFlight) {
-                        if (rocket.id.equals(rocketToSend.id)) {
-                            return;
-                        }
-                    }
-
-                    // Check rocket limit
-                    if (screen.getNumRocketsInFlightToPlanet(planet) + planet.numMyRockets >= planet.baseLimit) {
+            Container<PlanetImageButton> planetImageButtonContainer = new Container<>(planetImageButton);
+            planetImageButtonContainer.size(buttonSize);
+            planetImageButtonContainer.setTouchable(Touchable.enabled);
+            planetImageButtonContainer.setBackground(skin.getDrawable("panel_square"));
+            planetImageButtonContainer.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (planetImageButton.isDisabled()) {
                         screen.badSound.play(0.5f);
-                        screen.notificationTable.setMessage("Too many rockets at this planet.");
+                        screen.notificationTable.setMessage("Out of range.");
                         return;
                     }
 
-                    // Purchase flight
-                    Rocket.ROCKET_TIER_FUEL_PRICE[rocketToSend.tier - 1].purchase(screen.myPlayer);
+                    if (rocketToSend != null) {
+                        // Make sure rocket is not already in flight
+                        for (RocketInFlight rocket : screen.rocketsInFlight) {
+                            if (rocket.id.equals(rocketToSend.id)) {
+                                return;
+                            }
+                        }
 
-                    // Remove rocket
-                    screen.removeRocket(new RemoveRocketMessage(new RocketMessageModel(rocketToSend), rocketToSend.orbitingPlanet.name));
+                        // Check rocket limit
+                        if (screen.getNumRocketsInFlightToPlanet(planet) + planet.numMyRockets >= planet.baseLimit) {
+                            screen.badSound.play(0.5f);
+                            screen.notificationTable.setMessage("Too many rockets at this planet.");
+                            return;
+                        }
 
-                    // Add flight rocket
-                    RocketInFlight rocketInFlight = new RocketInFlight(
-                        screen,
-                        new RocketMessageModel(rocketToSend),
-                        rocketToSend.orbitingPlanet,
-                        planet
-                    );
+                        // Purchase flight
+                        Rocket.ROCKET_TIER_FUEL_PRICE[rocketToSend.tier - 1].purchase(screen.myPlayer);
 
-                    screen.rocketsInFlight.add(rocketInFlight);
+                        // Remove rocket
+                        screen.removeRocket(new RemoveRocketMessage(new RocketMessageModel(rocketToSend), rocketToSend.orbitingPlanet.name));
 
-                    rocketToSend = null;
-                    resetRangeFinder();
-                    return;
+                        // Add flight rocket
+                        RocketInFlight rocketInFlight = new RocketInFlight(
+                            screen,
+                            new RocketMessageModel(rocketToSend),
+                            rocketToSend.orbitingPlanet,
+                            planet
+                        );
+
+                        screen.rocketsInFlight.add(rocketInFlight);
+
+                        rocketToSend = null;
+                        resetRangeFinder();
+                        return;
+                    }
+
+                    trackPlanet(planet);
                 }
-
-                trackPlanet(planet);
-            }
-        });
-
-        return planetImageButton;
+            });
+            planetImageButtonContainer.addListener(new PlanetToolTip(this.screen, this.screen.planets.get(i), this.moonDrawable));
+            this.add(planetImageButtonContainer).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
+        }
+        Container<ImageButton> undoImageButtonContainer = new Container<>(this.getUndoImageButton());
+        undoImageButtonContainer.size(buttonSize);
+        undoImageButtonContainer.setBackground(skin.getDrawable("panel_square"));
+        this.add(undoImageButtonContainer).pad(0f, BUTTON_PAD, 0f, BUTTON_PAD);
     }
 
     public ImageButton getUndoImageButton() {
@@ -194,7 +171,7 @@ public class PlanetsTable extends Table {
     }
 
     public void resetPlanetImageButtons() {
-        for (ImageButton planetImageButton : this.planetButtons) {
+        for (PlanetImageButton planetImageButton : this.planetButtons) {
             planetImageButton.setDisabled(false);
         }
     }
@@ -232,7 +209,7 @@ public class PlanetsTable extends Table {
         }
 
         for (int i = 0; i < this.planetButtons.length; ++i) {
-            ImageButton planetButton = this.planetButtons[i];
+            PlanetImageButton planetButton = this.planetButtons[i];
             planetButton.setDisabled(
                 this.distanceBetweenPlanets(this.rangeFinderOrigin, this.screen.planets.get(i)) > this.rangeFinderRange
                     || this.rangeFinderOrigin.equals(this.screen.planets.get(i))

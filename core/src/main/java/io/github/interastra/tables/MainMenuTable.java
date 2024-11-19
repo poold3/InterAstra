@@ -13,10 +13,10 @@ import io.github.interastra.services.ClickListenerService;
 import io.github.interastra.services.ValidationService;
 
 public class MainMenuTable extends Table {
-    public static final float BUTTON_WIDTH = 100f;
-    public static final float BUTTON_HEIGHT = 40f;
-    public static final float TEXTFIELD_WIDTH = 150f;
-    public static final float TEXTFIELD_HEIGHT = 30f;
+    public static final float BUTTON_WIDTH = 150f;
+    public static final float BUTTON_HEIGHT = 60f;
+    public static final float TEXTFIELD_WIDTH = 180f;
+    public static final float TEXTFIELD_HEIGHT = 40f;
 
     private final MainMenuScreen screen;
     private final Skin skin;
@@ -154,7 +154,7 @@ public class MainMenuTable extends Table {
 
     public void setIPAddress() {
         String ipAddress = this.ipAddressTextField.getText();
-        if (ipAddress.isBlank()) {
+        if (ipAddress.isBlank() || ipAddress.equals("IP Address")) {
             return;
         }
 

@@ -12,7 +12,7 @@ import io.github.interastra.tooltips.ColorTextTooltip;
 import io.github.interastra.tooltips.InstantTooltipManager;
 
 public class PlanetDashboardButtonTable extends Table {
-    public final float DASHBOARD_BUTTON_SIZE = 50f;
+    public final float DASHBOARD_BUTTON_SIZE = 60f;
 
     private final GameScreen screen;
     public boolean isVisible = false;

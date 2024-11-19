@@ -14,9 +14,7 @@ public class CoordinatesTable extends Table {
         this.setFillParent(true);
 
         this.cameraOperatorService = cameraOperatorService;
-        Label.LabelStyle coordinateLabelStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
-        coordinateLabelStyle.font = skin.getFont("Teko-32");
-        this.coordinateLabel = new Label("", coordinateLabelStyle);
+        this.coordinateLabel = new Label("", skin);
         this.add(this.coordinateLabel).expandX().expandY().bottom().left().pad(5f);
     }
 

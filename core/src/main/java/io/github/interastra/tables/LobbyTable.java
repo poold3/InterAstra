@@ -18,10 +18,10 @@ import io.github.interastra.services.ClickListenerService;
 
 
 public class LobbyTable extends Table {
-    public static final float PLAYER_LABEL_WIDTH = 120f;
-    public static final float PLAYER_LABEL_HEIGHT = 70f;
-    public static final float BUTTON_WIDTH = 100f;
-    public static final float BUTTON_HEIGHT = 42f;
+    public static final float PLAYER_LABEL_WIDTH = 180f;
+    public static final float PLAYER_LABEL_HEIGHT = 80f;
+    public static final float BUTTON_WIDTH = 150f;
+    public static final float BUTTON_HEIGHT = 60f;
 
     private final LobbyScreen screen;
     private final Skin skin;

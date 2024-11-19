@@ -58,9 +58,7 @@ public class BuildBaseButton extends Container<Actor> {
         });
         buildBaseTextButton.addListener(new ColorTextTooltip(Planet.BASE_PRICE.toString(), new InstantTooltipManager(), skin, Color.BLACK));
 
-        Label.LabelStyle baseCooldownLabelStye = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
-        baseCooldownLabelStye.font = skin.getFont("Teko-32");
-        this.baseCooldownLabel = new ColorLabel("", baseCooldownLabelStye, Color.WHITE);
+        this.baseCooldownLabel = new ColorLabel("", skin, Color.WHITE);
         this.baseCooldownLabel.setAlignment(Align.center);
 
         this.setActor(this.baseCooldownLabel);

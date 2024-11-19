@@ -19,7 +19,7 @@ import io.github.interastra.tooltips.InstantTooltipManager;
 
 public class ResourcesTable extends Table {
     public final float RESOURCE_CELL_WIDTH = 80f;
-    public final float TRADE_ICON_SIZE = 30f;
+    public final float ICON_SIZE = 50f;
 
     private final GameScreen screen;
     private final Skin skin;
@@ -77,7 +77,7 @@ public class ResourcesTable extends Table {
                 screen.toggleBuySellTable();
             }
         });
-        this.add(buySellImageButton).size(TRADE_ICON_SIZE).pad(2f).right();
+        this.add(buySellImageButton).size(ICON_SIZE).pad(2f).right();
         this.row();
 
         ImageButton transferImageButton = new ImageButton(new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("transfer")));
@@ -88,7 +88,7 @@ public class ResourcesTable extends Table {
                 screen.toggleTransferTable();
             }
         });
-        this.add(transferImageButton).size(TRADE_ICON_SIZE).pad(2f).right();
+        this.add(transferImageButton).size(ICON_SIZE).pad(2f).right();
     }
 
     public void addResourceTextLabel(final String text) {
