@@ -31,10 +31,12 @@ public class Transfer implements StompFrameHandler {
             gameScreen.moneySound.play();
             Price transferAmount = new Price(message.amount());
             transferAmount.purchase(gameScreen.myPlayer);
+            gameScreen.notificationTable.setMessage(String.format("You sent %s %s.", message.to(), transferAmount));
         } else if (gameScreen.myPlayer.name.equals(message.to())) {
             gameScreen.moneySound.play();
             Price transferAmount = new Price(message.amount());
             transferAmount.sell(gameScreen.myPlayer);
+            gameScreen.notificationTable.setMessage(String.format("%s sent you %s.", message.from(), transferAmount));
         }
     }
 }

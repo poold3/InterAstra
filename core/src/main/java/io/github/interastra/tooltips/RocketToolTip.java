@@ -24,7 +24,7 @@ public class RocketToolTip extends Tooltip<Table> {
         rocketTable.add(new Image(rocketDrawable)).size(Rocket.ROCKET_TIER_WIDTH[rocketTier - 1] * 200f, Rocket.ROCKET_TIER_HEIGHT[rocketTier - 1] * 200f).padTop(5f);
         rocketTable.row();
 
-        Container<Label> priceContainer = new Container<>(new ColorLabel(Rocket.ROCKET_TIER_PRICE[rocketTier - 1].toString(), screen.skin, Color.BLACK));
+        Container<Label> priceContainer = new Container<>(new ColorLabel("Price: " + Rocket.ROCKET_TIER_PRICE[rocketTier - 1].toString(), screen.skin, Color.BLACK));
         priceContainer.pad(10f);
         rocketTable.add(priceContainer).expandX().center();
         rocketTable.row();

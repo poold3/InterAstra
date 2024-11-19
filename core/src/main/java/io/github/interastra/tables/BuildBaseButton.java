@@ -56,7 +56,7 @@ public class BuildBaseButton extends Container<Actor> {
                 planetDashboardTable.planet.baseCooldown = Planet.BASE_COOLDOWN;
             }
         });
-        buildBaseTextButton.addListener(new ColorTextTooltip(Planet.BASE_PRICE.toString(), new InstantTooltipManager(), skin, Color.BLACK));
+        buildBaseTextButton.addListener(new ColorTextTooltip("Price: " + Planet.BASE_PRICE.toString(), new InstantTooltipManager(), skin, Color.BLACK));
 
         this.baseCooldownLabel = new ColorLabel("", skin, Color.WHITE);
         this.baseCooldownLabel.setAlignment(Align.center);

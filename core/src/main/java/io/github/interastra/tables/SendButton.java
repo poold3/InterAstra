@@ -45,7 +45,7 @@ public class SendButton extends Table {
                 screen.planetsTable.setRocketToSend(rocket);
             }
         });
-        sendRocketButton.addListener(new ColorTextTooltip(Rocket.ROCKET_TIER_FUEL_PRICE[rocket.tier - 1].toString(), new InstantTooltipManager(), skin, Color.BLACK));
+        sendRocketButton.addListener(new ColorTextTooltip("Price: " + Rocket.ROCKET_TIER_FUEL_PRICE[rocket.tier - 1].toString(), new InstantTooltipManager(), skin, Color.BLACK));
 
         this.rocketCooldownLabel = new ColorLabel("", skin, Color.BLACK);
         this.rocketCooldownLabel.setAlignment(Align.center);
