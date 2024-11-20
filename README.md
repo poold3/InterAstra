@@ -11,7 +11,7 @@ Build a jar file.
 You can deploy this game with [packr](https://github.com/libgdx/packr).
 Here is the command that I use:
 ```
-java -jar packr-all-4.0.0.jar --platform windows64 --jdk "~\.jdks\liberica-17.0.13" --executable InterAstra --classpath "lwjgl3\build\libs\InterAstra-1.0.0.jar" --mainclass io.github.interastra.lwjgl3.Lwjgl3Launcher --resources "lwjgl3\build\resources" --output out-win
+java -jar packr-all-4.0.0.jar --platform windows64 --jdk "~\.jdks\liberica-17.0.13" --executable InterAstra --classpath "lwjgl3\build\libs\InterAstra-1.0.0.jar" --mainclass io.github.interastra.lwjgl3.Lwjgl3Launcher --resources "lwjgl3\build\resources" --output interastra-windows
 ```
 
 `$env:JAVA_HOME = "~\.jdks\liberica-17.0.13"`

@@ -1,5 +1,5 @@
-out-win
-out-mac
+interastra-windows
+interastra-mac
 
 ## Gradle:
 .gradle/
