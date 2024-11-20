@@ -1,3 +1,6 @@
+out-win
+out-mac
+
 ## Gradle:
 .gradle/
 gradle-app.setting

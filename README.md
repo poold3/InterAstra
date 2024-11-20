@@ -4,6 +4,18 @@ A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://git
 
 This project was generated with a template including simple application launchers and a main class extending `Game` that sets the first screen.
 
+## Deploy
+Build a jar file.
+`./gradlew lwjgl3:jar`
+
+You can deploy this game with [packr](https://github.com/libgdx/packr).
+Here is the command that I use:
+```
+java -jar packr-all-4.0.0.jar --platform windows64 --jdk "~\.jdks\liberica-17.0.13" --executable InterAstra --classpath "lwjgl3\build\libs\InterAstra-1.0.0.jar" --mainclass io.github.interastra.lwjgl3.Lwjgl3Launcher --resources "lwjgl3\build\resources" --output out-win
+```
+
+`$env:JAVA_HOME = "~\.jdks\liberica-17.0.13"`
+
 ## Platforms
 
 - `core`: Main module with the application logic shared by all platforms.
