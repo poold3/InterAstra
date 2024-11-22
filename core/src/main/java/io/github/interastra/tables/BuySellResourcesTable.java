@@ -21,6 +21,7 @@ public class BuySellResourcesTable extends Dashboard {
     private final ColorLabel buyLabel;
     private final ColorLabel sellLabel;
     private Price currentPrice;
+    public ColorTextTooltip sellRateTextToolTip;
 
     public BuySellResourcesTable(final GameScreen screen, final Skin skin) {
         super(screen, skin);
@@ -62,7 +63,7 @@ public class BuySellResourcesTable extends Dashboard {
                 enterResourcesTable.resetUI();
             }
         });
-        buyTextButton.addListener(new ColorTextTooltip(PlanetResource.getBuyRateString(), new InstantTooltipManager(), this.skin, Color.BLACK));
+        buyTextButton.addListener(new ColorTextTooltip(getBuyRateString(), new InstantTooltipManager(), this.skin, Color.BLACK));
         this.contentTable.add(buyTextButton).size(Dashboard.DASHBOARD_BUTTON_WIDTH, Dashboard.DASHBOARD_BUTTON_HEIGHT).padTop(10f);
 
         TextButton sellTextButton = new TextButton("Sell", this.skin);
@@ -84,12 +85,13 @@ public class BuySellResourcesTable extends Dashboard {
                 }
 
                 screen.moneySound.play();
-                screen.myPlayer.balance += sellAmount.getSellAmount();
+                screen.myPlayer.balance += sellAmount.getSellAmount(screen);
                 sellAmount.purchase(screen.myPlayer);
                 enterResourcesTable.resetUI();
             }
         });
-        sellTextButton.addListener(new ColorTextTooltip(PlanetResource.getSellRateString(), new InstantTooltipManager(), this.skin, Color.BLACK));
+        this.sellRateTextToolTip = new ColorTextTooltip(this.getSellRateString(), new InstantTooltipManager(), this.skin, Color.BLACK);
+        sellTextButton.addListener(this.sellRateTextToolTip);
         this.contentTable.add(sellTextButton).size(Dashboard.DASHBOARD_BUTTON_WIDTH, Dashboard.DASHBOARD_BUTTON_HEIGHT).padTop(10f);
         this.contentTable.row();
 
@@ -102,7 +104,44 @@ public class BuySellResourcesTable extends Dashboard {
 
         this.currentPrice = new Price();
         this.buyLabel.setText(String.format("$%.2f", this.currentPrice.getBuyAmount()));
-        this.sellLabel.setText(String.format("$%.2f", this.currentPrice.getSellAmount()));
+        this.sellLabel.setText(String.format("$%.2f", this.currentPrice.getSellAmount(screen)));
+    }
+
+    public static String getBuyRateString() {
+        return String.format(
+            "Iron: $%.2f, Oil: $%.2f, Silicon: $%.2f, Lithium: $%.2f, Helium3: $%.2f",
+            PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.IRON.ordinal()],
+            PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.OIL.ordinal()],
+            PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()],
+            PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()],
+            PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]
+        );
+    }
+
+    public String getSellRateString() {
+        return String.format(
+            "Iron: $%.2f, Oil: $%.2f, Silicon: $%.2f, Lithium: $%.2f, Helium3: $%.2f",
+            this.screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.IRON.ordinal()],
+            this.screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.OIL.ordinal()],
+            this.screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()],
+            this.screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()],
+            this.screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]
+        );
+    }
+
+    public void refreshRates() {
+        this.sellRateTextToolTip.getActor().getActor().setText(this.getSellRateString());
+        if (this.isVisible) {
+            Price newPrice = this.enterResourcesTable.getPrice();
+            if (newPrice == null) {
+                this.buyLabel.setText("");
+                this.sellLabel.setText("");
+            } else {
+                this.currentPrice = newPrice;
+                this.buyLabel.setText(String.format("$%.2f", this.currentPrice.getBuyAmount()));
+                this.sellLabel.setText(String.format("$%.2f", this.currentPrice.getSellAmount(screen)));
+            }
+        }
     }
 
     @Override
@@ -116,7 +155,7 @@ public class BuySellResourcesTable extends Dashboard {
         } else if (!newPrice.equals(this.currentPrice)) {
             this.currentPrice = newPrice;
             this.buyLabel.setText(String.format("$%.2f", this.currentPrice.getBuyAmount()));
-            this.sellLabel.setText(String.format("$%.2f", this.currentPrice.getSellAmount()));
+            this.sellLabel.setText(String.format("$%.2f", this.currentPrice.getSellAmount(screen)));
         }
     }
 }

@@ -27,6 +27,7 @@ public class Main extends Game {
         this.assetManager.load("audio/button.mp3", Sound.class);
         this.assetManager.load("audio/money.mp3", Sound.class);
         this.assetManager.load("audio/build.mp3", Sound.class);
+        this.assetManager.load("audio/devalue.mp3", Sound.class);
 
         this.spriteBatch = new SpriteBatch();
         this.setScreen(new LoadingScreen(this));

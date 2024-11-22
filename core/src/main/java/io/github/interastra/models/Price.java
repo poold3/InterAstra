@@ -1,6 +1,7 @@
 package io.github.interastra.models;
 
 import io.github.interastra.message.models.PriceMessageModel;
+import io.github.interastra.screens.GameScreen;
 
 public class Price {
     public float balance;
@@ -149,13 +150,13 @@ public class Price {
         return buyAmount;
     }
 
-    public float getSellAmount() {
+    public float getSellAmount(final GameScreen screen) {
         float sellAmount = 0f;
-        sellAmount += (this.ironBalance * PlanetResource.PLANET_RESOURCE_SELL_RATE[PlanetResource.PLANET_RESOURCE.IRON.ordinal()]);
-        sellAmount += (this.oilBalance * PlanetResource.PLANET_RESOURCE_SELL_RATE[PlanetResource.PLANET_RESOURCE.OIL.ordinal()]);
-        sellAmount += (this.siliconBalance * PlanetResource.PLANET_RESOURCE_SELL_RATE[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()]);
-        sellAmount += (this.lithiumBalance * PlanetResource.PLANET_RESOURCE_SELL_RATE[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()]);
-        sellAmount += (this.helium3Balance * PlanetResource.PLANET_RESOURCE_SELL_RATE[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]);
+        sellAmount += (this.ironBalance * screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.IRON.ordinal()]);
+        sellAmount += (this.oilBalance * screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.OIL.ordinal()]);
+        sellAmount += (this.siliconBalance * screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()]);
+        sellAmount += (this.lithiumBalance * screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()]);
+        sellAmount += (this.helium3Balance * screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]);
         return sellAmount;
     }
 

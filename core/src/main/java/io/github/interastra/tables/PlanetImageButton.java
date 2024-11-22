@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import io.github.interastra.labels.ColorLabel;
 import io.github.interastra.models.Planet;
 import io.github.interastra.screens.GameScreen;
@@ -42,13 +43,15 @@ public class PlanetImageButton extends Stack {
         Table indicatorTable = new Table();
         this.baseIndicator = new Container<>();
         this.baseIndicator.size(BASE_SIZE);
-        indicatorTable.add(this.baseIndicator).expand().center().bottom();
+        indicatorTable.add(this.baseIndicator).width(PLANET_SIZE / 2f).expand().bottom();
 
         this.rocketsInFlightIndicator = new ColorLabel("0", this.screen.skin, Color.WHITE);
-        indicatorTable.add(this.rocketsInFlightIndicator).expand().center().bottom();
+        this.rocketsInFlightIndicator.setAlignment(Align.center);
+        indicatorTable.add(this.rocketsInFlightIndicator).width(PLANET_SIZE / 4f).expand().bottom();
 
         this.rocketsInOrbitIndicator = new ColorLabel("0", this.screen.skin, Color.WHITE);
-        indicatorTable.add(this.rocketsInOrbitIndicator).expand().center().bottom();
+        this.rocketsInOrbitIndicator.setAlignment(Align.center);
+        indicatorTable.add(this.rocketsInOrbitIndicator).width(PLANET_SIZE / 4f).expand().bottom();
         this.add(indicatorTable);
     }
 
@@ -79,6 +82,11 @@ public class PlanetImageButton extends Stack {
         if (this.planet.numMyRockets != this.numRocketsInOrbit) {
             this.numRocketsInOrbit = this.planet.numMyRockets;
             this.rocketsInOrbitIndicator.setText(this.numRocketsInOrbit);
+        }
+
+        if (this.planet.rocketsInFlight.size() != this.numRocketsInFlight) {
+            this.numRocketsInFlight = this.planet.rocketsInFlight.size();
+            this.rocketsInFlightIndicator.setText(this.numRocketsInFlight);
         }
     }
 }

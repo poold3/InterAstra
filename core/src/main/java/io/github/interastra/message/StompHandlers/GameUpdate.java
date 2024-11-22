@@ -49,12 +49,9 @@ public class GameUpdate implements StompFrameHandler {
             });
             for (RocketMessageModel rocket : messagePlanet.rocketsInOrbit()) {
                 if (!planet.rocketsInOrbit.contains(rocket)) {
-                    gameScreen.rocketsInFlight.remove(rocket);
+                    planet.rocketsInFlight.remove(rocket);
                     planet.rocketsInOrbit.add(new RocketInOrbit(gameScreen.spaceCraftTextureAtlas, rocket, planet, gameScreen.cooldownSound, RocketInOrbit.ROCKET_TIER_STATS[rocket.tier() - 1].cooldown));
                     recalculateMyRockets.set(true);
-                    if (gameScreen.planetDashboardTable.isVisible && gameScreen.planetDashboardTable.planet.name.equals(planet.name)) {
-                        gameScreen.planetDashboardTable.updateRocketsInFlight();
-                    }
                 }
             }
             if (recalculateMyRockets.get()) {

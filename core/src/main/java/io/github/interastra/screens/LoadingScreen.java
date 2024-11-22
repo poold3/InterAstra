@@ -63,7 +63,7 @@ public class LoadingScreen implements Screen {
 
         this.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         this.shapeRenderer.setColor(Color.WHITE);
-        this.shapeRenderer.rect(startX + 1f, startY + 1f, progress, PROGRESS_BAR_HEIGHT - 3f);
+        this.shapeRenderer.rect(startX + 1f, startY + 2f, progress, PROGRESS_BAR_HEIGHT - 3f);
         this.shapeRenderer.end();
 
         GlyphLayout layout = new GlyphLayout(this.bitmapFont, "Inter Astra");

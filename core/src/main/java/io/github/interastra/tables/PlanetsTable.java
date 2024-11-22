@@ -3,7 +3,6 @@ package io.github.interastra.tables;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -58,14 +57,14 @@ public class PlanetsTable extends Table {
 
                     if (rocketToSend != null) {
                         // Make sure rocket is not already in flight
-                        for (RocketInFlight rocket : screen.rocketsInFlight) {
-                            if (rocket.id.equals(rocketToSend.id)) {
+                        for (RocketInFlight rocket : planet.rocketsInFlight) {
+                            if (rocket.equals(rocketToSend)) {
                                 return;
                             }
                         }
 
                         // Check rocket limit
-                        if (screen.getNumRocketsInFlightToPlanet(planet) + planet.numMyRockets >= planet.baseLimit) {
+                        if (planet.rocketsInFlight.size() + planet.numMyRockets >= planet.baseLimit) {
                             screen.badSound.play(0.5f);
                             screen.notificationTable.setMessage("Too many rockets at this planet.");
                             return;
@@ -85,7 +84,7 @@ public class PlanetsTable extends Table {
                             planet
                         );
 
-                        screen.rocketsInFlight.add(rocketInFlight);
+                        planet.rocketsInFlight.add(rocketInFlight);
 
                         rocketToSend = null;
                         resetRangeFinder();

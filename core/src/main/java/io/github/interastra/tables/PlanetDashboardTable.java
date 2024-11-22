@@ -29,7 +29,8 @@ public class PlanetDashboardTable extends Dashboard {
     public Planet planet;
 
     public ArrayList<String> bases = new ArrayList<>();
-    public ArrayList<RocketInOrbit> rockets = new ArrayList<>();
+    public ArrayList<RocketInOrbit> rocketsInOrbit = new ArrayList<>();
+    public ArrayList<RocketInFlight> rocketsInFlight = new ArrayList<>();
     public Label basesLabel;
     public Table rocketsInOrbitTable;
     public Table rocketsInFlightTable;
@@ -37,6 +38,7 @@ public class PlanetDashboardTable extends Dashboard {
     public Drawable sellDrawable;
     public String rocketToSell = "";
     public BuildBaseButton buildBaseButton;
+    private float updateTimer = 0f;
 
     public PlanetDashboardTable(final GameScreen screen, final Skin skin) {
         super(screen, skin);
@@ -120,7 +122,7 @@ public class PlanetDashboardTable extends Dashboard {
                         screen.badSound.play(0.5f);
                         screen.notificationTable.setMessage("Cooldown in effect.");
                         return;
-                    } else if (screen.getNumRocketsInFlightToPlanet(planet) + planet.numMyRockets >= planet.baseLimit) {
+                    } else if (planet.rocketsInFlight.size() + planet.numMyRockets >= planet.baseLimit) {
                         screen.badSound.play(0.5f);
                         screen.notificationTable.setMessage("Too many rockets at this planet.");
                         return;
@@ -138,7 +140,7 @@ public class PlanetDashboardTable extends Dashboard {
                         new RocketMessageModel(UUID.randomUUID().toString(), screen.myPlayer.name, finalI + 1),
                         planet
                     );
-                    screen.rocketsInFlight.add(newRocket);
+                    planet.rocketsInFlight.add(newRocket);
                     Rocket.ROCKET_TIER_PRICE[finalI].purchase(screen.myPlayer);
                     planet.baseCooldown = Planet.BASE_COOLDOWN;
                 }
@@ -230,42 +232,50 @@ public class PlanetDashboardTable extends Dashboard {
     public void setPlanet(final Planet planet) {
         this.planet = planet;
         this.rocketToSell = "";
-        this.rockets.clear();
+        this.rocketsInOrbit.clear();
         this.rocketsInOrbitTable.clear();
         this.bases.clear();
         this.basesLabel.setText("");
-        this.updateRocketsInFlight();
+        this.updateTimer = 1f;
     }
 
     public boolean needToUpdateRocketsInOrbit() {
-        if (this.rockets.size() != this.planet.rocketsInOrbit.size()) {
+        if (this.rocketsInOrbit.size() != this.planet.rocketsInOrbit.size()) {
             return true;
         }
 
-        for (int i = 0; i < this.rockets.size(); ++i) {
-            if (!this.rockets.get(i).equals(this.planet.rocketsInOrbit.get(i))) {
+        for (int i = 0; i < this.rocketsInOrbit.size(); ++i) {
+            if (!this.rocketsInOrbit.get(i).equals(this.planet.rocketsInOrbit.get(i))) {
                 return true;
             }
         }
         return false;
     }
 
-    public void updateRocketsInFlight() {
-        this.rocketsInFlightTable.clear();
-        for (int i = 0; i < this.screen.rocketsInFlight.size(); ++i) {
-            RocketInFlight rocketInFlight = this.screen.rocketsInFlight.get(i);
-            if (!rocketInFlight.arrived && rocketInFlight.destinationPlanet.equals(this.planet)) {
-                this.addRocketRow(rocketInFlight);
-            }
-            if (i % 2 == 1) {
-                this.rocketsInFlightTable.row();
+    public boolean needToUpdateRocketsInFlight() {
+        if (this.rocketsInFlight.size() != this.planet.rocketsInFlight.size()) {
+            return true;
+        }
+
+        for (int i = 0; i < this.rocketsInFlight.size(); ++i) {
+            if (!this.rocketsInFlight.get(i).equals(this.planet.rocketsInFlight.get(i))) {
+                return true;
             }
         }
+        return false;
     }
 
     @Override
     public void act(float delta) {
         super.act(delta);
+
+        this.updateTimer += delta;
+        if (this.updateTimer < 1f) {
+            return;
+        }
+
+        this.updateTimer -= 1f;
+
         if (!this.titleLabel.getText().equalsIgnoreCase(this.planet.name)) {
             this.titleLabel.setText(this.planet.name);
         }
@@ -276,27 +286,41 @@ public class PlanetDashboardTable extends Dashboard {
                 this.basesLabel.setText(this.bases.toString());
             }
             if (this.needToUpdateRocketsInOrbit()) {
-                this.rockets.clear();
+                this.rocketsInOrbit.clear();
                 this.rocketsInOrbitTable.clear();
-                this.rockets = new ArrayList<>(this.planet.rocketsInOrbit);
-                for (int i = 0; i < this.rockets.size(); ++i) {
-                    this.addRocketRow(this.rockets.get(i));
+                this.rocketsInOrbit = new ArrayList<>(this.planet.rocketsInOrbit);
+                for (int i = 0; i < this.rocketsInOrbit.size(); ++i) {
+                    this.addRocketRow(this.rocketsInOrbit.get(i));
                     if (i % 2 == 1) {
                         this.rocketsInOrbitTable.row();
                     }
                 }
             }
-
         } else {
             if (!this.bases.isEmpty()) {
                 this.bases.clear();
             }
             this.basesLabel.setText("Unknown");
-            if (!this.rockets.isEmpty()) {
-                this.rockets.clear();
+            if (!this.rocketsInOrbit.isEmpty()) {
+                this.rocketsInOrbit.clear();
             }
             this.rocketsInOrbitTable.clear();
             this.rocketsInOrbitTable.add(new Label("Unknown", this.skin)).expandX().center().pad(5f);
+        }
+
+        if (this.needToUpdateRocketsInFlight()) {
+            this.rocketsInFlight.clear();
+            this.rocketsInFlightTable.clear();
+            this.rocketsInFlight = new ArrayList<>(this.planet.rocketsInFlight);
+            for (int i = 0; i < this.rocketsInFlight.size(); ++i) {
+                if (this.rocketsInFlight.get(i).arrived) {
+                    continue;
+                }
+                this.addRocketRow(this.rocketsInFlight.get(i));
+                if (i % 2 == 1) {
+                    this.rocketsInFlightTable.row();
+                }
+            }
         }
     }
 }

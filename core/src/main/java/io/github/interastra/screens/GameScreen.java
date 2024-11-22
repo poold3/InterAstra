@@ -26,7 +26,6 @@ import io.github.interastra.tables.*;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameScreen implements Screen {
     public static final float MIN_WORLD_SIZE = 1000f;
@@ -48,6 +47,7 @@ public class GameScreen implements Screen {
     public Sound badSound;
     public Sound moneySound;
     public Sound buildSound;
+    public Sound devalueSound;
     public NotificationTable notificationTable;
     public CoordinatesTable coordinatesTable;
     public PlanetsTable planetsTable;
@@ -64,11 +64,12 @@ public class GameScreen implements Screen {
     public ArrayList<Planet> planets;
     public ArrayList<PlayerMessageModel> players;
     public Player myPlayer;
-    public CopyOnWriteArrayList<RocketInFlight> rocketsInFlight;
+    public float[] planetResourceSellRates = new float[PlanetResource.PLANET_RESOURCE_SELL_BASE_RATE.length];
     public boolean leaveGame = false;
     public ArrayList<StompSession.Subscription> gameSubscriptions;
     public boolean endGame = false;
     public float resourceUpdateTimer = 0f;
+    public float resourceDevaluationTimer = 0f;
     public boolean noCostMode = false;
 
     public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
@@ -84,6 +85,7 @@ public class GameScreen implements Screen {
         this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
         this.moneySound = this.game.assetManager.get("audio/money.mp3", Sound.class);
         this.buildSound = this.game.assetManager.get("audio/build.mp3", Sound.class);
+        this.devalueSound = this.game.assetManager.get("audio/devalue.mp3", Sound.class);
 
         this.loadGameData(gameData);
 
@@ -129,7 +131,7 @@ public class GameScreen implements Screen {
 
         this.input();
         this.logic(delta);
-        this.draw(delta);
+        this.draw();
 
         stage.act(delta);
         stage.draw();
@@ -194,6 +196,18 @@ public class GameScreen implements Screen {
             this.dispose();
         }
 
+        // Update resource devaluation
+        this.resourceDevaluationTimer += delta;
+        if (this.resourceDevaluationTimer >= PlanetResource.RESOURCE_DEVALUATION_TIMER) {
+            this.resourceDevaluationTimer -= PlanetResource.RESOURCE_DEVALUATION_TIMER;
+            for (int i = 0; i < this.planetResourceSellRates.length; ++i) {
+                this.planetResourceSellRates[i] *= PlanetResource.RESOURCE_DEVALUATION_RATE;
+            }
+            this.buySellTable.refreshRates();
+            this.devalueSound.play(0.5f);
+            this.notificationTable.setMessage("Sell rates have decreased.");
+        }
+
         // Update resource balances
         this.resourceUpdateTimer += delta;
         while (this.resourceUpdateTimer >= 1f) {
@@ -222,7 +236,7 @@ public class GameScreen implements Screen {
         this.camera.move();
     }
 
-    public void draw(float delta) {
+    public void draw() {
         this.gameViewport.apply();
         this.game.spriteBatch.setProjectionMatrix(this.camera.combined);
 
@@ -241,17 +255,14 @@ public class GameScreen implements Screen {
                     rocket.rocketSprite.draw(this.game.spriteBatch);
                 }
             }
-        }
-
-        for (RocketInFlight rocket : this.rocketsInFlight) {
-            rocket.move(delta);
-            if (rocket.arrived) {
-                continue;
+            for (RocketInFlight rocket : planet.rocketsInFlight) {
+                if (rocket.arrived) {
+                    continue;
+                }
+                rocket.propulsionSprite.draw(this.game.spriteBatch);
+                rocket.rocketSprite.draw(this.game.spriteBatch);
             }
-            rocket.propulsionSprite.draw(this.game.spriteBatch);
-            rocket.rocketSprite.draw(this.game.spriteBatch);
         }
-
         this.game.spriteBatch.end();
     }
 
@@ -274,8 +285,8 @@ public class GameScreen implements Screen {
             }
         }
 
-        // Add Rockets
-        this.rocketsInFlight = new CopyOnWriteArrayList<>();
+        // Load sell rates
+        System.arraycopy(PlanetResource.PLANET_RESOURCE_SELL_BASE_RATE, 0, this.planetResourceSellRates, 0, PlanetResource.PLANET_RESOURCE_SELL_BASE_RATE.length);
     }
 
     public void unsubscribeToGameTopics() {
@@ -389,16 +400,6 @@ public class GameScreen implements Screen {
         }
         String url = String.format("/ia-ws/remove-rocket/%s", this.lobbyScreen.gameCode);
         this.lobbyScreen.messageSession.send(url, message);
-    }
-
-    public int getNumRocketsInFlightToPlanet(final Planet planet) {
-        int rocketCount = 0;
-        for (RocketInFlight rocket : this.rocketsInFlight) {
-            if (rocket.destinationPlanet.equals(planet) && rocket.playerName.equals(this.myPlayer.name)) {
-                rocketCount += 1;
-            }
-        }
-        return rocketCount;
     }
 
     public void sendTransfer(final TransferMessage message) {

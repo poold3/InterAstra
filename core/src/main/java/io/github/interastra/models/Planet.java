@@ -34,6 +34,7 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public ArrayList<PlanetResource> resources = new ArrayList<>();
     public CopyOnWriteArrayList<String> bases = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<RocketInOrbit> rocketsInOrbit = new CopyOnWriteArrayList<>();
+    public CopyOnWriteArrayList<RocketInFlight> rocketsInFlight = new CopyOnWriteArrayList<>();
     public float baseCooldown = 0f;
     private final Sound cooldownSound;
 
@@ -87,6 +88,11 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
             for (RocketInOrbit rocket : this.rocketsInOrbit) {
                 rocket.move(deltaTime);
             }
+        }
+
+        // Move rockets in flight
+        for (RocketInFlight rocket : this.rocketsInFlight) {
+            rocket.move(deltaTime);
         }
 
         if (this.baseCooldown > 0f) {
