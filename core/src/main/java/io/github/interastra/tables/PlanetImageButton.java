@@ -17,8 +17,10 @@ public class PlanetImageButton extends Stack {
     private final ImageButton planetImageButton;
     private final Container<Image> baseIndicator;
     private boolean hasMyBase = false;
-    private final ColorLabel rocketIndicator;
-    private int numMyRockets = 0;
+    private final ColorLabel rocketsInOrbitIndicator;
+    private int numRocketsInOrbit = 0;
+    private final ColorLabel rocketsInFlightIndicator;
+    private int numRocketsInFlight = 0;
     private float updateTimer = 0f;
 
     public PlanetImageButton(final GameScreen screen, final Planet planet) {
@@ -42,8 +44,11 @@ public class PlanetImageButton extends Stack {
         this.baseIndicator.size(BASE_SIZE);
         indicatorTable.add(this.baseIndicator).expand().center().bottom();
 
-        this.rocketIndicator = new ColorLabel("0", this.screen.skin, Color.WHITE);
-        indicatorTable.add(this.rocketIndicator).expand().center().bottom();
+        this.rocketsInFlightIndicator = new ColorLabel("0", this.screen.skin, Color.WHITE);
+        indicatorTable.add(this.rocketsInFlightIndicator).expand().center().bottom();
+
+        this.rocketsInOrbitIndicator = new ColorLabel("0", this.screen.skin, Color.WHITE);
+        indicatorTable.add(this.rocketsInOrbitIndicator).expand().center().bottom();
         this.add(indicatorTable);
     }
 
@@ -71,9 +76,9 @@ public class PlanetImageButton extends Stack {
             this.hasMyBase = true;
         }
 
-        if (this.planet.numMyRockets != this.numMyRockets) {
-            this.numMyRockets = this.planet.numMyRockets;
-            this.rocketIndicator.setText(this.numMyRockets);
+        if (this.planet.numMyRockets != this.numRocketsInOrbit) {
+            this.numRocketsInOrbit = this.planet.numMyRockets;
+            this.rocketsInOrbitIndicator.setText(this.numRocketsInOrbit);
         }
     }
 }
