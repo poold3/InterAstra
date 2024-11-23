@@ -13,7 +13,7 @@ public class PlanetResource {
     public static float[] PLANET_RESOURCE_BUY_RATE = {1f, 1.5f, 2f, 3f, 6f};
     public static float[] PLANET_RESOURCE_SELL_BASE_RATE = {0.5f, 0.75f, 1f, 1.5f, 3f};
     public static float[] PLANET_RESOURCE_CAPS = {1000f, 750f, 500f, 500f, 250f};
-    public static float RESOURCE_DEVALUATION_TIMER = 300f;
+    public static float RESOURCE_DEVALUATION_TIMER = 600f;
     public static float RESOURCE_DEVALUATION_RATE = .75f;
 
     public PLANET_RESOURCE resource;
