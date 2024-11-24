@@ -2,7 +2,7 @@ interastra-windows
 interastra-windows.zip
 interastra-mac
 interastra-mac.zip
-*.dmg
+*.dmgq
 
 ## Gradle:
 .gradle/
