@@ -90,7 +90,7 @@ public class GameScreen implements Screen {
         this.gameSubscriptions = new ArrayList<>();
         this.subscribeToGameTopics();
 
-        this.noCostMode = true;
+        this.noCostMode = false;
 
         this.camera = new CameraOperatorService();
         this.gameViewport = new ExtendViewport(MIN_WORLD_SIZE, MIN_WORLD_SIZE, camera);
