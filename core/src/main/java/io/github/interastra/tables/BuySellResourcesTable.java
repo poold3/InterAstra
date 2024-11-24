@@ -22,6 +22,8 @@ public class BuySellResourcesTable extends Dashboard {
     private final ColorLabel sellLabel;
     private Price currentPrice;
     public ColorTextTooltip sellRateTextToolTip;
+    //public float[] planetResourceSellRates = new float[PlanetResource.PLANET_RESOURCE_SELL_BASE_RATE.length];
+    //public float[] planetResourceBuyRates = new float[PlanetResource.PLANET_RESOURCE_BUY_BASE_RATE.length];
 
     public BuySellResourcesTable(final GameScreen screen, final Skin skin) {
         super(screen, skin);
