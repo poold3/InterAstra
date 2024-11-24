@@ -140,23 +140,23 @@ public class Price {
         return stringBuilder.toString();
     }
 
-    public float getBuyAmount() {
+    public float getBuyAmount(final GameScreen screen) {
         float buyAmount = 0f;
-        buyAmount += (this.ironBalance * PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.IRON.ordinal()]);
-        buyAmount += (this.oilBalance * PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.OIL.ordinal()]);
-        buyAmount += (this.siliconBalance * PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()]);
-        buyAmount += (this.lithiumBalance * PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()]);
-        buyAmount += (this.helium3Balance * PlanetResource.PLANET_RESOURCE_BUY_RATE[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]);
+        buyAmount += (this.ironBalance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.IRON.ordinal()]);
+        buyAmount += (this.oilBalance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.OIL.ordinal()]);
+        buyAmount += (this.siliconBalance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()]);
+        buyAmount += (this.lithiumBalance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()]);
+        buyAmount += (this.helium3Balance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]);
         return buyAmount;
     }
 
     public float getSellAmount(final GameScreen screen) {
         float sellAmount = 0f;
-        sellAmount += (this.ironBalance * screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.IRON.ordinal()]);
-        sellAmount += (this.oilBalance * screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.OIL.ordinal()]);
-        sellAmount += (this.siliconBalance * screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()]);
-        sellAmount += (this.lithiumBalance * screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()]);
-        sellAmount += (this.helium3Balance * screen.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]);
+        sellAmount += (this.ironBalance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.IRON.ordinal()]);
+        sellAmount += (this.oilBalance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.OIL.ordinal()]);
+        sellAmount += (this.siliconBalance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()]);
+        sellAmount += (this.lithiumBalance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()]);
+        sellAmount += (this.helium3Balance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]);
         return sellAmount;
     }
 
