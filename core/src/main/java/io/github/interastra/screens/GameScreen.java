@@ -47,7 +47,7 @@ public class GameScreen implements Screen {
     public Sound badSound;
     public Sound moneySound;
     public Sound buildSound;
-    public Sound devalueSound;
+    public Sound valueSound;
     public NotificationTable notificationTable;
     public CoordinatesTable coordinatesTable;
     public PlanetsTable planetsTable;
@@ -64,12 +64,10 @@ public class GameScreen implements Screen {
     public ArrayList<Planet> planets;
     public ArrayList<PlayerMessageModel> players;
     public Player myPlayer;
-    public float[] planetResourceSellRates = new float[PlanetResource.PLANET_RESOURCE_SELL_BASE_RATE.length];
     public boolean leaveGame = false;
     public ArrayList<StompSession.Subscription> gameSubscriptions;
     public boolean endGame = false;
     public float resourceUpdateTimer = 0f;
-    public float resourceDevaluationTimer = 0f;
     public boolean noCostMode = false;
 
     public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
@@ -85,14 +83,14 @@ public class GameScreen implements Screen {
         this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
         this.moneySound = this.game.assetManager.get("audio/money.mp3", Sound.class);
         this.buildSound = this.game.assetManager.get("audio/build.mp3", Sound.class);
-        this.devalueSound = this.game.assetManager.get("audio/devalue.mp3", Sound.class);
+        this.valueSound = this.game.assetManager.get("audio/devalue.mp3", Sound.class);
 
         this.loadGameData(gameData);
 
         this.gameSubscriptions = new ArrayList<>();
         this.subscribeToGameTopics();
 
-        this.noCostMode = true;
+        this.noCostMode = false;
 
         this.camera = new CameraOperatorService();
         this.gameViewport = new ExtendViewport(MIN_WORLD_SIZE, MIN_WORLD_SIZE, camera);
@@ -127,7 +125,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-                ScreenUtils.clear(new Color(0.004f, 0f, 0.03f, 1f));
+        ScreenUtils.clear(new Color(0.004f, 0f, 0.03f, 1f));
 
         this.input();
         this.logic(delta);
@@ -196,17 +194,8 @@ public class GameScreen implements Screen {
             this.dispose();
         }
 
-        // Update resource devaluation
-        this.resourceDevaluationTimer += delta;
-        if (this.resourceDevaluationTimer >= PlanetResource.RESOURCE_DEVALUATION_TIMER) {
-            this.resourceDevaluationTimer -= PlanetResource.RESOURCE_DEVALUATION_TIMER;
-            for (int i = 0; i < this.planetResourceSellRates.length; ++i) {
-                this.planetResourceSellRates[i] *= PlanetResource.RESOURCE_DEVALUATION_RATE;
-            }
-            this.buySellTable.refreshRates();
-            this.devalueSound.play(0.5f);
-            this.notificationTable.setMessage("Sell rates have decreased.");
-        }
+        // Update resource buy/sell values
+        this.buySellTable.update(delta);
 
         // Update resource balances
         this.resourceUpdateTimer += delta;
@@ -284,9 +273,6 @@ public class GameScreen implements Screen {
                 this.myPlayer = new Player(player);
             }
         }
-
-        // Load sell rates
-        System.arraycopy(PlanetResource.PLANET_RESOURCE_SELL_BASE_RATE, 0, this.planetResourceSellRates, 0, PlanetResource.PLANET_RESOURCE_SELL_BASE_RATE.length);
     }
 
     public void unsubscribeToGameTopics() {
