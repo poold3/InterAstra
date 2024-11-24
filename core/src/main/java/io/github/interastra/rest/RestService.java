@@ -11,7 +11,7 @@ import okhttp3.*;
 import java.util.concurrent.TimeUnit;
 
 public class RestService {
-    public static String BASE_URL = "http://localhost:8090";
+    public static String BASE_URL = "http://localhost:8080";
     public static final String SERVER_ERROR = "We ran into an error. Please try again later.";
     public static final OkHttpClient client = new OkHttpClient.Builder()
         .readTimeout(10, TimeUnit.SECONDS)

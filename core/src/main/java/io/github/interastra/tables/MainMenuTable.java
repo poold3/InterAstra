@@ -158,7 +158,7 @@ public class MainMenuTable extends Table {
             return;
         }
 
-        RestService.BASE_URL = String.format("http://%s:8090", ipAddress);
-        MessageService.BASE_URL = String.format("ws://%s:8090", ipAddress);
+        RestService.BASE_URL = String.format("http://%s:8080", ipAddress);
+        MessageService.BASE_URL = String.format("ws://%s:8080", ipAddress);
     }
 }
