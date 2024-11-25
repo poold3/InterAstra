@@ -117,23 +117,23 @@ public class BuySellResourcesTable extends Dashboard {
 
     public String getBuyRateString() {
         return String.format(
-            "Iron: $%.2f, Oil: $%.2f, Silicon: $%.2f, Lithium: $%.2f, Helium3: $%.2f",
+            "Iron: $%.2f, Oil: $%.2f, Aluminum: $%.2f, Copper: $%.2f, Stone: $%.2f",
             this.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.IRON.ordinal()],
             this.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.OIL.ordinal()],
-            this.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()],
-            this.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()],
-            this.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]
+            this.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.ALUMINUM.ordinal()],
+            this.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.COPPER.ordinal()],
+            this.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.STONE.ordinal()]
         );
     }
 
     public String getSellRateString() {
         return String.format(
-            "Iron: $%.2f, Oil: $%.2f, Silicon: $%.2f, Lithium: $%.2f, Helium3: $%.2f",
+            "Iron: $%.2f, Oil: $%.2f, Aluminum: $%.2f, Copper: $%.2f, Stone: $%.2f",
             this.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.IRON.ordinal()],
             this.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.OIL.ordinal()],
-            this.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()],
-            this.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()],
-            this.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]
+            this.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.ALUMINUM.ordinal()],
+            this.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.COPPER.ordinal()],
+            this.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.STONE.ordinal()]
         );
     }
 

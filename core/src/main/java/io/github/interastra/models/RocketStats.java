@@ -17,6 +17,6 @@ public class RocketStats {
 
     @Override
     public String toString() {
-        return String.format("Range: %.0f u, Speed: %.1f u/s, Cooldown: %.0f s, Multiplier: %.1f, Sell Price: $%.2f", this.range, this.speed, this.cooldown, this.resourceMultiplier, this.sellPrice);
+        return String.format("Range: %.0f u, Speed: %.1f u/s, Cooldown: %.0f s, Multiplier: %.2f, Sell Price: $%.2f", this.range, this.speed, this.cooldown, this.resourceMultiplier, this.sellPrice);
     }
 }

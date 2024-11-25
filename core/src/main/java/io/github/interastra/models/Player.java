@@ -17,11 +17,11 @@ public class Player {
         this.bases = playerMessageModel.bases();
         this.balance = 0f;
         this.resourceBalances = new ConcurrentHashMap<>();
-        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.IRON, 100f);
-        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.OIL, 100f);
-        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.SILICON, 0f);
-        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.LITHIUM, 0f);
-        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.HELIUM3, 0f);
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.IRON, 150f);
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.OIL, 150f);
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.ALUMINUM, 0f);
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.COPPER, 0f);
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.STONE, 0f);
     }
 
     @Override

@@ -21,9 +21,9 @@ public class EnterResourcesTable extends Table {
     public final TextField balanceTextField;
     public final TextField ironTextField;
     public final TextField oilTextField;
-    public final TextField siliconTextField;
-    public final TextField lithiumTextField;
-    public final TextField helium3TextField;
+    public final TextField aluminumTextField;
+    public final TextField copperTextField;
+    public final TextField stoneTextField;
     public final GameStage stage;
 
     public EnterResourcesTable(final GameStage stage, final Skin skin, boolean includeBalance) {
@@ -52,25 +52,25 @@ public class EnterResourcesTable extends Table {
         this.row();
 
         Label oilLabel = this.getAmountLabel("Oil");
-        Label siliconLabel = this.getAmountLabel("Silicon");
+        Label aluminumLabel = this.getAmountLabel("Aluminum");
         this.add(oilLabel).width(TEXTFIELD_WIDTH).padTop(10f);
-        this.add(siliconLabel).width(TEXTFIELD_WIDTH).padTop(10f);
+        this.add(aluminumLabel).width(TEXTFIELD_WIDTH).padTop(10f);
         this.row();
         this.oilTextField = this.getAmountTextField();
-        this.siliconTextField = this.getAmountTextField();
+        this.aluminumTextField = this.getAmountTextField();
         this.add(this.oilTextField).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT).pad(5f);
-        this.add(this.siliconTextField).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT).pad(5f);
+        this.add(this.aluminumTextField).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT).pad(5f);
         this.row();
 
-        Label lithiumLabel = this.getAmountLabel("Lithium");
-        Label helium3Label = this.getAmountLabel("Helium3");
-        this.add(lithiumLabel).width(TEXTFIELD_WIDTH).padTop(10f);
-        this.add(helium3Label).width(TEXTFIELD_WIDTH).padTop(10f);
+        Label copperLabel = this.getAmountLabel("Copper");
+        Label stoneLabel = this.getAmountLabel("Stone");
+        this.add(copperLabel).width(TEXTFIELD_WIDTH).padTop(10f);
+        this.add(stoneLabel).width(TEXTFIELD_WIDTH).padTop(10f);
         this.row();
-        this.lithiumTextField = this.getAmountTextField();
-        this.helium3TextField = this.getAmountTextField();
-        this.add(this.lithiumTextField).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT).pad(5f);
-        this.add(this.helium3TextField).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT).pad(5f);
+        this.copperTextField = this.getAmountTextField();
+        this.stoneTextField = this.getAmountTextField();
+        this.add(this.copperTextField).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT).pad(5f);
+        this.add(this.stoneTextField).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT).pad(5f);
         this.row();
     }
 
@@ -81,12 +81,12 @@ public class EnterResourcesTable extends Table {
         this.stage.unfocus(this.ironTextField);
         this.oilTextField.setText("0.0");
         this.stage.unfocus(this.oilTextField);
-        this.siliconTextField.setText("0.0");
-        this.stage.unfocus(this.siliconTextField);
-        this.lithiumTextField.setText("0.0");
-        this.stage.unfocus(this.lithiumTextField);
-        this.helium3TextField.setText("0.0");
-        this.stage.unfocus(this.helium3TextField);
+        this.aluminumTextField.setText("0.0");
+        this.stage.unfocus(this.aluminumTextField);
+        this.copperTextField.setText("0.0");
+        this.stage.unfocus(this.copperTextField);
+        this.stoneTextField.setText("0.0");
+        this.stage.unfocus(this.stoneTextField);
     }
 
     public Label getAmountLabel(final String text) {
@@ -128,16 +128,16 @@ public class EnterResourcesTable extends Table {
         float balance;
         float ironBalance;
         float oilBalance;
-        float siliconBalance;
-        float lithiumBalance;
-        float helium3Balance;
+        float aluminumBalance;
+        float copperBalance;
+        float stoneBalance;
         try {
             balance = Float.parseFloat(balanceTextField.getText().isEmpty() ? "0" : balanceTextField.getText());
             ironBalance = Float.parseFloat(ironTextField.getText().isEmpty() ? "0" : ironTextField.getText());
             oilBalance = Float.parseFloat(oilTextField.getText().isEmpty() ? "0" : oilTextField.getText());
-            siliconBalance = Float.parseFloat(siliconTextField.getText().isEmpty() ? "0" : siliconTextField.getText());
-            lithiumBalance = Float.parseFloat(lithiumTextField.getText().isEmpty() ? "0" : lithiumTextField.getText());
-            helium3Balance = Float.parseFloat(helium3TextField.getText().isEmpty() ? "0" : helium3TextField.getText());
+            aluminumBalance = Float.parseFloat(aluminumTextField.getText().isEmpty() ? "0" : aluminumTextField.getText());
+            copperBalance = Float.parseFloat(copperTextField.getText().isEmpty() ? "0" : copperTextField.getText());
+            stoneBalance = Float.parseFloat(stoneTextField.getText().isEmpty() ? "0" : stoneTextField.getText());
         } catch (NumberFormatException e) {
             return null;
         }
@@ -147,9 +147,9 @@ public class EnterResourcesTable extends Table {
             balance < 0f
                 || ironBalance < 0f
                 || oilBalance < 0f
-                || siliconBalance < 0f
-                || lithiumBalance < 0f
-                || helium3Balance < 0f
+                || aluminumBalance < 0f
+                || copperBalance < 0f
+                || stoneBalance < 0f
         ) {
             return null;
         }
@@ -158,9 +158,9 @@ public class EnterResourcesTable extends Table {
             balance,
             ironBalance,
             oilBalance,
-            siliconBalance,
-            lithiumBalance,
-            helium3Balance
+            aluminumBalance,
+            copperBalance,
+            stoneBalance
         );
     }
 }

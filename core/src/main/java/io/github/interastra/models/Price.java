@@ -7,35 +7,35 @@ public class Price {
     public float balance;
     public float ironBalance;
     public float oilBalance;
-    public float siliconBalance;
-    public float lithiumBalance;
-    public float helium3Balance;
+    public float aluminumBalance;
+    public float copperBalance;
+    public float stoneBalance;
 
     public Price() {
         this.balance = 0f;
         this.ironBalance = 0f;
         this.oilBalance = 0f;
-        this.siliconBalance = 0f;
-        this.lithiumBalance = 0f;
-        this.helium3Balance = 0f;
+        this.aluminumBalance = 0f;
+        this.copperBalance = 0f;
+        this.stoneBalance = 0f;
     }
 
     public Price(final PriceMessageModel priceMessageModel) {
         this.balance = priceMessageModel.balance();
         this.ironBalance = priceMessageModel.ironBalance();
         this.oilBalance = priceMessageModel.oilBalance();
-        this.siliconBalance = priceMessageModel.siliconBalance();
-        this.lithiumBalance = priceMessageModel.lithiumBalance();
-        this.helium3Balance = priceMessageModel.helium3Balance();
+        this.aluminumBalance = priceMessageModel.aluminumBalance();
+        this.copperBalance = priceMessageModel.copperBalance();
+        this.stoneBalance = priceMessageModel.stoneBalance();
     }
 
-    public Price(final float balance, final float ironBalance, final float oilBalance, final float siliconBalance, final float lithiumBalance, final float helium3Balance) {
+    public Price(final float balance, final float ironBalance, final float oilBalance, final float aluminumBalance, final float copperBalance, final float stoneBalance) {
         this.balance = balance;
         this.ironBalance = ironBalance;
         this.oilBalance = oilBalance;
-        this.siliconBalance = siliconBalance;
-        this.lithiumBalance = lithiumBalance;
-        this.helium3Balance = helium3Balance;
+        this.aluminumBalance = aluminumBalance;
+        this.copperBalance = copperBalance;
+        this.stoneBalance = stoneBalance;
     }
 
     public boolean canAfford(final Player player) {
@@ -43,9 +43,9 @@ public class Price {
             player.balance >= this.balance
                 && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.IRON) >= this.ironBalance
                 && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.OIL) >= this.oilBalance
-                && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.SILICON) >= this.siliconBalance
-                && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.LITHIUM) >= this.lithiumBalance
-                && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.HELIUM3) >= this.helium3Balance
+                && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.ALUMINUM) >= this.aluminumBalance
+                && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.COPPER) >= this.copperBalance
+                && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.STONE) >= this.stoneBalance
         );
     }
 
@@ -63,14 +63,14 @@ public class Price {
         if (this.oilBalance > 0f) {
             player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.OIL, (k, currentBalance) -> currentBalance - this.oilBalance);
         }
-        if (this.siliconBalance > 0f) {
-            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.SILICON, (k, currentBalance) -> currentBalance - this.siliconBalance);
+        if (this.aluminumBalance > 0f) {
+            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.ALUMINUM, (k, currentBalance) -> currentBalance - this.aluminumBalance);
         }
-        if (this.lithiumBalance > 0f) {
-            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.LITHIUM, (k, currentBalance) -> currentBalance - this.lithiumBalance);
+        if (this.copperBalance > 0f) {
+            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.COPPER, (k, currentBalance) -> currentBalance - this.copperBalance);
         }
-        if (this.helium3Balance > 0f) {
-            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.HELIUM3, (k, currentBalance) -> currentBalance - this.helium3Balance);
+        if (this.stoneBalance > 0f) {
+            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.STONE, (k, currentBalance) -> currentBalance - this.stoneBalance);
         }
     }
 
@@ -84,14 +84,14 @@ public class Price {
         if (this.oilBalance > 0f) {
             player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.OIL, (k, currentBalance) -> currentBalance + this.oilBalance);
         }
-        if (this.siliconBalance > 0f) {
-            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.SILICON, (k, currentBalance) -> currentBalance + this.siliconBalance);
+        if (this.aluminumBalance > 0f) {
+            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.ALUMINUM, (k, currentBalance) -> currentBalance + this.aluminumBalance);
         }
-        if (this.lithiumBalance > 0f) {
-            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.LITHIUM, (k, currentBalance) -> currentBalance + this.lithiumBalance);
+        if (this.copperBalance > 0f) {
+            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.COPPER, (k, currentBalance) -> currentBalance + this.copperBalance);
         }
-        if (this.helium3Balance > 0f) {
-            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.HELIUM3, (k, currentBalance) -> currentBalance + this.helium3Balance);
+        if (this.stoneBalance > 0f) {
+            player.resourceBalances.computeIfPresent(PlanetResource.PLANET_RESOURCE.STONE, (k, currentBalance) -> currentBalance + this.stoneBalance);
         }
     }
 
@@ -117,25 +117,25 @@ public class Price {
             first = false;
             stringBuilder.append(String.format("%.0f oil", this.oilBalance));
         }
-        if (this.siliconBalance > 0f) {
+        if (this.aluminumBalance > 0f) {
             if (!first) {
                 stringBuilder.append(", ");
             }
             first = false;
-            stringBuilder.append(String.format("%.0f silicon", this.siliconBalance));
+            stringBuilder.append(String.format("%.0f aluminum", this.aluminumBalance));
         }
-        if (this.lithiumBalance > 0f) {
+        if (this.copperBalance > 0f) {
             if (!first) {
                 stringBuilder.append(", ");
             }
             first = false;
-            stringBuilder.append(String.format("%.0f lithium", this.lithiumBalance));
+            stringBuilder.append(String.format("%.0f copper", this.copperBalance));
         }
-        if (this.helium3Balance > 0f) {
+        if (this.stoneBalance > 0f) {
             if (!first) {
                 stringBuilder.append(", ");
             }
-            stringBuilder.append(String.format("%.0f helium3", this.helium3Balance));
+            stringBuilder.append(String.format("%.0f stone", this.stoneBalance));
         }
         return stringBuilder.toString();
     }
@@ -144,9 +144,9 @@ public class Price {
         float buyAmount = 0f;
         buyAmount += (this.ironBalance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.IRON.ordinal()]);
         buyAmount += (this.oilBalance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.OIL.ordinal()]);
-        buyAmount += (this.siliconBalance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()]);
-        buyAmount += (this.lithiumBalance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()]);
-        buyAmount += (this.helium3Balance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]);
+        buyAmount += (this.aluminumBalance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.ALUMINUM.ordinal()]);
+        buyAmount += (this.copperBalance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.COPPER.ordinal()]);
+        buyAmount += (this.stoneBalance * screen.buySellTable.planetResourceBuyRates[PlanetResource.PLANET_RESOURCE.STONE.ordinal()]);
         return buyAmount;
     }
 
@@ -154,9 +154,9 @@ public class Price {
         float sellAmount = 0f;
         sellAmount += (this.ironBalance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.IRON.ordinal()]);
         sellAmount += (this.oilBalance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.OIL.ordinal()]);
-        sellAmount += (this.siliconBalance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()]);
-        sellAmount += (this.lithiumBalance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()]);
-        sellAmount += (this.helium3Balance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()]);
+        sellAmount += (this.aluminumBalance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.ALUMINUM.ordinal()]);
+        sellAmount += (this.copperBalance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.COPPER.ordinal()]);
+        sellAmount += (this.stoneBalance * screen.buySellTable.planetResourceSellRates[PlanetResource.PLANET_RESOURCE.STONE.ordinal()]);
         return sellAmount;
     }
 
@@ -175,9 +175,9 @@ public class Price {
             otherPrice.balance == this.balance
                 && otherPrice.ironBalance == this.ironBalance
                 && otherPrice.oilBalance == this.oilBalance
-                && otherPrice.siliconBalance == this.siliconBalance
-                && otherPrice.lithiumBalance == this.lithiumBalance
-                && otherPrice.helium3Balance == this.helium3Balance
+                && otherPrice.aluminumBalance == this.aluminumBalance
+                && otherPrice.copperBalance == this.copperBalance
+                && otherPrice.stoneBalance == this.stoneBalance
         );
     }
 }

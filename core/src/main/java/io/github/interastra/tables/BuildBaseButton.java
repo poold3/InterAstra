@@ -51,7 +51,7 @@ public class BuildBaseButton extends Container<Actor> {
                     return;
                 }
 
-                screen.buildSound.play(0.01f);
+                screen.buildSound.play(0.05f);
                 RestService.addBase(screen, planetDashboardTable.planet.name, screen.myPlayer.name, screen.myPlayer.bases);
                 planetDashboardTable.planet.baseCooldown = Planet.BASE_COOLDOWN;
             }

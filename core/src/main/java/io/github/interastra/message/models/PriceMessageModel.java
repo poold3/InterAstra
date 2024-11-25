@@ -6,18 +6,18 @@ public record PriceMessageModel(
     float balance,
     float ironBalance,
     float oilBalance,
-    float siliconBalance,
-    float lithiumBalance,
-    float helium3Balance
+    float aluminumBalance,
+    float copperBalance,
+    float stoneBalance
 ) {
     public PriceMessageModel(final Price price) {
         this(
             price.balance,
             price.ironBalance,
             price.oilBalance,
-            price.siliconBalance,
-            price.lithiumBalance,
-            price.helium3Balance
+            price.aluminumBalance,
+            price.copperBalance,
+            price.stoneBalance
         );
     }
 }

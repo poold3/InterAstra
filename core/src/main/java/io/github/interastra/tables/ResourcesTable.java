@@ -27,9 +27,9 @@ public class ResourcesTable extends Table {
     public Label balanceLabel;
     public Label ironLabel;
     public Label oilLabel;
-    public Label siliconLabel;
-    public Label lithiumLabel;
-    public Label helium3Label;
+    public Label aluminumLabel;
+    public Label copperLabel;
+    public Label stoneLabel;
     private float updateTimer = 0f;
 
     public ResourcesTable(final GameScreen screen, final Skin skin) {
@@ -57,17 +57,17 @@ public class ResourcesTable extends Table {
         this.oilLabel = new Label("", this.skin);
         this.addResourceLabel(this.oilLabel);
 
-        this.addResourceTextLabel("Silicon");
-        this.siliconLabel = new Label("", this.skin);
-        this.addResourceLabel(this.siliconLabel);
+        this.addResourceTextLabel("Aluminum");
+        this.aluminumLabel = new Label("", this.skin);
+        this.addResourceLabel(this.aluminumLabel);
 
-        this.addResourceTextLabel("Lithium");
-        this.lithiumLabel = new Label("", this.skin);
-        this.addResourceLabel(this.lithiumLabel);
+        this.addResourceTextLabel("Copper");
+        this.copperLabel = new Label("", this.skin);
+        this.addResourceLabel(this.copperLabel);
 
-        this.addResourceTextLabel("Helium3");
-        this.helium3Label = new Label("", this.skin);
-        this.addResourceLabel(this.helium3Label);
+        this.addResourceTextLabel("Stone");
+        this.stoneLabel = new Label("", this.skin);
+        this.addResourceLabel(this.stoneLabel);
 
         ImageButton buySellImageButton = new ImageButton(new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("money-white")));
         buySellImageButton.addListener(new ColorTextTooltip("Buy/Sell Resources", new InstantTooltipManager(), this.skin, Color.BLACK));
@@ -119,24 +119,24 @@ public class ResourcesTable extends Table {
         this.screen.myPlayer.balance = MathUtils.clamp(this.screen.myPlayer.balance, 0f, Player.BALANCE_CAP);
         this.capResource(PlanetResource.PLANET_RESOURCE.IRON);
         this.capResource(PlanetResource.PLANET_RESOURCE.OIL);
-        this.capResource(PlanetResource.PLANET_RESOURCE.SILICON);
-        this.capResource(PlanetResource.PLANET_RESOURCE.LITHIUM);
-        this.capResource(PlanetResource.PLANET_RESOURCE.HELIUM3);
+        this.capResource(PlanetResource.PLANET_RESOURCE.ALUMINUM);
+        this.capResource(PlanetResource.PLANET_RESOURCE.COPPER);
+        this.capResource(PlanetResource.PLANET_RESOURCE.STONE);
 
         float balance = this.screen.myPlayer.balance;
         float ironBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.IRON);
         float oilBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.OIL);
-        float siliconBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.SILICON);
-        float lithiumBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.LITHIUM);
-        float helium3Balance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.HELIUM3);
+        float aluminumBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.ALUMINUM);
+        float copperBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.COPPER);
+        float stoneBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.STONE);
 
         this.basesLabel.setText(String.format("%d / %d", this.screen.myPlayer.bases, this.screen.basesToWin));
         this.balanceLabel.setText(String.format("$%.2f (%.0f%%)", balance, balance / Player.BALANCE_CAP * 100f));
         this.ironLabel.setText(String.format("%.3f (%.0f%%)", ironBalance, ironBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.IRON.ordinal()] * 100f));
         this.oilLabel.setText(String.format("%.3f (%.0f%%)", oilBalance, oilBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.OIL.ordinal()] * 100f));
-        this.siliconLabel.setText(String.format("%.3f (%.0f%%)", siliconBalance, siliconBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.SILICON.ordinal()] * 100f));
-        this.lithiumLabel.setText(String.format("%.3f (%.0f%%)", lithiumBalance, lithiumBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.LITHIUM.ordinal()] * 100f));
-        this.helium3Label.setText(String.format("%.3f (%.0f%%)", helium3Balance, helium3Balance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.HELIUM3.ordinal()] * 100f));
+        this.aluminumLabel.setText(String.format("%.3f (%.0f%%)", aluminumBalance, aluminumBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.ALUMINUM.ordinal()] * 100f));
+        this.copperLabel.setText(String.format("%.3f (%.0f%%)", copperBalance, copperBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.COPPER.ordinal()] * 100f));
+        this.stoneLabel.setText(String.format("%.3f (%.0f%%)", stoneBalance, stoneBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.STONE.ordinal()] * 100f));
     }
 
     private void capResource(PlanetResource.PLANET_RESOURCE planetResource) {

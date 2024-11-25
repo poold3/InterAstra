@@ -6,13 +6,13 @@ public class PlanetResource {
     public enum PLANET_RESOURCE {
         IRON,
         OIL,
-        SILICON,
-        LITHIUM,
-        HELIUM3
+        ALUMINUM,
+        COPPER,
+        STONE
     }
-    public static float[] PLANET_RESOURCE_BUY_BASE_RATE = {1f, 1.5f, 2f, 3f, 6f};
-    public static float[] PLANET_RESOURCE_SELL_BASE_RATE = {0.5f, 0.75f, 1f, 1.5f, 3f};
-    public static float[] PLANET_RESOURCE_CAPS = {1000f, 750f, 500f, 500f, 250f};
+    public static float[] PLANET_RESOURCE_BUY_BASE_RATE = {1f, 2f, 1.5f, 1.5f, 2f};
+    public static float[] PLANET_RESOURCE_SELL_BASE_RATE = {0.85f, 1.5f, 1f, 1f, 1.5f};
+    public static float[] PLANET_RESOURCE_CAPS = {750f, 500f, 750f, 750f, 500f};
     public static float RESOURCE_VALUATION_TIMER = 600f;
     public static float RESOURCE_SELL_VALUATION_RATE = .75f;
     public static float RESOURCE_BUY_VALUATION_RATE = .90f;
@@ -30,12 +30,12 @@ public class PlanetResource {
             return "Iron";
         } else if (resource == PLANET_RESOURCE.OIL) {
             return "Oil";
-        } else if (resource == PLANET_RESOURCE.SILICON) {
-            return "Silicon";
-        } else if (resource == PLANET_RESOURCE.LITHIUM) {
-            return "Lithium";
-        } else if (resource == PLANET_RESOURCE.HELIUM3) {
-            return "Helium3";
+        } else if (resource == PLANET_RESOURCE.ALUMINUM) {
+            return "Aluminum";
+        } else if (resource == PLANET_RESOURCE.COPPER) {
+            return "Copper";
+        } else if (resource == PLANET_RESOURCE.STONE) {
+            return "Stone";
         }
         return "";
     }
