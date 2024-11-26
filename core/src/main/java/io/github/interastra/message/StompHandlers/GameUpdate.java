@@ -50,7 +50,12 @@ public class GameUpdate implements StompFrameHandler {
             for (RocketMessageModel rocket : messagePlanet.rocketsInOrbit()) {
                 if (!planet.rocketsInOrbit.contains(rocket)) {
                     planet.rocketsInFlight.remove(rocket);
-                    planet.rocketsInOrbit.add(new RocketInOrbit(gameScreen.spaceCraftTextureAtlas, rocket, planet, gameScreen.cooldownSound, RocketInOrbit.ROCKET_TIER_STATS[rocket.tier() - 1].cooldown));
+                    if (rocket.playerName().equals(gameScreen.myPlayer.name)) {
+                        planet.rocketsInOrbit.add(new RocketInOrbit(gameScreen.spaceCraftTextureAtlas, rocket, planet, gameScreen.cooldownSound, RocketInOrbit.ROCKET_TIER_STATS[rocket.tier() - 1].cooldown));
+                    } else {
+                        planet.rocketsInOrbit.add(new RocketInOrbit(gameScreen.spaceCraftTextureAtlas, rocket, planet, gameScreen.cooldownSound));
+                    }
+
                     recalculateMyRockets.set(true);
                 }
             }
