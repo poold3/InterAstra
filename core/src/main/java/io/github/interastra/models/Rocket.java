@@ -15,10 +15,10 @@ public abstract class Rocket implements CameraEnabledEntity {
     public static final float ROCKET_PROPULSION_WIDTH = 0.02f;
     public static final float ROCKET_PROPULSION_HEIGHT = 0.1f;
     public static final Price[] ROCKET_TIER_PRICE = {
-        new Price(250f, 200f, 200f, 300f, 100f, 0f),
-        new Price(300f, 225f, 225f, 350f, 125f, 0f),
-        new Price(350f, 250f, 250f, 400f, 150f, 0f),
-        new Price(400f, 275f, 275f, 450f, 175f, 0f)
+        new Price(250f, 200f, 100f, 200f, 100f, 0f),
+        new Price(300f, 225f, 125f, 225f, 125f, 0f),
+        new Price(350f, 250f, 150f, 250f, 150f, 0f),
+        new Price(400f, 275f, 175f, 275f, 175f, 0f)
     };
     public static final Price[] ROCKET_TIER_FUEL_PRICE = {
         new Price(0f, 0f, 200f, 0f, 0f, 0f),
