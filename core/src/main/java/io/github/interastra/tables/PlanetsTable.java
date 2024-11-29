@@ -153,11 +153,6 @@ public class PlanetsTable extends Table {
     }
 
     public void trackPlanet(final Planet planet) {
-        if (screen.transferTable.isVisible) {
-            screen.toggleTransferTable();
-        } else if (screen.buySellTable.isVisible) {
-            screen.toggleBuySellTable();
-        }
         screen.entityBeingFollowed = planet;
         screen.camera.targetZoom = screen.camera.getZoomForSize(planet.getWidth() * 3f);
         if (!screen.planetDashboardButtonTable.isVisible) {
@@ -165,6 +160,14 @@ public class PlanetsTable extends Table {
         }
         if (screen.planetDashboardTable.isVisible) {
             screen.planetDashboardTable.setPlanet(planet);
+        }
+
+        if (screen.transferTable.isVisible) {
+            screen.toggleTransferTable();
+            screen.togglePlanetDashboard();
+        } else if (screen.buySellTable.isVisible) {
+            screen.toggleBuySellTable();
+            screen.togglePlanetDashboard();
         }
     }
 

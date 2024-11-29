@@ -10,7 +10,7 @@ import io.github.interastra.screens.GameScreen;
 
 public class RocketToolTip extends Tooltip<Table> {
     public RocketToolTip(final GameScreen screen, final int rocketTier) {
-        super(new Table(), new InstantTooltipManager());
+        super(new Table(), new InstantTooltipManager(-200f, 30f));
 
         Container<Table> toolTipContainer = this.getContainer();
         toolTipContainer.setActor(this.getRocketTable(screen, rocketTier));

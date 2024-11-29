@@ -9,4 +9,13 @@ public class InstantTooltipManager extends TooltipManager {
         this.initialTime = 0f;
         this.subsequentTime = 0f;
     }
+
+    public InstantTooltipManager(final float offsetX, final float offsetY) {
+        super();
+        this.instant();
+        this.initialTime = 0f;
+        this.subsequentTime = 0f;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+    }
 }
