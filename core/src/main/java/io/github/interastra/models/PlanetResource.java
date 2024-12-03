@@ -11,9 +11,9 @@ public class PlanetResource {
         STONE
     }
     public static float[] PLANET_RESOURCE_BUY_BASE_RATE = {1f, 2f, 1.5f, 1.5f, 2f};
-    public static float[] PLANET_RESOURCE_SELL_BASE_RATE = {0.85f, 1.5f, 1f, 1f, 1.5f};
+    public static float[] PLANET_RESOURCE_SELL_BASE_RATE = {0.9f, 1.5f, 1f, 1f, 1.5f};
     public static float[] PLANET_RESOURCE_CAPS = {1000f, 500f, 750f, 750f, 500f};
-    public static float RESOURCE_VALUATION_TIMER = 700f;
+    public static float RESOURCE_VALUATION_TIMER = 600f;
     public static float RESOURCE_SELL_VALUATION_RATE = .85f;
     public static float RESOURCE_BUY_VALUATION_RATE = .90f;
 
