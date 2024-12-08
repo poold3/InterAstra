@@ -201,7 +201,7 @@ public class GameScreen implements Screen {
             this.resourceUpdateTimer -= 1f;
             for (Planet planet : this.planets) {
                 if (planet.isVisible) {
-                    final float resourceMultiplier = (planet.hasMyBase ? Planet.BASE_RESOURCE_MULTIPLIER : 0) + planet.myResourceMultiplier;
+                    final float resourceMultiplier = (planet.hasMyBase ? Planet.BASE_RESOURCE_MULTIPLIER : 0f) + planet.myResourceMultiplier;
                     for (PlanetResource planetResource : planet.resources) {
                         myPlayer.resourceBalances.computeIfPresent(planetResource.resource, (k, currentBalance) -> currentBalance + (planetResource.rate * resourceMultiplier));
                     }
@@ -364,6 +364,7 @@ public class GameScreen implements Screen {
         }
         this.buySellTable.isVisible = !this.buySellTable.isVisible;
         if (this.buySellTable.isVisible) {
+            this.buySellTable.revaluationLabelUpdateTimer = 1f;
             this.stage.addActor(this.buySellTable);
         } else {
             this.buySellTable.remove();

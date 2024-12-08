@@ -14,9 +14,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public static final String HOME_PLANET = "Terra Nova";
     public static final float TWO_PI = (float) (2f * Math.PI);
-    public static final Price BASE_PRICE = new Price(500f, 500f, 0f, 250f, 250f, 300f);
+    public static final Price BASE_PRICE = new Price(500f, 400f, 0f, 200f, 200f, 300f);
     public static final float BASE_COOLDOWN = 120f;
-    public static final int BASE_RESOURCE_MULTIPLIER = 3;
+    public static final float BASE_RESOURCE_MULTIPLIER = 3f;
 
     public int index;
     public String name;

@@ -21,10 +21,10 @@ public abstract class Rocket implements CameraEnabledEntity {
         new Price(400f, 275f, 175f, 275f, 175f, 0f)
     };
     public static final Price[] ROCKET_TIER_FUEL_PRICE = {
+        new Price(0f, 0f, 150f, 0f, 0f, 0f),
         new Price(0f, 0f, 200f, 0f, 0f, 0f),
         new Price(0f, 0f, 250f, 0f, 0f, 0f),
-        new Price(0f, 0f, 300f, 0f, 0f, 0f),
-        new Price(0f, 0f, 350f, 0f, 0f, 0f)
+        new Price(0f, 0f, 300f, 0f, 0f, 0f)
     };
     public static final String[] ROCKET_TIER_STRING = {"I", "II", "III", "IV"};
     public static final RocketStats[] ROCKET_TIER_STATS = {

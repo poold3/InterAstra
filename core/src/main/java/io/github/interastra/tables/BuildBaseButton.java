@@ -11,6 +11,7 @@ import io.github.interastra.models.Planet;
 import io.github.interastra.rest.RestService;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.tooltips.BaseToolTip;
 import io.github.interastra.tooltips.ColorTextTooltip;
 import io.github.interastra.tooltips.InstantTooltipManager;
 
@@ -56,7 +57,7 @@ public class BuildBaseButton extends Container<Actor> {
                 planetDashboardTable.planet.baseCooldown = Planet.BASE_COOLDOWN;
             }
         });
-        buildBaseTextButton.addListener(new ColorTextTooltip("Price: " + Planet.BASE_PRICE, new InstantTooltipManager(-200f, 30f), skin, Color.BLACK));
+        buildBaseTextButton.addListener(new BaseToolTip(screen));
 
         this.baseCooldownLabel = new ColorLabel("", skin, Color.WHITE);
         this.baseCooldownLabel.setAlignment(Align.center);

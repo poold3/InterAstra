@@ -21,6 +21,8 @@ public class BuySellResourcesTable extends Dashboard {
     private final ColorLabel buyLabel;
     private final ColorLabel sellLabel;
     private Price currentPrice;
+    public Label revaluationLabel;
+    public float revaluationLabelUpdateTimer = 0f;
     public ColorTextTooltip sellRateTextToolTip;
     public ColorTextTooltip buyRateTextToolTip;
     public float[] planetResourceSellRates = new float[PlanetResource.PLANET_RESOURCE_SELL_BASE_RATE.length];
@@ -37,6 +39,10 @@ public class BuySellResourcesTable extends Dashboard {
 
         Label.LabelStyle headerLabelStyle = new Label.LabelStyle(this.skin.get(Label.LabelStyle.class));
         headerLabelStyle.font = this.skin.getFont("Teko-32");
+
+        this.revaluationLabel = new Label("", headerLabelStyle);
+        this.contentTable.add(this.revaluationLabel).colspan(2);
+        this.contentTable.row();
 
         this.enterResourcesTable = new EnterResourcesTable(this.screen.stage, this.skin, false);
 
@@ -183,5 +189,13 @@ public class BuySellResourcesTable extends Dashboard {
             this.buyLabel.setText(String.format("$%.2f", this.currentPrice.getBuyAmount(screen)));
             this.sellLabel.setText(String.format("$%.2f", this.currentPrice.getSellAmount(screen)));
         }
+
+        this.revaluationLabelUpdateTimer += delta;
+        if (this.revaluationLabelUpdateTimer < 1f) {
+            return;
+        }
+
+        this.revaluationLabelUpdateTimer -= 1f;
+        this.revaluationLabel.setText(String.format("Revaluation: %.0f s", PlanetResource.RESOURCE_VALUATION_TIMER - this.resourceRevaluationTimer));
     }
 }
