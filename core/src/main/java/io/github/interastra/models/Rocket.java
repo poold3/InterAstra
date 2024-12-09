@@ -14,24 +14,25 @@ public abstract class Rocket implements CameraEnabledEntity {
     public static final float[] ROCKET_TIER_WIDTH = {0.1f, 0.075f, 0.087f, 0.078f};
     public static final float ROCKET_PROPULSION_WIDTH = 0.02f;
     public static final float ROCKET_PROPULSION_HEIGHT = 0.1f;
+    public static final float ROCKET_RESOURCE_MULTIPLIER = 1f;
     public static final Price[] ROCKET_TIER_PRICE = {
-        new Price(250f, 200f, 100f, 200f, 100f, 0f),
-        new Price(300f, 225f, 125f, 225f, 125f, 0f),
-        new Price(350f, 250f, 150f, 250f, 150f, 0f),
-        new Price(400f, 275f, 175f, 275f, 175f, 0f)
+        new Price(150f, 200f, 100f, 200f, 100f, 0f),
+        new Price(175f, 225f, 125f, 225f, 125f, 0f),
+        new Price(200f, 250f, 150f, 250f, 150f, 0f),
+        new Price(225f, 275f, 175f, 275f, 175f, 0f)
     };
     public static final Price[] ROCKET_TIER_FUEL_PRICE = {
+        new Price(0f, 0f, 100f, 0f, 0f, 0f),
+        new Price(0f, 0f, 125f, 0f, 0f, 0f),
         new Price(0f, 0f, 150f, 0f, 0f, 0f),
-        new Price(0f, 0f, 200f, 0f, 0f, 0f),
-        new Price(0f, 0f, 250f, 0f, 0f, 0f),
-        new Price(0f, 0f, 300f, 0f, 0f, 0f)
+        new Price(0f, 0f, 175f, 0f, 0f, 0f)
     };
     public static final String[] ROCKET_TIER_STRING = {"I", "II", "III", "IV"};
     public static final RocketStats[] ROCKET_TIER_STATS = {
-        new RocketStats(150f, 2f, 60f, ROCKET_TIER_PRICE[0].balance / 2f, 1f),
-        new RocketStats(300f, 2.5f, 80f, ROCKET_TIER_PRICE[1].balance / 2f, 1.25f),
-        new RocketStats(450f, 3f, 100f, ROCKET_TIER_PRICE[2].balance / 2f, 1.75f),
-        new RocketStats(600f, 4f, 120f, ROCKET_TIER_PRICE[3].balance / 2f, 2f)
+        new RocketStats(250f, 2f, 60f, ROCKET_TIER_PRICE[0].balance / 2f, ROCKET_RESOURCE_MULTIPLIER),
+        new RocketStats(250f, 3f, 60f, ROCKET_TIER_PRICE[1].balance / 2f, ROCKET_RESOURCE_MULTIPLIER),
+        new RocketStats(400f, 2f, 60f, ROCKET_TIER_PRICE[2].balance / 2f, ROCKET_RESOURCE_MULTIPLIER),
+        new RocketStats(400f, 3f, 60f, ROCKET_TIER_PRICE[3].balance / 2f, ROCKET_RESOURCE_MULTIPLIER)
     };
     public static final float ROCKET_ORBITAL_RADIUS = 1f;
     public static final float ROCKET_ORBITAL_SPEED = 0.1f;

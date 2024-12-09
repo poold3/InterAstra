@@ -13,10 +13,7 @@ import io.github.interastra.Main;
 import io.github.interastra.message.StompHandlers.GameEnd;
 import io.github.interastra.message.StompHandlers.GameUpdate;
 import io.github.interastra.message.StompHandlers.Transfer;
-import io.github.interastra.message.messages.AddRocketMessage;
-import io.github.interastra.message.messages.GameStartMessage;
-import io.github.interastra.message.messages.RemoveRocketMessage;
-import io.github.interastra.message.messages.TransferMessage;
+import io.github.interastra.message.messages.*;
 import io.github.interastra.message.models.PlanetMessageModel;
 import io.github.interastra.message.models.PlayerMessageModel;
 import io.github.interastra.models.*;
@@ -68,7 +65,7 @@ public class GameScreen implements Screen {
     public ArrayList<StompSession.Subscription> gameSubscriptions;
     public boolean endGame = false;
     public float resourceUpdateTimer = 0f;
-    public boolean noCostMode = false;
+    public boolean noCostMode = true;
 
     public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
         this.game = game;
@@ -392,6 +389,14 @@ public class GameScreen implements Screen {
             return;
         }
         String url = String.format("/ia-ws/transfer/%s", this.lobbyScreen.gameCode);
+        this.lobbyScreen.messageSession.send(url, message);
+    }
+
+    public void addBase(final AddBaseMessage message) {
+        if (!this.lobbyScreen.messageSession.isConnected()) {
+            return;
+        }
+        String url = String.format("/ia-ws/add-base/%s", this.lobbyScreen.gameCode);
         this.lobbyScreen.messageSession.send(url, message);
     }
 }

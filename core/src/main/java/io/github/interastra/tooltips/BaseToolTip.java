@@ -18,6 +18,11 @@ public class BaseToolTip extends Tooltip<Table> {
     public Table getBaseTable(final GameScreen screen) {
         Table baseTable = new Table();
 
+        Container<Label> titleContainer = new Container<>(new ColorLabel("Upgrade to Base", screen.skin, Color.BLACK));
+        titleContainer.pad(10f);
+        baseTable.add(titleContainer).expandX().center();
+        baseTable.row();
+
         Container<Label> priceContainer = new Container<>(new ColorLabel("Price: " + Planet.BASE_PRICE, screen.skin, Color.BLACK));
         priceContainer.pad(10f);
         baseTable.add(priceContainer).expandX().center();

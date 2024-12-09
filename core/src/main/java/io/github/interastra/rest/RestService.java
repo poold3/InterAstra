@@ -1,9 +1,7 @@
 package io.github.interastra.rest;
 
-import io.github.interastra.rest.callbacks.AddBaseCallback;
 import io.github.interastra.rest.callbacks.JoinGameCallback;
 import io.github.interastra.rest.callbacks.SetReadyCallback;
-import io.github.interastra.screens.GameScreen;
 import io.github.interastra.screens.LobbyScreen;
 import io.github.interastra.screens.MainMenuScreen;
 import okhttp3.*;
@@ -68,23 +66,5 @@ public class RestService {
 
         Call call = client.newCall(request);
         call.enqueue(new SetReadyCallback(screen));
-    }
-
-    public static void addBase(final GameScreen screen, final String planetName, final String base, final int currentNumBases) {
-        RequestBody requestBody = new FormBody.Builder()
-            .add("gameCode", screen.lobbyScreen.gameCode)
-            .add("planetName", planetName)
-            .add("base", base)
-            .add("currentNumBases", String.valueOf(currentNumBases))
-            .build();
-
-        Request request = new Request.Builder()
-            .url(BASE_URL + "/add-base")
-            .post(requestBody)
-            .addHeader("Accept", "application/json")
-            .build();
-
-        Call call = client.newCall(request);
-        call.enqueue(new AddBaseCallback(screen));
     }
 }

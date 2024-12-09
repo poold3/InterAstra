@@ -10,13 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Null;
 import io.github.interastra.labels.ColorLabel;
-import io.github.interastra.message.messages.RemoveRocketMessage;
 import io.github.interastra.message.models.RocketMessageModel;
 import io.github.interastra.models.*;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
-import io.github.interastra.tooltips.ColorTextTooltip;
-import io.github.interastra.tooltips.InstantTooltipManager;
 import io.github.interastra.tooltips.RocketToolTip;
 
 import java.util.ArrayList;
@@ -35,18 +32,15 @@ public class PlanetDashboardTable extends Dashboard {
     public Table rocketsInOrbitTable;
     public Table rocketsInFlightTable;
     public Drawable viewDrawable;
-    public Drawable sellDrawable;
-    public String rocketToSell = "";
-    public BuildBaseButton buildBaseButton;
+    public PlanetCooldownLabel buildBaseButton;
     private float updateTimer = 0f;
 
     public PlanetDashboardTable(final GameScreen screen, final Skin skin) {
         super(screen, skin);
 
         this.viewDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("view"));
-        this.sellDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("money"));
 
-        this.buildBaseButton = new BuildBaseButton(this.screen, this, this.skin);
+        this.buildBaseButton = new PlanetCooldownLabel(this.screen, this, this.skin);
 
         this.setPlanetDetails();
     }
@@ -172,44 +166,13 @@ public class PlanetDashboardTable extends Dashboard {
 
         if (rocket.getClass() == RocketInOrbit.class) {
             if (rocket.playerName.equals(this.screen.myPlayer.name)) {
-                ImageButton sellRocketButton = new ImageButton(this.sellDrawable);
-                sellRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        if (rocketToSell.equals(rocket.id)) {
-                            screen.moneySound.play();
-                            screen.myPlayer.balance += Rocket.ROCKET_TIER_STATS[rocket.tier - 1].sellPrice;
-                            screen.removeRocket(new RemoveRocketMessage(new RocketMessageModel(rocket), planet.name));
-                        } else {
-                            rocketToSell = rocket.id;
-                            screen.notificationTable.setMessage("Press the sell button again to sell this rocket.");
-                        }
-                    }
-                });
-                sellRocketButton.addListener(new ColorTextTooltip(String.format("Sell Price: $%.2f", Rocket.ROCKET_TIER_STATS[rocket.tier - 1].sellPrice), new InstantTooltipManager(), this.skin, Color.BLACK));
-                rocketTable.add(sellRocketButton).size(ROCKET_LABEL_WIDTH / 6f);
-
-                rocketTable.add(new SendButton(this.screen, this.skin, (RocketInOrbit) rocket));
+                rocketTable.add(new MyRocketInOrbitButtons(this.screen, this.skin, (RocketInOrbit) rocket));
             } else {
-                rocketTable.add().size(ROCKET_LABEL_WIDTH / 6f);
-                rocketTable.add().size(ROCKET_LABEL_WIDTH / 6f);
+                rocketTable.add().size(ROCKET_LABEL_WIDTH / 2f, ROCKET_LABEL_HEIGHT / 2f);
             }
         } else {
-            rocketTable.add().colspan(2).size(ROCKET_LABEL_WIDTH / 3f, ROCKET_LABEL_HEIGHT / 2f);
+            rocketTable.add(new MyRocketInFlightButtons(this.screen, this.skin, (RocketInFlight) rocket));
         }
-
-        ImageButton viewRocketButton = new ImageButton(this.viewDrawable);
-        viewRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                screen.entityBeingFollowed = rocket;
-                screen.camera.targetZoom = screen.camera.getZoomForSize(5f);
-                screen.removePlanetDashboardButton();
-                screen.togglePlanetDashboard();
-            }
-        });
-        viewRocketButton.addListener(new ColorTextTooltip("View", new InstantTooltipManager(), this.skin, Color.BLACK));
-        rocketTable.add(viewRocketButton).size(ROCKET_LABEL_WIDTH / 6f);
 
         rocketTable.row();
 
@@ -231,7 +194,6 @@ public class PlanetDashboardTable extends Dashboard {
 
     public void setPlanet(final Planet planet) {
         this.planet = planet;
-        this.rocketToSell = "";
         this.rocketsInOrbit.clear();
         this.rocketsInOrbitTable.clear();
         this.bases.clear();
