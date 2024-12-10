@@ -62,7 +62,7 @@ public class LobbyScreen implements Screen {
         this.background = this.game.assetManager.get("background.png", Texture.class);
         this.buttonSound = this.game.assetManager.get("audio/button.mp3", Sound.class);
         this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
-        this.notificationTable = new NotificationTable(this.skin);
+        this.notificationTable = new NotificationTable(this.skin, this.viewport);
         this.lobbyTable = new LobbyTable(this, this.skin);
 
         Image backgroundImage = new Image(this.background);

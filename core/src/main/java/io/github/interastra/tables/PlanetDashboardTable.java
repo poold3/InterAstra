@@ -126,9 +126,8 @@ public class PlanetDashboardTable extends Dashboard {
                         return;
                     }
 
-                    if (!Rocket.ROCKET_TIER_PRICE[finalI].canAfford(screen.myPlayer) && !screen.noCostMode) {
+                    if (!Rocket.ROCKET_TIER_PRICE[finalI].canAfford(screen) && !screen.noCostMode) {
                         screen.badSound.play(0.5f);
-                        screen.notificationTable.setMessage("You cannot afford this action.");
                         return;
                     }
 
@@ -139,7 +138,7 @@ public class PlanetDashboardTable extends Dashboard {
                         planet
                     );
                     planet.rocketsInFlight.add(newRocket);
-                    Rocket.ROCKET_TIER_PRICE[finalI].purchase(screen.myPlayer);
+                    Rocket.ROCKET_TIER_PRICE[finalI].purchase(screen);
                     planet.baseCooldown = Planet.BASE_COOLDOWN;
                 }
             });

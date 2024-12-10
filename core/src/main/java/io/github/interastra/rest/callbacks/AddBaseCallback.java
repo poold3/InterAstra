@@ -32,7 +32,7 @@ public class AddBaseCallback implements Callback {
             Gson gson = new Gson();
             io.github.interastra.rest.responses.Response addBaseResponse = gson.fromJson(response.body().string(), io.github.interastra.rest.responses.Response.class);
             if (addBaseResponse.success) {
-                Planet.BASE_PRICE.purchase(screen.myPlayer);
+                Planet.BASE_PRICE.purchase(screen);
                 screen.myPlayer.bases += 1;
             } else {
                 screen.badSound.play(0.5f);

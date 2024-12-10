@@ -71,7 +71,7 @@ public class PlanetsTable extends Table {
                         }
 
                         // Purchase flight
-                        Rocket.ROCKET_TIER_FUEL_PRICE[rocketToSend.tier - 1].purchase(screen.myPlayer);
+                        Rocket.ROCKET_TIER_FUEL_PRICE[rocketToSend.tier - 1].purchase(screen);
 
                         // Remove rocket
                         screen.removeRocket(new RemoveRocketMessage(new RocketMessageModel(rocketToSend), rocketToSend.orbitingPlanet.name));

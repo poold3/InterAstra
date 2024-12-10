@@ -66,9 +66,8 @@ public class MyRocketInOrbitButtons extends Table {
         sendRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!Rocket.ROCKET_TIER_FUEL_PRICE[rocket.tier - 1].canAfford(screen.myPlayer) && !screen.noCostMode) {
+                if (!Rocket.ROCKET_TIER_FUEL_PRICE[rocket.tier - 1].canAfford(screen) && !screen.noCostMode) {
                     screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage("You cannot afford this action.");
                     return;
                 }
 
@@ -99,9 +98,8 @@ public class MyRocketInOrbitButtons extends Table {
                         return;
                     }
 
-                    if (!Planet.BASE_PRICE.canAfford(screen.myPlayer) && !screen.noCostMode) {
+                    if (!Planet.BASE_PRICE.canAfford(screen) && !screen.noCostMode) {
                         screen.badSound.play(0.5f);
-                        screen.notificationTable.setMessage("You cannot afford this action.");
                         return;
                     }
 

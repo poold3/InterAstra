@@ -95,7 +95,7 @@ public class GameScreen implements Screen {
         this.stage = new GameStage(this.stageViewport, this);
         this.iconsTextureAtlas = this.game.assetManager.get("icons/icons.atlas", TextureAtlas.class);
         this.skin = this.game.assetManager.get("spaceskin/spaceskin.json", Skin.class);
-        this.notificationTable = new NotificationTable(this.skin);
+        this.notificationTable = new NotificationTable(this.skin, this.stageViewport);
         this.coordinatesTable = new CoordinatesTable(this.camera, this.skin);
         this.planetsTable = new PlanetsTable(this, this.skin);
         this.optionsTable = new OptionsTable(this, this.skin);

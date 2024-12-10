@@ -72,9 +72,8 @@ public class TransferTable extends Dashboard {
                 }
 
                 // Verify player can afford
-                if (!transferAmount.canAfford(screen.myPlayer) && !screen.noCostMode) {
+                if (!transferAmount.canAfford(screen) && !screen.noCostMode) {
                     screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage("You cannot afford this action.");
                     return;
                 }
 

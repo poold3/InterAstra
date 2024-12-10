@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.StringBuilder;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -20,13 +21,14 @@ public class NotificationTable extends Table {
     private int currentNumberOfPeriods;
     private final ReentrantLock lock;
 
-    public NotificationTable(final Skin skin) {
+    public NotificationTable(final Skin skin, final ScreenViewport stageViewport) {
         super();
         this.setFillParent(true);
 
         this.message = new StringBuilder();
         this.messageLabel = new Label(this.message, skin);
-        this.add(this.messageLabel).expandX().expandY().top().left().pad(5f);
+        this.messageLabel.setWrap(true);
+        this.add(this.messageLabel).width(stageViewport.getWorldWidth() / 4f).growX().expandY().top().left().pad(5f);
 
         this.duration = 0f;
         this.isLoading = false;

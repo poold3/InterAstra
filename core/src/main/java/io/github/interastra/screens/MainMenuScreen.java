@@ -40,7 +40,7 @@ public class MainMenuScreen implements Screen {
         this.buttonSound = this.game.assetManager.get("audio/button.mp3", Sound.class);
         this.badSound = this.game.assetManager.get("audio/bad.mp3", Sound.class);
         this.leaveSound = this.game.assetManager.get("audio/leave.mp3", Sound.class);
-        this.notificationTable = new NotificationTable(this.skin);
+        this.notificationTable = new NotificationTable(this.skin, this.viewport);
         this.mainMenuTable = new MainMenuTable(this, this.skin);
         this.joinGameResponse = null;
 

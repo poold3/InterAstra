@@ -38,19 +38,67 @@ public class Price {
         this.stoneBalance = stoneBalance;
     }
 
-    public boolean canAfford(final Player player) {
-        return (
-            player.balance >= this.balance
-                && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.IRON) >= this.ironBalance
-                && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.OIL) >= this.oilBalance
-                && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.ALUMINUM) >= this.aluminumBalance
-                && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.COPPER) >= this.copperBalance
-                && player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.STONE) >= this.stoneBalance
-        );
+    public boolean canAfford(final GameScreen screen) {
+        Player player = screen.myPlayer;
+        float balanceRequired = this.balance - player.balance;
+        float ironRequired = this.ironBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.IRON);
+        float oilRequired = this.oilBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.OIL);
+        float aluminumRequired = this.aluminumBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.ALUMINUM);
+        float copperRequired = this.copperBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.COPPER);
+        float stoneRequired = this.stoneBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.STONE);
+
+        boolean result = true;
+        StringBuilder stringBuilder = new StringBuilder("Missing: ");
+        if (balanceRequired > 0f) {
+            result = false;
+            stringBuilder.append(String.format("$%.2f", balanceRequired));
+        }
+        if (ironRequired > 0f) {
+            if (!result) {
+                stringBuilder.append(", ");
+            }
+            result = false;
+            stringBuilder.append(String.format("%.0f iron", ironRequired));
+        }
+        if (oilRequired > 0f) {
+            if (!result) {
+                stringBuilder.append(", ");
+            }
+            result = false;
+            stringBuilder.append(String.format("%.0f oil", oilRequired));
+        }
+        if (aluminumRequired > 0f) {
+            if (!result) {
+                stringBuilder.append(", ");
+            }
+            result = false;
+            stringBuilder.append(String.format("%.0f aluminum", aluminumRequired));
+        }
+        if (copperRequired > 0f) {
+            if (!result) {
+                stringBuilder.append(", ");
+            }
+            result = false;
+            stringBuilder.append(String.format("%.0f copper", copperRequired));
+        }
+        if (stoneRequired > 0f) {
+            if (!result) {
+                stringBuilder.append(", ");
+            }
+            result = false;
+            stringBuilder.append(String.format("%.0f stone", stoneRequired));
+        }
+
+        if (!result) {
+            screen.notificationTable.setMessage(stringBuilder.toString(), 5f);
+        }
+
+        return result;
     }
 
-    public void purchase (final Player player) {
-        if (!this.canAfford(player)) {
+    public void purchase (final GameScreen screen) {
+        Player player = screen.myPlayer;
+        if (!this.canAfford(screen)) {
             return;
         }
 

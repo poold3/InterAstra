@@ -66,7 +66,6 @@ public class BuySellResourcesTable extends Dashboard {
                 float requiredBalance = buyAmount.getBuyAmount(screen);
                 if (requiredBalance > screen.myPlayer.balance && !screen.noCostMode) {
                     screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage("You cannot afford this action.");
                     return;
                 }
 
@@ -92,15 +91,14 @@ public class BuySellResourcesTable extends Dashboard {
                 }
 
 
-                if (!sellAmount.canAfford(screen.myPlayer) && !screen.noCostMode) {
+                if (!sellAmount.canAfford(screen) && !screen.noCostMode) {
                     screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage("You cannot afford this action.");
                     return;
                 }
 
                 screen.moneySound.play();
                 screen.myPlayer.balance += sellAmount.getSellAmount(screen);
-                sellAmount.purchase(screen.myPlayer);
+                sellAmount.purchase(screen);
                 enterResourcesTable.resetUI();
             }
         });
