@@ -88,6 +88,7 @@ public class RocketInFlight extends Rocket {
             this.propulsionSprite.translate(currentDx, currentDy);
             this.arrivalTimer -= (deltaTime);
             if (this.arrivalTimer <= 0f) {
+                screen.cooldownSound.play(0.3f);
                 this.arrival();
             }
         } else {

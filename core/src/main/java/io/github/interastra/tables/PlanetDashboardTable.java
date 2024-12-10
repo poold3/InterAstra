@@ -197,7 +197,7 @@ public class PlanetDashboardTable extends Dashboard {
         this.rocketsInOrbit.clear();
         this.rocketsInOrbitTable.clear();
         this.bases.clear();
-        this.basesLabel.setText("");
+        this.basesLabel.setText("[]");
         this.updateTimer = 1f;
     }
 
@@ -243,7 +243,7 @@ public class PlanetDashboardTable extends Dashboard {
         }
 
         if (this.planet.isVisible) {
-            if (this.bases.size() != this.planet.bases.size()) {
+            if (this.bases.size() != this.planet.bases.size() || this.basesLabel.textEquals("Unknown")) {
                 this.bases = new ArrayList<>(this.planet.bases);
                 this.basesLabel.setText(this.bases.toString());
             }

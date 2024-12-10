@@ -17,8 +17,8 @@ public class Player {
         this.bases = playerMessageModel.bases();
         this.balance = 0f;
         this.resourceBalances = new ConcurrentHashMap<>();
-        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.IRON, 100f);
-        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.OIL, 100f);
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.IRON, 75f);
+        this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.OIL, 75f);
         this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.ALUMINUM, 0f);
         this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.COPPER, 0f);
         this.resourceBalances.put(PlanetResource.PLANET_RESOURCE.STONE, 0f);
