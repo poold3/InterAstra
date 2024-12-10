@@ -104,7 +104,7 @@ public class MyRocketInOrbitButtons extends Table {
                     }
 
                     readyToUpgrade = true;
-                    screen.notificationTable.setMessage("Press the button again to upgrade to a base.");
+                    screen.notificationTable.setMessage("Press the upgrade button again to upgrade this rocket to a base.");
                 }
             }
         });

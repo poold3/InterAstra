@@ -28,7 +28,7 @@ public class NotificationTable extends Table {
         this.message = new StringBuilder();
         this.messageLabel = new Label(this.message, skin);
         this.messageLabel.setWrap(true);
-        this.add(this.messageLabel).width(stageViewport.getWorldWidth() / 4f).growX().expandY().top().left().pad(5f);
+        this.add(this.messageLabel).width(stageViewport.getWorldWidth() / 4.5f).growX().expandY().top().left().pad(5f);
 
         this.duration = 0f;
         this.isLoading = false;

@@ -40,12 +40,12 @@ public class Price {
 
     public boolean canAfford(final GameScreen screen) {
         Player player = screen.myPlayer;
-        float balanceRequired = this.balance - player.balance;
-        float ironRequired = this.ironBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.IRON);
-        float oilRequired = this.oilBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.OIL);
-        float aluminumRequired = this.aluminumBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.ALUMINUM);
-        float copperRequired = this.copperBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.COPPER);
-        float stoneRequired = this.stoneBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.STONE);
+        float balanceRequired = (float) Math.ceil(this.balance - player.balance);
+        float ironRequired = (float) Math.ceil(this.ironBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.IRON));
+        float oilRequired = (float) Math.ceil(this.oilBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.OIL));
+        float aluminumRequired = (float) Math.ceil(this.aluminumBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.ALUMINUM));
+        float copperRequired = (float) Math.ceil(this.copperBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.COPPER));
+        float stoneRequired = (float) Math.ceil(this.stoneBalance - player.resourceBalances.get(PlanetResource.PLANET_RESOURCE.STONE));
 
         boolean result = true;
         StringBuilder stringBuilder = new StringBuilder("Missing: ");
