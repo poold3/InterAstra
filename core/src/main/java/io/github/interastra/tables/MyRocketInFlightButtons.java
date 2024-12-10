@@ -38,24 +38,12 @@ public class MyRocketInFlightButtons extends Table {
                 screen.togglePlanetDashboard();
             }
         });
-        viewRocketButton.addListener(new ColorTextTooltip("View", new InstantTooltipManager(), skin, Color.BLACK));
+        viewRocketButton.addListener(new ColorTextTooltip("View Rocket", new InstantTooltipManager(), skin, Color.BLACK));
+        this.add(this.viewRocketButton).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 6f, PlanetDashboardTable.ROCKET_LABEL_HEIGHT / 2f);
 
         this.rocketArrivalLabel = new ColorLabel("", skin, Color.BLACK);
         this.rocketArrivalLabel.setAlignment(Align.center);
         this.add(this.rocketArrivalLabel).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 3f, PlanetDashboardTable.ROCKET_LABEL_HEIGHT / 2f);
-
-        this.viewRocketButton = new ImageButton(this.viewDrawable);
-        viewRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                screen.entityBeingFollowed = rocket;
-                screen.camera.targetZoom = screen.camera.getZoomForSize(5f);
-                screen.removePlanetDashboardButton();
-                screen.togglePlanetDashboard();
-            }
-        });
-        viewRocketButton.addListener(new ColorTextTooltip("View Rocket", new InstantTooltipManager(), skin, Color.BLACK));
-        this.add(this.viewRocketButton).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 6f, PlanetDashboardTable.ROCKET_LABEL_HEIGHT / 2f);
     }
 
     @Override

@@ -11,12 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import io.github.interastra.labels.ColorLabel;
-import io.github.interastra.message.messages.AddBaseMessage;
 import io.github.interastra.message.messages.RemoveRocketMessage;
 import io.github.interastra.message.models.RocketMessageModel;
 import io.github.interastra.models.Planet;
 import io.github.interastra.models.Rocket;
 import io.github.interastra.models.RocketInOrbit;
+import io.github.interastra.rest.RestService;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
 import io.github.interastra.tooltips.*;
@@ -60,6 +60,7 @@ public class MyRocketInOrbitButtons extends Table {
             }
         });
         sellRocketButton.addListener(new SellToolTip(screen, rocket));
+        this.add(this.sellRocketButton).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 6f);
 
         this.sendRocketButton = new ImageButton(this.sendDrawable);
         sendRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
@@ -85,10 +86,8 @@ public class MyRocketInOrbitButtons extends Table {
             public void clicked(InputEvent event, float x, float y) {
                 if (readyToUpgrade) {
                     screen.buildSound.play(0.05f);
-                    screen.addBase(new AddBaseMessage(new RocketMessageModel(rocket), rocket.orbitingPlanet.name, screen.myPlayer.bases));
+                    RestService.addBase(screen, rocket.orbitingPlanet.name, screen.myPlayer.name, screen.myPlayer.bases, rocket.id);
                     rocket.orbitingPlanet.baseCooldown = Planet.BASE_COOLDOWN;
-                    Planet.BASE_PRICE.purchase(screen.myPlayer);
-                    screen.myPlayer.bases += 1;
                 } else {
                     if (rocket.orbitingPlanet.hasMyBase) {
                         screen.badSound.play(0.5f);
@@ -115,7 +114,7 @@ public class MyRocketInOrbitButtons extends Table {
 
         this.rocketCooldownLabel = new ColorLabel("", skin, Color.BLACK);
         this.rocketCooldownLabel.setAlignment(Align.center);
-        this.add(this.rocketCooldownLabel).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 2f, PlanetDashboardTable.ROCKET_LABEL_HEIGHT / 2f);
+        this.add(this.rocketCooldownLabel).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 3f, PlanetDashboardTable.ROCKET_LABEL_HEIGHT / 2f);
     }
 
     @Override

@@ -32,7 +32,7 @@ public class PlanetDashboardTable extends Dashboard {
     public Table rocketsInOrbitTable;
     public Table rocketsInFlightTable;
     public Drawable viewDrawable;
-    public PlanetCooldownLabel buildBaseButton;
+    public ColorLabel planetCooldownLabel;
     private float updateTimer = 0f;
 
     public PlanetDashboardTable(final GameScreen screen, final Skin skin) {
@@ -40,7 +40,8 @@ public class PlanetDashboardTable extends Dashboard {
 
         this.viewDrawable = new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("view"));
 
-        this.buildBaseButton = new PlanetCooldownLabel(this.screen, this, this.skin);
+        this.planetCooldownLabel = new ColorLabel("", skin, Color.WHITE);
+        this.planetCooldownLabel.setAlignment(Align.center);
 
         this.setPlanetDetails();
     }
@@ -48,6 +49,9 @@ public class PlanetDashboardTable extends Dashboard {
     public void setPlanetDetails() {
         Label.LabelStyle titleLabelStyle = new Label.LabelStyle(this.skin.get(Label.LabelStyle.class));
         titleLabelStyle.font = this.skin.getFont("Teko-32");
+
+        this.contentTable.add(this.planetCooldownLabel).colspan(2).expandX().center().pad(5f);
+        this.contentTable.row();
 
         this.contentTable.add(new Label("Build Actions", titleLabelStyle)).colspan(2).expandX().center().pad(5f);
         this.contentTable.row();
@@ -144,8 +148,6 @@ public class PlanetDashboardTable extends Dashboard {
         }
 
         Table buildRocketTextButtonsTable = new Table();
-        buildRocketTextButtonsTable.add(this.buildBaseButton).colspan(2).pad(5f);
-        buildRocketTextButtonsTable.row();
 
         for (int i = 0; i < 2; ++i) {
             buildRocketTextButtonsTable.add(rocketButtons[i]).size(DASHBOARD_BUTTON_WIDTH, DASHBOARD_BUTTON_HEIGHT).pad(5f);
@@ -237,6 +239,12 @@ public class PlanetDashboardTable extends Dashboard {
         }
 
         this.updateTimer -= 1f;
+
+        if (this.planet.baseCooldown > 0f) {
+            this.planetCooldownLabel.setText(String.format("%.0f", this.planet.baseCooldown));
+        } else {
+            this.planetCooldownLabel.setText("");
+        }
 
         if (!this.titleLabel.getText().equalsIgnoreCase(this.planet.name)) {
             this.titleLabel.setText(this.planet.name);

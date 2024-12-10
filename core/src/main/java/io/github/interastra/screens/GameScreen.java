@@ -391,12 +391,4 @@ public class GameScreen implements Screen {
         String url = String.format("/ia-ws/transfer/%s", this.lobbyScreen.gameCode);
         this.lobbyScreen.messageSession.send(url, message);
     }
-
-    public void addBase(final AddBaseMessage message) {
-        if (!this.lobbyScreen.messageSession.isConnected()) {
-            return;
-        }
-        String url = String.format("/ia-ws/add-base/%s", this.lobbyScreen.gameCode);
-        this.lobbyScreen.messageSession.send(url, message);
-    }
 }
