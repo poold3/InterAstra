@@ -54,6 +54,7 @@ public class GameScreen implements Screen {
     public PlanetDashboardTable planetDashboardTable;
     public TransferTable transferTable;
     public BuySellResourcesTable buySellTable;
+    public InfoTable infoTable;
     public TextureAtlas planetsTextureAtlas;
 
     public int basesToWin;
@@ -104,6 +105,7 @@ public class GameScreen implements Screen {
         this.planetDashboardTable = new PlanetDashboardTable(this, this.skin);
         this.transferTable = new TransferTable(this, this.skin);
         this.buySellTable = new BuySellResourcesTable(this, this.skin);
+        this.infoTable = new InfoTable(this, this.skin);
 
         this.stage.addActor(this.notificationTable);
         this.stage.addActor(this.coordinatesTable);
@@ -167,11 +169,21 @@ public class GameScreen implements Screen {
                 this.toggleTransferTable();
             } else if (this.buySellTable.isVisible) {
                 this.toggleBuySellTable();
+            } else if (this.infoTable.isVisible) {
+                this.toggleInfoTable();
             } else {
                 this.toggleOptionsMenu();
             }
         }
-
+        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+            this.toggleBuySellTable();
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+            this.toggleTransferTable();
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+            this.toggleInfoTable();
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+            this.togglePlanetDashboard();
+        }
     }
 
     public void logic(float delta) {
@@ -329,7 +341,14 @@ public class GameScreen implements Screen {
             this.toggleTransferTable();
         } else if (this.buySellTable.isVisible) {
             this.toggleBuySellTable();
+        } else if (this.infoTable.isVisible) {
+            this.toggleInfoTable();
         }
+
+        if (this.entityBeingFollowed == null || this.entityBeingFollowed.getClass() != Planet.class) {
+            return;
+        }
+
         this.planetDashboardTable.isVisible = !this.planetDashboardTable.isVisible;
         if (this.planetDashboardTable.isVisible) {
             this.planetDashboardTable.setPlanet((Planet) this.entityBeingFollowed);
@@ -344,6 +363,8 @@ public class GameScreen implements Screen {
             this.togglePlanetDashboard();
         } else if (this.buySellTable.isVisible) {
             this.toggleBuySellTable();
+        } else if (this.infoTable.isVisible) {
+            this.toggleInfoTable();
         }
         this.transferTable.isVisible = !this.transferTable.isVisible;
         if (this.transferTable.isVisible) {
@@ -358,6 +379,8 @@ public class GameScreen implements Screen {
             this.togglePlanetDashboard();
         } else if (this.transferTable.isVisible) {
             this.toggleTransferTable();
+        } else if (this.infoTable.isVisible) {
+            this.toggleInfoTable();
         }
         this.buySellTable.isVisible = !this.buySellTable.isVisible;
         if (this.buySellTable.isVisible) {
@@ -365,6 +388,22 @@ public class GameScreen implements Screen {
             this.stage.addActor(this.buySellTable);
         } else {
             this.buySellTable.remove();
+        }
+    }
+
+    public void toggleInfoTable() {
+        if (this.planetDashboardTable.isVisible) {
+            this.togglePlanetDashboard();
+        } else if (this.transferTable.isVisible) {
+            this.toggleTransferTable();
+        } else if (this.buySellTable.isVisible) {
+            this.toggleBuySellTable();
+        }
+        this.infoTable.isVisible = !this.infoTable.isVisible;
+        if (this.infoTable.isVisible) {
+            this.stage.addActor(this.infoTable);
+        } else {
+            this.infoTable.remove();
         }
     }
 

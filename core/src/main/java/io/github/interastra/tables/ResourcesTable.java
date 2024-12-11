@@ -19,7 +19,7 @@ import io.github.interastra.tooltips.InstantTooltipManager;
 
 public class ResourcesTable extends Table {
     public final float RESOURCE_CELL_WIDTH = 80f;
-    public final float ICON_SIZE = 50f;
+    public final float ICON_SIZE = 25f;
 
     private final GameScreen screen;
     private final Skin skin;
@@ -69,26 +69,43 @@ public class ResourcesTable extends Table {
         this.stoneLabel = new Label("", this.skin);
         this.addResourceLabel(this.stoneLabel);
 
+        this.add(this.getIconsTable()).pad(2f).right();
+    }
+
+    public Table getIconsTable() {
+        Table iconsTable = new Table();
+
         ImageButton buySellImageButton = new ImageButton(new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("money-white")));
-        buySellImageButton.addListener(new ColorTextTooltip("Buy/Sell Resources", new InstantTooltipManager(), this.skin, Color.BLACK));
+        buySellImageButton.addListener(new ColorTextTooltip("Buy/Sell Resources (s)", new InstantTooltipManager(), this.skin, Color.BLACK));
         buySellImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 screen.toggleBuySellTable();
             }
         });
-        this.add(buySellImageButton).size(ICON_SIZE).pad(2f).right();
-        this.row();
+        iconsTable.add(buySellImageButton).size(ICON_SIZE).pad(2f);
 
         ImageButton transferImageButton = new ImageButton(new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("transfer")));
-        transferImageButton.addListener(new ColorTextTooltip("Transfer Resources", new InstantTooltipManager(), this.skin, Color.BLACK));
+        transferImageButton.addListener(new ColorTextTooltip("Transfer Resources (t)", new InstantTooltipManager(), this.skin, Color.BLACK));
         transferImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 screen.toggleTransferTable();
             }
         });
-        this.add(transferImageButton).size(ICON_SIZE).pad(2f).right();
+        iconsTable.add(transferImageButton).size(ICON_SIZE).pad(2f);
+
+        ImageButton infoImageButton = new ImageButton(new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("info")));
+        infoImageButton.addListener(new ColorTextTooltip("Information (i)", new InstantTooltipManager(), this.skin, Color.BLACK));
+        infoImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                screen.toggleInfoTable();
+            }
+        });
+        iconsTable.add(infoImageButton).size(ICON_SIZE).pad(2f);
+
+        return iconsTable;
     }
 
     public void addResourceTextLabel(final String text) {

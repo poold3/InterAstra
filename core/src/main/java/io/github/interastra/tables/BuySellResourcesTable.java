@@ -64,8 +64,10 @@ public class BuySellResourcesTable extends Dashboard {
                 }
 
                 float requiredBalance = buyAmount.getBuyAmount(screen);
-                if (requiredBalance > screen.myPlayer.balance && !screen.noCostMode) {
+                float balanceStillNeeded = requiredBalance - screen.myPlayer.balance;
+                if (balanceStillNeeded > 0f && !screen.noCostMode) {
                     screen.badSound.play(0.5f);
+                    screen.notificationTable.setMessage(String.format("Missing: $%.2f", balanceStillNeeded));
                     return;
                 }
 

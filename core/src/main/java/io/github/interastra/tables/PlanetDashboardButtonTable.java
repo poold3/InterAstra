@@ -46,7 +46,7 @@ public class PlanetDashboardButtonTable extends Table {
         buttonContainer.height(DASHBOARD_BUTTON_SIZE);
         buttonContainer.setBackground(skin.getDrawable("panel_square"));
 
-        Tooltip<Container<Label>> dashboardTooltip = new ColorTextTooltip("Planet Dashboard", new InstantTooltipManager(), skin, Color.BLACK);
+        Tooltip<Container<Label>> dashboardTooltip = new ColorTextTooltip("Planet Dashboard (d)", new InstantTooltipManager(), skin, Color.BLACK);
         buttonContainer.addListener(dashboardTooltip);
 
         this.add(buttonContainer).maxWidth(DASHBOARD_BUTTON_SIZE).maxHeight(DASHBOARD_BUTTON_SIZE).expandX().right().top().pad(5f);

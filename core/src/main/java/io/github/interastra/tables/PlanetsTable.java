@@ -168,6 +168,9 @@ public class PlanetsTable extends Table {
         } else if (screen.buySellTable.isVisible) {
             screen.toggleBuySellTable();
             screen.togglePlanetDashboard();
+        } else if (screen.infoTable.isVisible) {
+            screen.toggleInfoTable();
+            screen.togglePlanetDashboard();
         }
     }
 
