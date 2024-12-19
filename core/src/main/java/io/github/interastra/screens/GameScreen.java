@@ -66,7 +66,7 @@ public class GameScreen implements Screen {
     public ArrayList<StompSession.Subscription> gameSubscriptions;
     public boolean endGame = false;
     public float resourceUpdateTimer = 0f;
-    public boolean noCostMode = false;
+    public boolean noCostMode = true;
 
     public GameScreen(final Main game, final LobbyScreen lobbyScreen, final GameStartMessage gameData) {
         this.game = game;
@@ -345,7 +345,7 @@ public class GameScreen implements Screen {
             this.toggleInfoTable();
         }
 
-        if (this.entityBeingFollowed == null || this.entityBeingFollowed.getClass() != Planet.class) {
+        if (!this.planetDashboardTable.isVisible && (this.entityBeingFollowed == null || this.entityBeingFollowed.getClass() != Planet.class)) {
             return;
         }
 
