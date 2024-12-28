@@ -12,8 +12,11 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.interastra.Main;
 import io.github.interastra.rest.responses.JoinGameResponse;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.tables.MainMenuTable;
 import io.github.interastra.tables.NotificationTable;
+
+import java.util.logging.Level;
 
 public class MainMenuScreen implements Screen {
     public Main game;
@@ -59,20 +62,24 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        if (this.exitGame) {
-            this.exitTime += delta;
-            if (this.exitTime >= 0.75f) {
+        try {
+            if (this.exitGame) {
+                this.exitTime += delta;
+                if (this.exitTime >= 0.75f) {
+                    this.dispose();
+                    Gdx.app.exit();
+                }
+            } else if (this.joinGameResponse != null) {
+                this.game.setScreen(new LobbyScreen(this.game, this.joinGameResponse.gameCode, this.mainMenuTable.getUsernameText()));
                 this.dispose();
-                Gdx.app.exit();
             }
-        } else if (this.joinGameResponse != null) {
-            this.game.setScreen(new LobbyScreen(this.game, this.joinGameResponse.gameCode, this.mainMenuTable.getUsernameText()));
-            this.dispose();
-        }
 
-        ScreenUtils.clear(Color.BLACK);
-        stage.act(delta);
-        stage.draw();
+            ScreenUtils.clear(Color.BLACK);
+            stage.act(delta);
+            stage.draw();
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     @Override
@@ -97,7 +104,11 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
-        this.stage.dispose();
+        try {
+            this.stage.dispose();
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public synchronized void joinGameSuccess(final JoinGameResponse response) {

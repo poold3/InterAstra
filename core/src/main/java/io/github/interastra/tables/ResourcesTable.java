@@ -14,8 +14,11 @@ import io.github.interastra.models.PlanetResource;
 import io.github.interastra.models.Player;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.tooltips.ColorTextTooltip;
 import io.github.interastra.tooltips.InstantTooltipManager;
+
+import java.util.logging.Level;
 
 public class ResourcesTable extends Table {
     public final float RESOURCE_CELL_WIDTH = 80f;
@@ -80,7 +83,11 @@ public class ResourcesTable extends Table {
         buySellImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.toggleBuySellTable();
+                try {
+                    screen.toggleBuySellTable();
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         iconsTable.add(buySellImageButton).size(ICON_SIZE).pad(2f);
@@ -90,7 +97,11 @@ public class ResourcesTable extends Table {
         transferImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.toggleTransferTable();
+                try {
+                    screen.toggleTransferTable();
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         iconsTable.add(transferImageButton).size(ICON_SIZE).pad(2f);
@@ -100,7 +111,11 @@ public class ResourcesTable extends Table {
         infoImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.toggleInfoTable();
+                try {
+                    screen.toggleInfoTable();
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         iconsTable.add(infoImageButton).size(ICON_SIZE).pad(2f);
@@ -123,43 +138,51 @@ public class ResourcesTable extends Table {
 
     @Override
     public void act(float delta) {
-        super.act(delta);
+        try {
+            super.act(delta);
 
-        this.updateTimer += delta;
-        if (this.updateTimer < 1f) {
-            return;
+            this.updateTimer += delta;
+            if (this.updateTimer < 1f) {
+                return;
+            }
+
+            this.updateTimer -= 1f;
+
+            // Cap resources
+            this.screen.myPlayer.balance = MathUtils.clamp(this.screen.myPlayer.balance, 0f, Player.BALANCE_CAP);
+            this.capResource(PlanetResource.PLANET_RESOURCE.IRON);
+            this.capResource(PlanetResource.PLANET_RESOURCE.OIL);
+            this.capResource(PlanetResource.PLANET_RESOURCE.ALUMINUM);
+            this.capResource(PlanetResource.PLANET_RESOURCE.COPPER);
+            this.capResource(PlanetResource.PLANET_RESOURCE.STONE);
+
+            float balance = this.screen.myPlayer.balance;
+            float ironBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.IRON);
+            float oilBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.OIL);
+            float aluminumBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.ALUMINUM);
+            float copperBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.COPPER);
+            float stoneBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.STONE);
+
+            this.basesLabel.setText(String.format("%d / %d", this.screen.myPlayer.bases, this.screen.basesToWin));
+            this.balanceLabel.setText(String.format("$%.2f (%.0f%%)", balance, balance / Player.BALANCE_CAP * 100f));
+            this.ironLabel.setText(String.format("%.3f (%.0f%%)", ironBalance, ironBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.IRON.ordinal()] * 100f));
+            this.oilLabel.setText(String.format("%.3f (%.0f%%)", oilBalance, oilBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.OIL.ordinal()] * 100f));
+            this.aluminumLabel.setText(String.format("%.3f (%.0f%%)", aluminumBalance, aluminumBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.ALUMINUM.ordinal()] * 100f));
+            this.copperLabel.setText(String.format("%.3f (%.0f%%)", copperBalance, copperBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.COPPER.ordinal()] * 100f));
+            this.stoneLabel.setText(String.format("%.3f (%.0f%%)", stoneBalance, stoneBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.STONE.ordinal()] * 100f));
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-
-        this.updateTimer -= 1f;
-
-        // Cap resources
-        this.screen.myPlayer.balance = MathUtils.clamp(this.screen.myPlayer.balance, 0f, Player.BALANCE_CAP);
-        this.capResource(PlanetResource.PLANET_RESOURCE.IRON);
-        this.capResource(PlanetResource.PLANET_RESOURCE.OIL);
-        this.capResource(PlanetResource.PLANET_RESOURCE.ALUMINUM);
-        this.capResource(PlanetResource.PLANET_RESOURCE.COPPER);
-        this.capResource(PlanetResource.PLANET_RESOURCE.STONE);
-
-        float balance = this.screen.myPlayer.balance;
-        float ironBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.IRON);
-        float oilBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.OIL);
-        float aluminumBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.ALUMINUM);
-        float copperBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.COPPER);
-        float stoneBalance = this.screen.myPlayer.resourceBalances.get(PlanetResource.PLANET_RESOURCE.STONE);
-
-        this.basesLabel.setText(String.format("%d / %d", this.screen.myPlayer.bases, this.screen.basesToWin));
-        this.balanceLabel.setText(String.format("$%.2f (%.0f%%)", balance, balance / Player.BALANCE_CAP * 100f));
-        this.ironLabel.setText(String.format("%.3f (%.0f%%)", ironBalance, ironBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.IRON.ordinal()] * 100f));
-        this.oilLabel.setText(String.format("%.3f (%.0f%%)", oilBalance, oilBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.OIL.ordinal()] * 100f));
-        this.aluminumLabel.setText(String.format("%.3f (%.0f%%)", aluminumBalance, aluminumBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.ALUMINUM.ordinal()] * 100f));
-        this.copperLabel.setText(String.format("%.3f (%.0f%%)", copperBalance, copperBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.COPPER.ordinal()] * 100f));
-        this.stoneLabel.setText(String.format("%.3f (%.0f%%)", stoneBalance, stoneBalance / PlanetResource.PLANET_RESOURCE_CAPS[PlanetResource.PLANET_RESOURCE.STONE.ordinal()] * 100f));
     }
 
     private void capResource(PlanetResource.PLANET_RESOURCE planetResource) {
-        this.screen.myPlayer.resourceBalances.computeIfPresent(
-            planetResource,
-            (k, currentBalance) -> MathUtils.clamp(currentBalance, 0f, PlanetResource.PLANET_RESOURCE_CAPS[k.ordinal()])
-        );
+        try {
+            this.screen.myPlayer.resourceBalances.computeIfPresent(
+                planetResource,
+                (k, currentBalance) -> MathUtils.clamp(currentBalance, 0f, PlanetResource.PLANET_RESOURCE_CAPS[k.ordinal()])
+            );
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 }

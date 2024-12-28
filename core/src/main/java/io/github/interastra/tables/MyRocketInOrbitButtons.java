@@ -19,7 +19,10 @@ import io.github.interastra.models.RocketInOrbit;
 import io.github.interastra.rest.RestService;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.tooltips.*;
+
+import java.util.logging.Level;
 
 public class MyRocketInOrbitButtons extends Table {
     private final GameScreen screen;
@@ -49,13 +52,17 @@ public class MyRocketInOrbitButtons extends Table {
         sellRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (readyToSell) {
-                    screen.moneySound.play();
-                    screen.myPlayer.balance += Rocket.ROCKET_TIER_STATS[rocket.tier - 1].sellPrice;
-                    screen.removeRocket(new RemoveRocketMessage(new RocketMessageModel(rocket), rocket.orbitingPlanet.name));
-                } else {
-                    readyToSell = true;
-                    screen.notificationTable.setMessage("Press the sell button again to sell this rocket.");
+                try {
+                    if (readyToSell) {
+                        screen.moneySound.play();
+                        screen.myPlayer.balance += Rocket.ROCKET_TIER_STATS[rocket.tier - 1].sellPrice;
+                        screen.removeRocket(new RemoveRocketMessage(new RocketMessageModel(rocket), rocket.orbitingPlanet.name));
+                    } else {
+                        readyToSell = true;
+                        screen.notificationTable.setMessage("Press the sell button again to sell this rocket.");
+                    }
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         });
@@ -66,13 +73,17 @@ public class MyRocketInOrbitButtons extends Table {
         sendRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!Rocket.ROCKET_TIER_FUEL_PRICE[rocket.tier - 1].canAfford(screen) && !screen.noCostMode) {
-                    screen.badSound.play(0.5f);
-                    return;
-                }
+                try {
+                    if (!Rocket.ROCKET_TIER_FUEL_PRICE[rocket.tier - 1].canAfford(screen) && !screen.noCostMode) {
+                        screen.badSound.play(0.5f);
+                        return;
+                    }
 
-                screen.notificationTable.setMessage("Select an available planet.");
-                screen.planetsTable.setRocketToSend(rocket);
+                    screen.notificationTable.setMessage("Select an available planet.");
+                    screen.planetsTable.setRocketToSend(rocket);
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         sendRocketButton.addListener(new SendToolTip(screen, rocket));
@@ -83,28 +94,32 @@ public class MyRocketInOrbitButtons extends Table {
         upgradeButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (readyToUpgrade) {
-                    screen.buildSound.play(0.05f);
-                    RestService.addBase(screen, rocket.orbitingPlanet.name, screen.myPlayer.name, screen.myPlayer.bases, rocket.id);
-                    rocket.orbitingPlanet.baseCooldown = Planet.BASE_COOLDOWN;
-                } else {
-                    if (rocket.orbitingPlanet.hasMyBase) {
-                        screen.badSound.play(0.5f);
-                        screen.notificationTable.setMessage("You already have a base here.");
-                        return;
-                    } else if (rocket.orbitingPlanet.bases.size() >= rocket.orbitingPlanet.baseLimit) {
-                        screen.badSound.play(0.5f);
-                        screen.notificationTable.setMessage("No more bases can be built here.");
-                        return;
-                    }
+                try {
+                    if (readyToUpgrade) {
+                        screen.buildSound.play(0.05f);
+                        RestService.addBase(screen, rocket.orbitingPlanet.name, screen.myPlayer.name, screen.myPlayer.bases, rocket.id);
+                        rocket.orbitingPlanet.baseCooldown = Planet.BASE_COOLDOWN;
+                    } else {
+                        if (rocket.orbitingPlanet.hasMyBase) {
+                            screen.badSound.play(0.5f);
+                            screen.notificationTable.setMessage("You already have a base here.");
+                            return;
+                        } else if (rocket.orbitingPlanet.bases.size() >= rocket.orbitingPlanet.baseLimit) {
+                            screen.badSound.play(0.5f);
+                            screen.notificationTable.setMessage("No more bases can be built here.");
+                            return;
+                        }
 
-                    if (!Planet.BASE_PRICE.canAfford(screen) && !screen.noCostMode) {
-                        screen.badSound.play(0.5f);
-                        return;
-                    }
+                        if (!Planet.BASE_PRICE.canAfford(screen) && !screen.noCostMode) {
+                            screen.badSound.play(0.5f);
+                            return;
+                        }
 
-                    readyToUpgrade = true;
-                    screen.notificationTable.setMessage("Press the upgrade button again to upgrade this rocket to a base.");
+                        readyToUpgrade = true;
+                        screen.notificationTable.setMessage("Press the upgrade button again to upgrade this rocket to a base.");
+                    }
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         });
@@ -117,32 +132,36 @@ public class MyRocketInOrbitButtons extends Table {
 
     @Override
     public void act(float delta) {
-        super.act(delta);
+        try {
+            super.act(delta);
 
-        if (this.rocket.cooldown > 0f) {
-            this.rocketCooldownLabel.setText((int) this.rocket.cooldown);
-            return;
-        }
+            if (this.rocket.cooldown > 0f) {
+                this.rocketCooldownLabel.setText((int) this.rocket.cooldown);
+                return;
+            }
 
-        this.updateTimer += delta;
-        if (this.updateTimer < 1f) {
-            return;
-        }
+            this.updateTimer += delta;
+            if (this.updateTimer < 1f) {
+                return;
+            }
 
-        this.updateTimer -= 1f;
+            this.updateTimer -= 1f;
 
-        if (this.upgradeContainer.getActor() == null && !rocket.orbitingPlanet.hasMyBase && rocket.orbitingPlanet.bases.size() < rocket.orbitingPlanet.baseLimit) {
-            this.upgradeContainer.setActor(this.upgradeButton);
-        } else if (this.upgradeContainer.getActor() != null && (rocket.orbitingPlanet.hasMyBase || rocket.orbitingPlanet.bases.size() >= rocket.orbitingPlanet.baseLimit)) {
-            this.upgradeContainer.clear();
-        }
+            if (this.upgradeContainer.getActor() == null && !rocket.orbitingPlanet.hasMyBase && rocket.orbitingPlanet.bases.size() < rocket.orbitingPlanet.baseLimit) {
+                this.upgradeContainer.setActor(this.upgradeButton);
+            } else if (this.upgradeContainer.getActor() != null && (rocket.orbitingPlanet.hasMyBase || rocket.orbitingPlanet.bases.size() >= rocket.orbitingPlanet.baseLimit)) {
+                this.upgradeContainer.clear();
+            }
 
-        if (this.needToUpdate) {
-            this.needToUpdate = false;
-            this.clear();
-            this.add(this.sellRocketButton).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 6f);
-            this.add(this.sendRocketButton).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 6f);
-            this.add(this.upgradeContainer).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 6f);
+            if (this.needToUpdate) {
+                this.needToUpdate = false;
+                this.clear();
+                this.add(this.sellRocketButton).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 6f);
+                this.add(this.sendRocketButton).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 6f);
+                this.add(this.upgradeContainer).size(PlanetDashboardTable.ROCKET_LABEL_WIDTH / 6f);
+            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 }

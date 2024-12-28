@@ -7,9 +7,11 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.interastra.message.models.PlanetMessageModel;
 import io.github.interastra.message.models.PlanetResourceMessageModel;
 import io.github.interastra.message.models.RocketMessageModel;
+import io.github.interastra.services.InterAstraLog;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 
 public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     public static final String HOME_PLANET = "Terra Nova";
@@ -75,31 +77,35 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     }
 
     public void move(float worldWidth, float worldHeight, float deltaTime) {
-        Vector2 newPosition = this.getPositionInTime(worldWidth, worldHeight, deltaTime, true);
-        this.planetSprite.setCenter(newPosition.x, newPosition.y);
+        try {
+            Vector2 newPosition = this.getPositionInTime(worldWidth, worldHeight, deltaTime, true);
+            this.planetSprite.setCenter(newPosition.x, newPosition.y);
 
-        // Move moon as well
-        if (this.moon != null) {
-            this.moon.move(deltaTime);
-        }
+            // Move moon as well
+            if (this.moon != null) {
+                this.moon.move(deltaTime);
+            }
 
-        // Move rockets in orbit
-        if (this.isVisible) {
-            for (RocketInOrbit rocket : this.rocketsInOrbit) {
+            // Move rockets in orbit
+            if (this.isVisible) {
+                for (RocketInOrbit rocket : this.rocketsInOrbit) {
+                    rocket.move(deltaTime);
+                }
+            }
+
+            // Move rockets in flight
+            for (RocketInFlight rocket : this.rocketsInFlight) {
                 rocket.move(deltaTime);
             }
-        }
 
-        // Move rockets in flight
-        for (RocketInFlight rocket : this.rocketsInFlight) {
-            rocket.move(deltaTime);
-        }
-
-        if (this.baseCooldown > 0f) {
-            this.baseCooldown -= (deltaTime);
-            if (this.baseCooldown <= 0f) {
-                this.cooldownSound.play(0.3f);
+            if (this.baseCooldown > 0f) {
+                this.baseCooldown -= (deltaTime);
+                if (this.baseCooldown <= 0f) {
+                    this.cooldownSound.play(0.3f);
+                }
             }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -118,29 +124,37 @@ public class Planet implements CameraEnabledEntity, Comparable<Planet> {
     }
 
     public void setHasMyBase() {
-        this.hasMyBase = false;
-        for (String base : this.bases) {
-            if (base.equals(this.myName)) {
-                this.hasMyBase = true;
-                break;
+        try {
+            this.hasMyBase = false;
+            for (String base : this.bases) {
+                if (base.equals(this.myName)) {
+                    this.hasMyBase = true;
+                    break;
+                }
             }
+            this.isVisible = this.hasMyBase || this.numMyRockets > 0;
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        this.isVisible = this.hasMyBase || this.numMyRockets > 0;
     }
 
     public void setNumMyRockets() {
-        this.numMyRockets = 0;
-        this.myResourceMultiplier = 0;
-        for (int i = 0; i < this.rocketsInOrbit.size(); ++i) {
-            RocketInOrbit rocket = this.rocketsInOrbit.get(i);
-            if (rocket.playerName.equals(this.myName)) {
-                this.numMyRockets += 1;
-                if (i < this.baseLimit && !this.name.equals(HOME_PLANET)) {
-                    this.myResourceMultiplier += Rocket.ROCKET_TIER_STATS[rocket.tier - 1].resourceMultiplier;
+        try {
+            this.numMyRockets = 0;
+            this.myResourceMultiplier = 0;
+            for (int i = 0; i < this.rocketsInOrbit.size(); ++i) {
+                RocketInOrbit rocket = this.rocketsInOrbit.get(i);
+                if (rocket.playerName.equals(this.myName)) {
+                    this.numMyRockets += 1;
+                    if (i < this.baseLimit && !this.name.equals(HOME_PLANET)) {
+                        this.myResourceMultiplier += Rocket.ROCKET_TIER_STATS[rocket.tier - 1].resourceMultiplier;
+                    }
                 }
             }
+            this.isVisible = this.hasMyBase || this.numMyRockets > 0;
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        this.isVisible = this.hasMyBase || this.numMyRockets > 0;
     }
 
     @Override

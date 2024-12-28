@@ -15,6 +15,9 @@ import io.github.interastra.message.models.LobbyPlayerMessageModel;
 import io.github.interastra.rest.RestService;
 import io.github.interastra.screens.LobbyScreen;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
+
+import java.util.logging.Level;
 
 
 public class LobbyTable extends Table {
@@ -87,9 +90,13 @@ public class LobbyTable extends Table {
         copyImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.notificationTable.setMessage("Game code copied to clipboard.");
-                Clipboard clipboard = Gdx.app.getClipboard();
-                clipboard.setContents(screen.gameCode);
+                try {
+                    screen.notificationTable.setMessage("Game code copied to clipboard.");
+                    Clipboard clipboard = Gdx.app.getClipboard();
+                    clipboard.setContents(screen.gameCode);
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
 
@@ -99,18 +106,22 @@ public class LobbyTable extends Table {
     }
 
     public void updatePlayers() {
-        this.playersTable.clearChildren();
-        this.playerReadyButton.setDisabled(true);
-        this.screen.players.lock();
-        for (LobbyPlayerMessageModel player : this.screen.players.getData()) {
-            this.playersTable.add(this.getPlayerContainer(player.name(), player.ready())).padLeft(10f).padRight(10f);
+        try {
+            this.playersTable.clearChildren();
+            this.playerReadyButton.setDisabled(true);
+            this.screen.players.lock();
+            for (LobbyPlayerMessageModel player : this.screen.players.getData()) {
+                this.playersTable.add(this.getPlayerContainer(player.name(), player.ready())).padLeft(10f).padRight(10f);
 
-            if (player.name().equals(this.screen.myName)) {
-                this.playerReadyButton.setText(player.ready() ? "Ready Down" : "Ready Up");
-                this.playerReadyButton.setDisabled(false);
+                if (player.name().equals(this.screen.myName)) {
+                    this.playerReadyButton.setText(player.ready() ? "Ready Down" : "Ready Up");
+                    this.playerReadyButton.setDisabled(false);
+                }
             }
+            this.screen.players.unlock();
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        this.screen.players.unlock();
     }
 
     public Container<Table> getPlayerContainer(final String name, final boolean ready) {
@@ -140,8 +151,12 @@ public class LobbyTable extends Table {
         playerReadyButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.notificationTable.startLoading("Setting ready status");
-                RestService.setReady(screen, screen.gameCode, screen.myName, !screen.getReadyStatus(screen.myName));
+                try {
+                    screen.notificationTable.startLoading("Setting ready status");
+                    RestService.setReady(screen, screen.gameCode, screen.myName, !screen.getReadyStatus(screen.myName));
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         playerReadyButton.setDisabled(true);
@@ -153,8 +168,12 @@ public class LobbyTable extends Table {
         leaveButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.leaveSound.play();
-                screen.leaveLobby = true;
+                try {
+                    screen.leaveSound.play();
+                    screen.leaveLobby = true;
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         return leaveButton;

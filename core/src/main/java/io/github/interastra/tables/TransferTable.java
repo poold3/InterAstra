@@ -11,6 +11,9 @@ import io.github.interastra.message.models.PriceMessageModel;
 import io.github.interastra.models.Price;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
+
+import java.util.logging.Level;
 
 public class TransferTable extends Dashboard {
 
@@ -57,28 +60,32 @@ public class TransferTable extends Dashboard {
         sendTextButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Verify recipient
-                if (recipientLabel.textEquals("")) {
-                    screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage("You must select a recipient.");
-                    return;
-                }
+                try {
+                    // Verify recipient
+                    if (recipientLabel.textEquals("")) {
+                        screen.badSound.play(0.5f);
+                        screen.notificationTable.setMessage("You must select a recipient.");
+                        return;
+                    }
 
-                Price transferAmount = enterResourcesTable.getPrice();
-                if (transferAmount == null) {
-                    screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage("Invalid resource value(s).");
-                    return;
-                }
+                    Price transferAmount = enterResourcesTable.getPrice();
+                    if (transferAmount == null) {
+                        screen.badSound.play(0.5f);
+                        screen.notificationTable.setMessage("Invalid resource value(s).");
+                        return;
+                    }
 
-                // Verify player can afford
-                if (!transferAmount.canAfford(screen) && !screen.noCostMode) {
-                    screen.badSound.play(0.5f);
-                    return;
-                }
+                    // Verify player can afford
+                    if (!transferAmount.canAfford(screen) && !screen.noCostMode) {
+                        screen.badSound.play(0.5f);
+                        return;
+                    }
 
-                screen.sendTransfer(new TransferMessage(screen.myPlayer.name, recipientLabel.getText().toString(), new PriceMessageModel(transferAmount)));
-                resetUI();
+                    screen.sendTransfer(new TransferMessage(screen.myPlayer.name, recipientLabel.getText().toString(), new PriceMessageModel(transferAmount)));
+                    resetUI();
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
 
@@ -96,7 +103,11 @@ public class TransferTable extends Dashboard {
         playerTextButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                recipientLabel.setText(player.name());
+                try {
+                    recipientLabel.setText(player.name());
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         return playerTextButton;

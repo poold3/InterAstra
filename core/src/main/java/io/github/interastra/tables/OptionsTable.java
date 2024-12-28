@@ -6,6 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
+
+import java.util.logging.Level;
 
 public class OptionsTable extends Table {
     public static final float MIN_SIZE = 400f;
@@ -53,7 +56,11 @@ public class OptionsTable extends Table {
         resumeButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.toggleOptionsMenu();
+                try {
+                    screen.toggleOptionsMenu();
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         return resumeButton;
@@ -64,8 +71,12 @@ public class OptionsTable extends Table {
         leaveButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.leaveSound.play();
-                screen.leaveGame = true;
+                try {
+                    screen.leaveSound.play();
+                    screen.leaveGame = true;
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         return leaveButton;

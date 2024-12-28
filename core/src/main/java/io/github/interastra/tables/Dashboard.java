@@ -9,6 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import io.github.interastra.screens.GameScreen;
+import io.github.interastra.services.InterAstraLog;
+
+import java.util.logging.Level;
 
 public class Dashboard extends Table {
     public static final float DASHBOARD_BUTTON_WIDTH = 150f;
@@ -47,14 +50,22 @@ public class Dashboard extends Table {
         ScrollPane scrollPane = new ScrollPane(this.contentTable, this.skin);
         scrollPane.addListener(new InputListener() {
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                if (getStage() != null) {
-                    getStage().setScrollFocus(scrollPane);
+                try {
+                    if (getStage() != null) {
+                        getStage().setScrollFocus(scrollPane);
+                    }
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
 
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                if (getStage() != null) {
-                    getStage().setScrollFocus(null);
+                try {
+                    if (getStage() != null) {
+                        getStage().setScrollFocus(null);
+                    }
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         });

@@ -14,10 +14,12 @@ import io.github.interastra.message.models.RocketMessageModel;
 import io.github.interastra.models.*;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.tooltips.RocketToolTip;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class PlanetDashboardTable extends Dashboard {
     public static final float ROCKET_LABEL_WIDTH = 140f;
@@ -92,54 +94,66 @@ public class PlanetDashboardTable extends Dashboard {
             buildRocketTextButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
                 @Override
                 public void enter (InputEvent event, float x, float y, int pointer, @Null Actor fromActor) {
-                    super.enter(event, x, y, pointer, fromActor);
-                    if (cursor != null && screen.planetsTable.rocketToSend == null) {
-                        float range = Rocket.ROCKET_TIER_STATS[finalI].range;
-                        if (planet.moon != null) {
-                            range += Moon.RANGE_INCREASE;
+                    try {
+                        super.enter(event, x, y, pointer, fromActor);
+                        if (cursor != null && screen.planetsTable.rocketToSend == null) {
+                            float range = Rocket.ROCKET_TIER_STATS[finalI].range;
+                            if (planet.moon != null) {
+                                range += Moon.RANGE_INCREASE;
+                            }
+                            screen.planetsTable.setRangeFinder(planet, range);
                         }
-                        screen.planetsTable.setRangeFinder(planet, range);
+                    } catch (Exception e) {
+                        InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
 
                 @Override
                 public void exit (InputEvent event, float x, float y, int pointer, @Null Actor toActor) {
-                    super.exit(event, x, y, pointer, toActor);
-                    if (pointer == -1 && cursor != null && screen.planetsTable.rocketToSend == null) {
-                        screen.planetsTable.resetRangeFinder();
+                    try {
+                        super.exit(event, x, y, pointer, toActor);
+                        if (pointer == -1 && cursor != null && screen.planetsTable.rocketToSend == null) {
+                            screen.planetsTable.resetRangeFinder();
+                        }
+                    } catch (Exception e) {
+                        InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
 
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    if (!planet.hasMyBase) {
-                        screen.badSound.play(0.5f);
-                        screen.notificationTable.setMessage("You must have a base to build a rocket here.");
-                        return;
-                    } else if (planet.baseCooldown > 0f) {
-                        screen.badSound.play(0.5f);
-                        screen.notificationTable.setMessage("Cooldown in effect.");
-                        return;
-                    } else if (planet.rocketsInFlight.size() + planet.numMyRockets >= planet.baseLimit) {
-                        screen.badSound.play(0.5f);
-                        screen.notificationTable.setMessage("Too many rockets at this planet.");
-                        return;
-                    }
+                    try {
+                        if (!planet.hasMyBase) {
+                            screen.badSound.play(0.5f);
+                            screen.notificationTable.setMessage("You must have a base to build a rocket here.");
+                            return;
+                        } else if (planet.baseCooldown > 0f) {
+                            screen.badSound.play(0.5f);
+                            screen.notificationTable.setMessage("Cooldown in effect.");
+                            return;
+                        } else if (planet.rocketsInFlight.size() + planet.numMyRockets >= planet.baseLimit) {
+                            screen.badSound.play(0.5f);
+                            screen.notificationTable.setMessage("Too many rockets at this planet.");
+                            return;
+                        }
 
-                    if (!Rocket.ROCKET_TIER_PRICE[finalI].canAfford(screen) && !screen.noCostMode) {
-                        screen.badSound.play(0.5f);
-                        return;
-                    }
+                        if (!Rocket.ROCKET_TIER_PRICE[finalI].canAfford(screen) && !screen.noCostMode) {
+                            screen.badSound.play(0.5f);
+                            return;
+                        }
 
-                    screen.buildSound.play(0.05f);
-                    RocketInFlight newRocket = new RocketInFlight(
-                        screen,
-                        new RocketMessageModel(UUID.randomUUID().toString(), screen.myPlayer.name, finalI + 1),
-                        planet
-                    );
-                    planet.rocketsInFlight.add(newRocket);
-                    Rocket.ROCKET_TIER_PRICE[finalI].purchase(screen);
-                    planet.baseCooldown = Planet.BASE_COOLDOWN;
+                        screen.buildSound.play(0.05f);
+                        RocketInFlight newRocket = new RocketInFlight(
+                            screen,
+                            new RocketMessageModel(UUID.randomUUID().toString(), screen.myPlayer.name, finalI + 1),
+                            planet
+                        );
+                        planet.rocketsInFlight.add(newRocket);
+                        Rocket.ROCKET_TIER_PRICE[finalI].purchase(screen);
+                        planet.baseCooldown = Planet.BASE_COOLDOWN;
+                    } catch (Exception e) {
+                        InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
                 }
             });
             buildRocketTextButton.addListener(new RocketToolTip(screen, i + 1));
@@ -194,12 +208,16 @@ public class PlanetDashboardTable extends Dashboard {
     }
 
     public void setPlanet(final Planet planet) {
-        this.planet = planet;
-        this.rocketsInOrbit.clear();
-        this.rocketsInOrbitTable.clear();
-        this.bases.clear();
-        this.basesLabel.setText("[]");
-        this.updateTimer = 1f;
+        try {
+            this.planet = planet;
+            this.rocketsInOrbit.clear();
+            this.rocketsInOrbitTable.clear();
+            this.bases.clear();
+            this.basesLabel.setText("[]");
+            this.updateTimer = 1f;
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public boolean needToUpdateRocketsInOrbit() {
@@ -230,66 +248,70 @@ public class PlanetDashboardTable extends Dashboard {
 
     @Override
     public void act(float delta) {
-        super.act(delta);
+        try {
+            super.act(delta);
 
-        this.updateTimer += delta;
-        if (this.updateTimer < 1f) {
-            return;
-        }
-
-        this.updateTimer -= 1f;
-
-        if (this.planet.baseCooldown > 0f) {
-            this.planetCooldownLabel.setText(String.format("%.0f", this.planet.baseCooldown));
-        } else {
-            this.planetCooldownLabel.setText("");
-        }
-
-        if (!this.titleLabel.getText().equalsIgnoreCase(this.planet.name)) {
-            this.titleLabel.setText(this.planet.name);
-        }
-
-        if (this.planet.isVisible) {
-            if (this.bases.size() != this.planet.bases.size() || this.basesLabel.textEquals("Unknown")) {
-                this.bases = new ArrayList<>(this.planet.bases);
-                this.basesLabel.setText(this.bases.toString());
+            this.updateTimer += delta;
+            if (this.updateTimer < 1f) {
+                return;
             }
-            if (this.needToUpdateRocketsInOrbit()) {
-                this.rocketsInOrbit.clear();
+
+            this.updateTimer -= 1f;
+
+            if (this.planet.baseCooldown > 0f) {
+                this.planetCooldownLabel.setText(String.format("%.0f", this.planet.baseCooldown));
+            } else {
+                this.planetCooldownLabel.setText("");
+            }
+
+            if (!this.titleLabel.getText().equalsIgnoreCase(this.planet.name)) {
+                this.titleLabel.setText(this.planet.name);
+            }
+
+            if (this.planet.isVisible) {
+                if (this.bases.size() != this.planet.bases.size() || this.basesLabel.textEquals("Unknown")) {
+                    this.bases = new ArrayList<>(this.planet.bases);
+                    this.basesLabel.setText(this.bases.toString());
+                }
+                if (this.needToUpdateRocketsInOrbit()) {
+                    this.rocketsInOrbit.clear();
+                    this.rocketsInOrbitTable.clear();
+                    this.rocketsInOrbit = new ArrayList<>(this.planet.rocketsInOrbit);
+                    for (int i = 0; i < this.rocketsInOrbit.size(); ++i) {
+                        this.addRocketRow(this.rocketsInOrbit.get(i));
+                        if (i % 2 == 1) {
+                            this.rocketsInOrbitTable.row();
+                        }
+                    }
+                }
+            } else {
+                if (!this.bases.isEmpty()) {
+                    this.bases.clear();
+                }
+                this.basesLabel.setText("Unknown");
+                if (!this.rocketsInOrbit.isEmpty()) {
+                    this.rocketsInOrbit.clear();
+                }
                 this.rocketsInOrbitTable.clear();
-                this.rocketsInOrbit = new ArrayList<>(this.planet.rocketsInOrbit);
-                for (int i = 0; i < this.rocketsInOrbit.size(); ++i) {
-                    this.addRocketRow(this.rocketsInOrbit.get(i));
+                this.rocketsInOrbitTable.add(new Label("Unknown", this.skin)).expandX().center().pad(5f);
+            }
+
+            if (this.needToUpdateRocketsInFlight()) {
+                this.rocketsInFlight.clear();
+                this.rocketsInFlightTable.clear();
+                this.rocketsInFlight = new ArrayList<>(this.planet.rocketsInFlight);
+                for (int i = 0; i < this.rocketsInFlight.size(); ++i) {
+                    if (this.rocketsInFlight.get(i).arrived) {
+                        continue;
+                    }
+                    this.addRocketRow(this.rocketsInFlight.get(i));
                     if (i % 2 == 1) {
-                        this.rocketsInOrbitTable.row();
+                        this.rocketsInFlightTable.row();
                     }
                 }
             }
-        } else {
-            if (!this.bases.isEmpty()) {
-                this.bases.clear();
-            }
-            this.basesLabel.setText("Unknown");
-            if (!this.rocketsInOrbit.isEmpty()) {
-                this.rocketsInOrbit.clear();
-            }
-            this.rocketsInOrbitTable.clear();
-            this.rocketsInOrbitTable.add(new Label("Unknown", this.skin)).expandX().center().pad(5f);
-        }
-
-        if (this.needToUpdateRocketsInFlight()) {
-            this.rocketsInFlight.clear();
-            this.rocketsInFlightTable.clear();
-            this.rocketsInFlight = new ArrayList<>(this.planet.rocketsInFlight);
-            for (int i = 0; i < this.rocketsInFlight.size(); ++i) {
-                if (this.rocketsInFlight.get(i).arrived) {
-                    continue;
-                }
-                this.addRocketRow(this.rocketsInFlight.get(i));
-                if (i % 2 == 1) {
-                    this.rocketsInFlightTable.row();
-                }
-            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 }

@@ -8,8 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.tooltips.ColorTextTooltip;
 import io.github.interastra.tooltips.InstantTooltipManager;
+
+import java.util.logging.Level;
 
 public class PlanetDashboardButtonTable extends Table {
     public final float DASHBOARD_BUTTON_SIZE = 60f;
@@ -35,7 +38,11 @@ public class PlanetDashboardButtonTable extends Table {
         dashboardImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.togglePlanetDashboard();
+                try {
+                    screen.togglePlanetDashboard();
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
 

@@ -3,8 +3,10 @@ package io.github.interastra.models;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import io.github.interastra.message.models.RocketMessageModel;
+import io.github.interastra.services.InterAstraLog;
 
 import java.util.Random;
+import java.util.logging.Level;
 
 public class RocketInOrbit extends Rocket {
     public float cooldown;
@@ -29,31 +31,35 @@ public class RocketInOrbit extends Rocket {
     }
 
     public void move(float deltaTime) {
-        if (this.inOrbit()) {
-            if (this.orbitalDirection == ORBITAL_DIRECTION.COUNTER_CLOCKWISE) {
-                this.orbitalPosition += (ROCKET_ORBITAL_SPEED * deltaTime);
-                if (this.orbitalPosition >= TWO_PI) {
-                    this.orbitalPosition -= TWO_PI;
+        try {
+            if (this.inOrbit()) {
+                if (this.orbitalDirection == ORBITAL_DIRECTION.COUNTER_CLOCKWISE) {
+                    this.orbitalPosition += (ROCKET_ORBITAL_SPEED * deltaTime);
+                    if (this.orbitalPosition >= TWO_PI) {
+                        this.orbitalPosition -= TWO_PI;
+                    }
+                    this.rocketSprite.setRotation((float) (this.orbitalPosition / Math.PI * 180f));
+                } else {
+                    this.orbitalPosition -= (ROCKET_ORBITAL_SPEED * deltaTime);
+                    if (this.orbitalPosition < 0f) {
+                        this.orbitalPosition += TWO_PI;
+                    }
+                    this.rocketSprite.setRotation((float) ((this.orbitalPosition / Math.PI * 180f) + 180f));
                 }
-                this.rocketSprite.setRotation((float) (this.orbitalPosition / Math.PI * 180f));
-            } else {
-                this.orbitalPosition -= (ROCKET_ORBITAL_SPEED * deltaTime);
-                if (this.orbitalPosition < 0f) {
-                    this.orbitalPosition += TWO_PI;
-                }
-                this.rocketSprite.setRotation((float) ((this.orbitalPosition / Math.PI * 180f) + 180f));
-            }
 
-            float x = this.orbitalRadius * (float) Math.cos(this.orbitalPosition) + this.orbitingPlanet.getX();
-            float y = this.orbitalRadius * (float) Math.sin(this.orbitalPosition) + this.orbitingPlanet.getY();
-            this.rocketSprite.setCenter(x, y);
+                float x = this.orbitalRadius * (float) Math.cos(this.orbitalPosition) + this.orbitingPlanet.getX();
+                float y = this.orbitalRadius * (float) Math.sin(this.orbitalPosition) + this.orbitingPlanet.getY();
+                this.rocketSprite.setCenter(x, y);
 
-            if (this.cooldown > 0f) {
-                this.cooldown -= (deltaTime);
-                if (this.cooldown <= 0f) {
-                    this.cooldownSound.play(0.3f);
+                if (this.cooldown > 0f) {
+                    this.cooldown -= (deltaTime);
+                    if (this.cooldown <= 0f) {
+                        this.cooldownSound.play(0.3f);
+                    }
                 }
             }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 }

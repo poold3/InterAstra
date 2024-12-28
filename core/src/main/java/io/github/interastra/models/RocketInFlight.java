@@ -5,6 +5,9 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.interastra.message.messages.AddRocketMessage;
 import io.github.interastra.message.models.RocketMessageModel;
 import io.github.interastra.screens.GameScreen;
+import io.github.interastra.services.InterAstraLog;
+
+import java.util.logging.Level;
 
 public class RocketInFlight extends Rocket {
     public GameScreen screen;
@@ -81,21 +84,25 @@ public class RocketInFlight extends Rocket {
     }
 
     public void move(final float deltaTime) {
-        if (!this.arrived) {
-            float currentDx = this.dx * deltaTime;
-            float currentDy = this.dy * deltaTime;
-            this.rocketSprite.translate(currentDx, currentDy);
-            this.propulsionSprite.translate(currentDx, currentDy);
-            this.arrivalTimer -= (deltaTime);
-            if (this.arrivalTimer <= 0f) {
-                screen.cooldownSound.play(0.3f);
-                this.arrival();
+        try {
+            if (!this.arrived) {
+                float currentDx = this.dx * deltaTime;
+                float currentDy = this.dy * deltaTime;
+                this.rocketSprite.translate(currentDx, currentDy);
+                this.propulsionSprite.translate(currentDx, currentDy);
+                this.arrivalTimer -= (deltaTime);
+                if (this.arrivalTimer <= 0f) {
+                    screen.cooldownSound.play(0.3f);
+                    this.arrival();
+                }
+            } else {
+                this.arrivalTimer += (deltaTime);
+                if (this.arrivalTimer > 5f) {
+                    this.arrival();
+                }
             }
-        } else {
-            this.arrivalTimer += (deltaTime);
-            if (this.arrivalTimer > 5f) {
-                this.arrival();
-            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -109,8 +116,12 @@ public class RocketInFlight extends Rocket {
     }
 
     public void arrival() {
-        this.arrived = true;
-        this.arrivalTimer = 0f;
-        this.screen.addRocket(new AddRocketMessage(new RocketMessageModel(this), this.destinationPlanet.name));
+        try {
+            this.arrived = true;
+            this.arrivalTimer = 0f;
+            this.screen.addRocket(new AddRocketMessage(new RocketMessageModel(this), this.destinationPlanet.name));
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 }

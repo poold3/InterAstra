@@ -4,6 +4,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import io.github.interastra.services.CameraOperatorService;
+import io.github.interastra.services.InterAstraLog;
+
+import java.util.logging.Level;
 
 public class CoordinatesTable extends Table {
     private final Label coordinateLabel;
@@ -20,7 +23,11 @@ public class CoordinatesTable extends Table {
 
     @Override
     public void act(float delta) {
-        super.act(delta);
-        this.coordinateLabel.setText(String.format("%.0f, %.0f", this.cameraOperatorService.position.x, this.cameraOperatorService.position.y));
+        try {
+            super.act(delta);
+            this.coordinateLabel.setText(String.format("%.0f, %.0f", this.cameraOperatorService.position.x, this.cameraOperatorService.position.y));
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 }

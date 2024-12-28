@@ -5,6 +5,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import io.github.interastra.models.CameraEnabledEntity;
 
+import java.util.logging.Level;
+
 /**
  * Hi! I'm a camera operator! Just tell me where to film by setting my targetPosition and targetZoom properties.
  * Every time my move() function is called, I slowly move towards the targetPosition and targetZoom settings.
@@ -27,20 +29,20 @@ public class CameraOperatorService extends OrthographicCamera {
         this.viewport = viewport;
     }
 
-    public boolean needsToMove() {
-        return Math.abs(this.targetZoom - this.zoom) <= 0.0001f || !this.targetPosition.epsilonEquals(this.position);
-    }
-
     public void move() {
-        // Adjust zoom
-        this.zoom = floatLerp(this.zoom, this.targetZoom, ZOOM_SPEED);
+        try {
+            // Adjust zoom
+            this.zoom = floatLerp(this.zoom, this.targetZoom, ZOOM_SPEED);
 
-        // Adjust position
-        this.position.x = floatLerp(this.position.x, this.targetPosition.x, MOVE_SPEED);
+            // Adjust position
+            this.position.x = floatLerp(this.position.x, this.targetPosition.x, MOVE_SPEED);
 
-        this.position.y = floatLerp(this.position.y, this.targetPosition.y, MOVE_SPEED);
+            this.position.y = floatLerp(this.position.y, this.targetPosition.y, MOVE_SPEED);
 
-        this.update();
+            this.update();
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public void reset() {

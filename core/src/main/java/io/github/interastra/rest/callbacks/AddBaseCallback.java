@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.github.interastra.models.Planet;
 import io.github.interastra.rest.RestService;
 import io.github.interastra.screens.GameScreen;
+import io.github.interastra.services.InterAstraLog;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 public class AddBaseCallback implements Callback {
     private final GameScreen screen;
@@ -26,21 +28,26 @@ public class AddBaseCallback implements Callback {
     }
 
     @Override
-    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-        screen.notificationTable.clearNotification();
-        if (response.isSuccessful()) {
-            Gson gson = new Gson();
-            io.github.interastra.rest.responses.Response addBaseResponse = gson.fromJson(response.body().string(), io.github.interastra.rest.responses.Response.class);
-            if (addBaseResponse.success) {
-                Planet.BASE_PRICE.purchase(screen);
-                screen.myPlayer.bases += 1;
+    public void onResponse(@NotNull Call call, @NotNull Response response) {
+        try {
+            screen.notificationTable.clearNotification();
+            if (response.isSuccessful()) {
+                Gson gson = new Gson();
+                io.github.interastra.rest.responses.Response addBaseResponse = gson.fromJson(response.body().string(), io.github.interastra.rest.responses.Response.class);
+                if (addBaseResponse.success) {
+                    Planet.BASE_PRICE.purchase(screen);
+                    screen.myPlayer.bases += 1;
+                } else {
+                    screen.badSound.play(0.5f);
+                    screen.notificationTable.setMessage(addBaseResponse.message);
+                }
             } else {
-                screen.badSound.play(0.5f);
-                screen.notificationTable.setMessage(addBaseResponse.message);
+                screen.notificationTable.setMessage(RestService.SERVER_ERROR);
             }
-        } else {
-            screen.notificationTable.setMessage(RestService.SERVER_ERROR);
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            response.close();
         }
-        response.close();
     }
 }

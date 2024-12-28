@@ -5,8 +5,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import io.github.interastra.services.InterAstraLog;
 
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 
 public class NotificationTable extends Table {
     public static final float LOADING_TICK_LENGTH = .5f;
@@ -49,6 +51,8 @@ public class NotificationTable extends Table {
             this.message.append(message);
             this.messageLabel.setText(this.message);
             this.duration = duration;
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         } finally {
             this.lock.unlock();
         }
@@ -63,6 +67,8 @@ public class NotificationTable extends Table {
             this.isLoading = true;
             this.currentNumberOfPeriods = 0;
             this.loadingTimer = 0f;
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         } finally {
             this.lock.unlock();
         }
@@ -74,6 +80,8 @@ public class NotificationTable extends Table {
             this.isLoading = false;
             this.message.clear();
             this.messageLabel.setText(this.message);
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         } finally {
             this.lock.unlock();
         }
@@ -108,6 +116,8 @@ public class NotificationTable extends Table {
                     }
                 }
             }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         } finally {
             this.lock.unlock();
         }

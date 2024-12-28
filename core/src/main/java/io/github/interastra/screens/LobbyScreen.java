@@ -17,12 +17,14 @@ import io.github.interastra.message.StompHandlers.GameStart;
 import io.github.interastra.message.StompHandlers.LobbyUpdate;
 import io.github.interastra.message.messages.GameStartMessage;
 import io.github.interastra.message.models.LobbyPlayerMessageModel;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.services.LockService;
 import io.github.interastra.tables.LobbyTable;
 import io.github.interastra.tables.NotificationTable;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 public class LobbyScreen implements Screen {
     public Main game;
@@ -80,21 +82,25 @@ public class LobbyScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        if (this.leaveLobby) {
-            this.leaveTime += delta;
-            if (this.leaveTime >= 0.75f) {
-                this.unsubscribeToLobbyTopics();
-                this.messageSession.disconnect();
-                this.game.setScreen(new MainMenuScreen(this.game));
-                this.dispose();
+        try {
+            if (this.leaveLobby) {
+                this.leaveTime += delta;
+                if (this.leaveTime >= 0.75f) {
+                    this.unsubscribeToLobbyTopics();
+                    this.messageSession.disconnect();
+                    this.game.setScreen(new MainMenuScreen(this.game));
+                    this.dispose();
+                }
+            } else if (this.gameData != null) {
+                this.game.setScreen(new GameScreen(this.game, this, this.gameData));
             }
-        } else if (this.gameData != null) {
-            this.game.setScreen(new GameScreen(this.game, this, this.gameData));
-        }
 
-        ScreenUtils.clear(Color.BLACK);
-        stage.act(delta);
-        stage.draw();
+            ScreenUtils.clear(Color.BLACK);
+            stage.act(delta);
+            stage.draw();
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     @Override
@@ -119,7 +125,11 @@ public class LobbyScreen implements Screen {
 
     @Override
     public void dispose() {
-        this.stage.dispose();
+        try {
+            this.stage.dispose();
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public void setMessageSession(final StompSession messageSession) {
@@ -127,42 +137,55 @@ public class LobbyScreen implements Screen {
     }
 
     public void unsubscribeToLobbyTopics() {
-        for (StompSession.Subscription sub : this.lobbySubscriptions) {
-            sub.unsubscribe();
+        try {
+            for (StompSession.Subscription sub : this.lobbySubscriptions) {
+                sub.unsubscribe();
+            }
+            this.lobbySubscriptions.clear();
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        this.lobbySubscriptions.clear();
     }
 
     public void subscribeToLobbyTopics() {
-        this.unsubscribeToLobbyTopics();
+        try {
+            this.unsubscribeToLobbyTopics();
 
-        // Add lobby update subscription
-        this.lobbySubscriptions.add(
-            this.messageSession.subscribe(
-                String.format("/topic/lobby-update/%s", this.gameCode),
-                new LobbyUpdate(this)
-            )
-        );
+            // Add lobby update subscription
+            this.lobbySubscriptions.add(
+                this.messageSession.subscribe(
+                    String.format("/topic/lobby-update/%s", this.gameCode),
+                    new LobbyUpdate(this)
+                )
+            );
 
-        // Add game start subscription
-        this.lobbySubscriptions.add(
-            this.messageSession.subscribe(
-                String.format("/topic/game-start/%s", this.gameCode),
-                new GameStart(this)
-            )
-        );
+            // Add game start subscription
+            this.lobbySubscriptions.add(
+                this.messageSession.subscribe(
+                    String.format("/topic/game-start/%s", this.gameCode),
+                    new GameStart(this)
+                )
+            );
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public boolean getReadyStatus(final String name) {
-        boolean ready = false;
-        this.players.lock();
-        for (LobbyPlayerMessageModel player : this.players.getData()) {
-            if (player.name().equals(name)) {
-                ready = player.ready();
-                break;
+        try {
+            boolean ready = false;
+            this.players.lock();
+            for (LobbyPlayerMessageModel player : this.players.getData()) {
+                if (player.name().equals(name)) {
+                    ready = player.ready();
+                    break;
+                }
             }
+            this.players.unlock();
+            return ready;
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        this.players.unlock();
-        return ready;
+        return false;
     }
 }

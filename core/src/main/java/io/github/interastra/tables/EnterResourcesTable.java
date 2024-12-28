@@ -11,7 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.utils.Align;
 import io.github.interastra.models.Price;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.stages.GameStage;
+
+import java.util.logging.Level;
 
 public class EnterResourcesTable extends Table {
     public static final float TEXTFIELD_WIDTH = 150f;
@@ -75,18 +78,22 @@ public class EnterResourcesTable extends Table {
     }
 
     public void resetUI() {
-        this.balanceTextField.setText("0.0");
-        this.stage.unfocus(this.balanceTextField);
-        this.ironTextField.setText("0.0");
-        this.stage.unfocus(this.ironTextField);
-        this.oilTextField.setText("0.0");
-        this.stage.unfocus(this.oilTextField);
-        this.aluminumTextField.setText("0.0");
-        this.stage.unfocus(this.aluminumTextField);
-        this.copperTextField.setText("0.0");
-        this.stage.unfocus(this.copperTextField);
-        this.stoneTextField.setText("0.0");
-        this.stage.unfocus(this.stoneTextField);
+        try {
+            this.balanceTextField.setText("0.0");
+            this.stage.unfocus(this.balanceTextField);
+            this.ironTextField.setText("0.0");
+            this.stage.unfocus(this.ironTextField);
+            this.oilTextField.setText("0.0");
+            this.stage.unfocus(this.oilTextField);
+            this.aluminumTextField.setText("0.0");
+            this.stage.unfocus(this.aluminumTextField);
+            this.copperTextField.setText("0.0");
+            this.stage.unfocus(this.copperTextField);
+            this.stoneTextField.setText("0.0");
+            this.stage.unfocus(this.stoneTextField);
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public Label getAmountLabel(final String text) {
@@ -107,11 +114,15 @@ public class EnterResourcesTable extends Table {
         amountTextField.addListener(new FocusListener() {
             @Override
             public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
-                super.keyboardFocusChanged(event, actor, focused);
-                if (focused && amountTextField.getText().equals("0.0")) {
-                    amountTextField.setText("");
-                } else if (!focused && amountTextField.getText().isBlank()) {
-                    amountTextField.setText("0.0");
+                try {
+                    super.keyboardFocusChanged(event, actor, focused);
+                    if (focused && amountTextField.getText().equals("0.0")) {
+                        amountTextField.setText("");
+                    } else if (!focused && amountTextField.getText().isBlank()) {
+                        amountTextField.setText("0.0");
+                    }
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         });

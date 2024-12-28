@@ -12,8 +12,11 @@ import io.github.interastra.models.PlanetResource;
 import io.github.interastra.models.Price;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.tooltips.ColorTextTooltip;
 import io.github.interastra.tooltips.InstantTooltipManager;
+
+import java.util.logging.Level;
 
 public class BuySellResourcesTable extends Dashboard {
 
@@ -56,25 +59,29 @@ public class BuySellResourcesTable extends Dashboard {
         buyTextButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Price buyAmount = enterResourcesTable.getPrice();
-                if (buyAmount == null) {
-                    screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage("Invalid resource value(s).");
-                    return;
-                }
+                try {
+                    Price buyAmount = enterResourcesTable.getPrice();
+                    if (buyAmount == null) {
+                        screen.badSound.play(0.5f);
+                        screen.notificationTable.setMessage("Invalid resource value(s).");
+                        return;
+                    }
 
-                float requiredBalance = buyAmount.getBuyAmount(screen);
-                float balanceStillNeeded = requiredBalance - screen.myPlayer.balance;
-                if (balanceStillNeeded > 0f && !screen.noCostMode) {
-                    screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage(String.format("Missing: $%.2f", balanceStillNeeded));
-                    return;
-                }
+                    float requiredBalance = buyAmount.getBuyAmount(screen);
+                    float balanceStillNeeded = requiredBalance - screen.myPlayer.balance;
+                    if (balanceStillNeeded > 0f && !screen.noCostMode) {
+                        screen.badSound.play(0.5f);
+                        screen.notificationTable.setMessage(String.format("Missing: $%.2f", balanceStillNeeded));
+                        return;
+                    }
 
-                screen.moneySound.play();
-                screen.myPlayer.balance -= requiredBalance;
-                buyAmount.sell(screen.myPlayer);
-                enterResourcesTable.resetUI();
+                    screen.moneySound.play();
+                    screen.myPlayer.balance -= requiredBalance;
+                    buyAmount.sell(screen.myPlayer);
+                    enterResourcesTable.resetUI();
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         this.buyRateTextToolTip = new ColorTextTooltip(this.getBuyRateString(), new InstantTooltipManager(), this.skin, Color.BLACK);
@@ -85,23 +92,27 @@ public class BuySellResourcesTable extends Dashboard {
         sellTextButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Price sellAmount = enterResourcesTable.getPrice();
-                if (sellAmount == null) {
-                    screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage("Invalid resource value(s).");
-                    return;
+                try {
+                    Price sellAmount = enterResourcesTable.getPrice();
+                    if (sellAmount == null) {
+                        screen.badSound.play(0.5f);
+                        screen.notificationTable.setMessage("Invalid resource value(s).");
+                        return;
+                    }
+
+
+                    if (!sellAmount.canAfford(screen) && !screen.noCostMode) {
+                        screen.badSound.play(0.5f);
+                        return;
+                    }
+
+                    screen.moneySound.play();
+                    screen.myPlayer.balance += sellAmount.getSellAmount(screen);
+                    sellAmount.purchase(screen);
+                    enterResourcesTable.resetUI();
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                 }
-
-
-                if (!sellAmount.canAfford(screen) && !screen.noCostMode) {
-                    screen.badSound.play(0.5f);
-                    return;
-                }
-
-                screen.moneySound.play();
-                screen.myPlayer.balance += sellAmount.getSellAmount(screen);
-                sellAmount.purchase(screen);
-                enterResourcesTable.resetUI();
             }
         });
         this.sellRateTextToolTip = new ColorTextTooltip(this.getSellRateString(), new InstantTooltipManager(), this.skin, Color.BLACK);
@@ -144,58 +155,70 @@ public class BuySellResourcesTable extends Dashboard {
     }
 
     public void refreshRates() {
-        this.sellRateTextToolTip.getActor().getActor().setText(this.getSellRateString());
-        this.buyRateTextToolTip.getActor().getActor().setText(this.getBuyRateString());
-        if (this.isVisible) {
-            Price newPrice = this.enterResourcesTable.getPrice();
-            if (newPrice == null) {
-                this.buyLabel.setText("");
-                this.sellLabel.setText("");
-            } else {
-                this.currentPrice = newPrice;
-                this.buyLabel.setText(String.format("$%.2f", this.currentPrice.getBuyAmount(screen)));
-                this.sellLabel.setText(String.format("$%.2f", this.currentPrice.getSellAmount(screen)));
+        try {
+            this.sellRateTextToolTip.getActor().getActor().setText(this.getSellRateString());
+            this.buyRateTextToolTip.getActor().getActor().setText(this.getBuyRateString());
+            if (this.isVisible) {
+                Price newPrice = this.enterResourcesTable.getPrice();
+                if (newPrice == null) {
+                    this.buyLabel.setText("");
+                    this.sellLabel.setText("");
+                } else {
+                    this.currentPrice = newPrice;
+                    this.buyLabel.setText(String.format("$%.2f", this.currentPrice.getBuyAmount(screen)));
+                    this.sellLabel.setText(String.format("$%.2f", this.currentPrice.getSellAmount(screen)));
+                }
             }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     public void update(float delta) {
-        // Update resource valuation
-        this.resourceRevaluationTimer += delta;
-        if (this.resourceRevaluationTimer >= PlanetResource.RESOURCE_VALUATION_TIMER) {
-            this.resourceRevaluationTimer -= PlanetResource.RESOURCE_VALUATION_TIMER;
-            for (int i = 0; i < this.planetResourceSellRates.length; ++i) {
-                this.planetResourceSellRates[i] *= PlanetResource.RESOURCE_SELL_VALUATION_RATE;
+        try {
+            // Update resource valuation
+            this.resourceRevaluationTimer += delta;
+            if (this.resourceRevaluationTimer >= PlanetResource.RESOURCE_VALUATION_TIMER) {
+                this.resourceRevaluationTimer -= PlanetResource.RESOURCE_VALUATION_TIMER;
+                for (int i = 0; i < this.planetResourceSellRates.length; ++i) {
+                    this.planetResourceSellRates[i] *= PlanetResource.RESOURCE_SELL_VALUATION_RATE;
+                }
+                for (int i = 0; i < this.planetResourceBuyRates.length; ++i) {
+                    this.planetResourceBuyRates[i] *= PlanetResource.RESOURCE_BUY_VALUATION_RATE;
+                }
+                this.refreshRates();
+                this.screen.valueSound.play(0.5f);
+                this.screen.notificationTable.setMessage("Resource buy/sell rates have been revalued.");
             }
-            for (int i = 0; i < this.planetResourceBuyRates.length; ++i) {
-                this.planetResourceBuyRates[i] *= PlanetResource.RESOURCE_BUY_VALUATION_RATE;
-            }
-            this.refreshRates();
-            this.screen.valueSound.play(0.5f);
-            this.screen.notificationTable.setMessage("Resource buy/sell rates have been revalued.");
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     @Override
     public void act(float delta) {
-        super.act(delta);
+        try {
+            super.act(delta);
 
-        Price newPrice = this.enterResourcesTable.getPrice();
-        if (newPrice == null) {
-            this.buyLabel.setText("");
-            this.sellLabel.setText("");
-        } else if (!newPrice.equals(this.currentPrice)) {
-            this.currentPrice = newPrice;
-            this.buyLabel.setText(String.format("$%.2f", this.currentPrice.getBuyAmount(screen)));
-            this.sellLabel.setText(String.format("$%.2f", this.currentPrice.getSellAmount(screen)));
+            Price newPrice = this.enterResourcesTable.getPrice();
+            if (newPrice == null) {
+                this.buyLabel.setText("");
+                this.sellLabel.setText("");
+            } else if (!newPrice.equals(this.currentPrice)) {
+                this.currentPrice = newPrice;
+                this.buyLabel.setText(String.format("$%.2f", this.currentPrice.getBuyAmount(screen)));
+                this.sellLabel.setText(String.format("$%.2f", this.currentPrice.getSellAmount(screen)));
+            }
+
+            this.revaluationLabelUpdateTimer += delta;
+            if (this.revaluationLabelUpdateTimer < 1f) {
+                return;
+            }
+
+            this.revaluationLabelUpdateTimer -= 1f;
+            this.revaluationLabel.setText(String.format("Revaluation: %.0f s", PlanetResource.RESOURCE_VALUATION_TIMER - this.resourceRevaluationTimer));
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-
-        this.revaluationLabelUpdateTimer += delta;
-        if (this.revaluationLabelUpdateTimer < 1f) {
-            return;
-        }
-
-        this.revaluationLabelUpdateTimer -= 1f;
-        this.revaluationLabel.setText(String.format("Revaluation: %.0f s", PlanetResource.RESOURCE_VALUATION_TIMER - this.resourceRevaluationTimer));
     }
 }

@@ -11,7 +11,10 @@ import io.github.interastra.message.models.RocketMessageModel;
 import io.github.interastra.models.*;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.tooltips.PlanetToolTip;
+
+import java.util.logging.Level;
 
 public class PlanetsTable extends Table {
     public static final float MAX_BUTTON_SIZE = 70f;
@@ -49,49 +52,53 @@ public class PlanetsTable extends Table {
             planetImageButtonContainer.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    if (planetImageButton.isDisabled()) {
-                        screen.badSound.play(0.5f);
-                        screen.notificationTable.setMessage("Out of range.");
-                        return;
-                    }
-
-                    if (rocketToSend != null) {
-                        // Make sure rocket is not already in flight
-                        for (RocketInFlight rocket : planet.rocketsInFlight) {
-                            if (rocket.equals(rocketToSend)) {
-                                return;
-                            }
-                        }
-
-                        // Check rocket limit
-                        if (planet.rocketsInFlight.size() + planet.numMyRockets >= planet.baseLimit) {
+                    try {
+                        if (planetImageButton.isDisabled()) {
                             screen.badSound.play(0.5f);
-                            screen.notificationTable.setMessage("Too many rockets at this planet.");
+                            screen.notificationTable.setMessage("Out of range.");
                             return;
                         }
 
-                        // Purchase flight
-                        Rocket.ROCKET_TIER_FUEL_PRICE[rocketToSend.tier - 1].purchase(screen);
+                        if (rocketToSend != null) {
+                            // Make sure rocket is not already in flight
+                            for (RocketInFlight rocket : planet.rocketsInFlight) {
+                                if (rocket.equals(rocketToSend)) {
+                                    return;
+                                }
+                            }
 
-                        // Remove rocket
-                        screen.removeRocket(new RemoveRocketMessage(new RocketMessageModel(rocketToSend), rocketToSend.orbitingPlanet.name));
+                            // Check rocket limit
+                            if (planet.rocketsInFlight.size() + planet.numMyRockets >= planet.baseLimit) {
+                                screen.badSound.play(0.5f);
+                                screen.notificationTable.setMessage("Too many rockets at this planet.");
+                                return;
+                            }
 
-                        // Add flight rocket
-                        RocketInFlight rocketInFlight = new RocketInFlight(
-                            screen,
-                            new RocketMessageModel(rocketToSend),
-                            rocketToSend.orbitingPlanet,
-                            planet
-                        );
+                            // Purchase flight
+                            Rocket.ROCKET_TIER_FUEL_PRICE[rocketToSend.tier - 1].purchase(screen);
 
-                        planet.rocketsInFlight.add(rocketInFlight);
+                            // Remove rocket
+                            screen.removeRocket(new RemoveRocketMessage(new RocketMessageModel(rocketToSend), rocketToSend.orbitingPlanet.name));
 
-                        rocketToSend = null;
-                        resetRangeFinder();
-                        return;
+                            // Add flight rocket
+                            RocketInFlight rocketInFlight = new RocketInFlight(
+                                screen,
+                                new RocketMessageModel(rocketToSend),
+                                rocketToSend.orbitingPlanet,
+                                planet
+                            );
+
+                            planet.rocketsInFlight.add(rocketInFlight);
+
+                            rocketToSend = null;
+                            resetRangeFinder();
+                            return;
+                        }
+
+                        trackPlanet(planet);
+                    } catch (Exception e) {
+                        InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                     }
-
-                    trackPlanet(planet);
                 }
             });
             planetImageButtonContainer.addListener(new PlanetToolTip(this.screen, this.screen.planets.get(i), this.moonDrawable));
@@ -114,37 +121,41 @@ public class PlanetsTable extends Table {
         undoImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.notificationTable.clearNotification();
-                // Are we in send rocket mode?
-                if (rocketToSend != null) {
-                    rocketToSend = null;
-                    resetRangeFinder();
-                }
-                // Are we viewing the trade table?
-                else if (screen.transferTable.isVisible) {
-                    screen.toggleTransferTable();
-                }
-                // Are we viewing the buy/sell table?
-                else if (screen.buySellTable.isVisible) {
-                    screen.toggleBuySellTable();
-                }
-                // Are we viewing a planet dashboard?
-                else if (screen.planetDashboardTable.isVisible) {
-                    screen.togglePlanetDashboard();
-                }
-                // Are we viewing a rocket in orbit?
-                else if (screen.entityBeingFollowed != null && screen.entityBeingFollowed.getClass() == RocketInOrbit.class && ((RocketInOrbit) screen.entityBeingFollowed).inOrbit()) {
-                    trackPlanet(((RocketInOrbit) screen.entityBeingFollowed).orbitingPlanet);
-                }
-                // Are we viewing a rocket in flight?
-                else if (screen.entityBeingFollowed != null && screen.entityBeingFollowed.getClass() == RocketInFlight.class && (!((RocketInFlight) screen.entityBeingFollowed).arrived)) {
-                    trackPlanet(((RocketInFlight) screen.entityBeingFollowed).destinationPlanet);
-                }
-                // Reset camera. Make sure planet dashboard button is removed.
-                else {
-                    screen.removePlanetDashboardButton();
-                    screen.entityBeingFollowed = null;
-                    screen.camera.reset();
+                try {
+                    screen.notificationTable.clearNotification();
+                    // Are we in send rocket mode?
+                    if (rocketToSend != null) {
+                        rocketToSend = null;
+                        resetRangeFinder();
+                    }
+                    // Are we viewing the trade table?
+                    else if (screen.transferTable.isVisible) {
+                        screen.toggleTransferTable();
+                    }
+                    // Are we viewing the buy/sell table?
+                    else if (screen.buySellTable.isVisible) {
+                        screen.toggleBuySellTable();
+                    }
+                    // Are we viewing a planet dashboard?
+                    else if (screen.planetDashboardTable.isVisible) {
+                        screen.togglePlanetDashboard();
+                    }
+                    // Are we viewing a rocket in orbit?
+                    else if (screen.entityBeingFollowed != null && screen.entityBeingFollowed.getClass() == RocketInOrbit.class && ((RocketInOrbit) screen.entityBeingFollowed).inOrbit()) {
+                        trackPlanet(((RocketInOrbit) screen.entityBeingFollowed).orbitingPlanet);
+                    }
+                    // Are we viewing a rocket in flight?
+                    else if (screen.entityBeingFollowed != null && screen.entityBeingFollowed.getClass() == RocketInFlight.class && (!((RocketInFlight) screen.entityBeingFollowed).arrived)) {
+                        trackPlanet(((RocketInFlight) screen.entityBeingFollowed).destinationPlanet);
+                    }
+                    // Reset camera. Make sure planet dashboard button is removed.
+                    else {
+                        screen.removePlanetDashboardButton();
+                        screen.entityBeingFollowed = null;
+                        screen.camera.reset();
+                    }
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         });
@@ -153,30 +164,38 @@ public class PlanetsTable extends Table {
     }
 
     public void trackPlanet(final Planet planet) {
-        screen.entityBeingFollowed = planet;
-        screen.camera.targetZoom = screen.camera.getZoomForSize(planet.getWidth() * 3f);
-        if (!screen.planetDashboardButtonTable.isVisible) {
-            screen.addPlanetDashboardButton();
-        }
-        if (screen.planetDashboardTable.isVisible) {
-            screen.planetDashboardTable.setPlanet(planet);
-        }
+        try {
+            screen.entityBeingFollowed = planet;
+            screen.camera.targetZoom = screen.camera.getZoomForSize(planet.getWidth() * 3f);
+            if (!screen.planetDashboardButtonTable.isVisible) {
+                screen.addPlanetDashboardButton();
+            }
+            if (screen.planetDashboardTable.isVisible) {
+                screen.planetDashboardTable.setPlanet(planet);
+            }
 
-        if (screen.transferTable.isVisible) {
-            screen.toggleTransferTable();
-            screen.togglePlanetDashboard();
-        } else if (screen.buySellTable.isVisible) {
-            screen.toggleBuySellTable();
-            screen.togglePlanetDashboard();
-        } else if (screen.infoTable.isVisible) {
-            screen.toggleInfoTable();
-            screen.togglePlanetDashboard();
+            if (screen.transferTable.isVisible) {
+                screen.toggleTransferTable();
+                screen.togglePlanetDashboard();
+            } else if (screen.buySellTable.isVisible) {
+                screen.toggleBuySellTable();
+                screen.togglePlanetDashboard();
+            } else if (screen.infoTable.isVisible) {
+                screen.toggleInfoTable();
+                screen.togglePlanetDashboard();
+            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     public void resetPlanetImageButtons() {
-        for (PlanetImageButton planetImageButton : this.planetButtons) {
-            planetImageButton.setDisabled(false);
+        try {
+            for (PlanetImageButton planetImageButton : this.planetButtons) {
+                planetImageButton.setDisabled(false);
+            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -185,12 +204,16 @@ public class PlanetsTable extends Table {
     }
 
     public void setRocketToSend(final RocketInOrbit rocketToSend) {
-        this.rocketToSend = rocketToSend;
-        float newRange = Rocket.ROCKET_TIER_STATS[this.rocketToSend.tier - 1].range;
-        if (this.rocketToSend.orbitingPlanet.moon != null) {
-            newRange += Moon.RANGE_INCREASE;
+        try {
+            this.rocketToSend = rocketToSend;
+            float newRange = Rocket.ROCKET_TIER_STATS[this.rocketToSend.tier - 1].range;
+            if (this.rocketToSend.orbitingPlanet.moon != null) {
+                newRange += Moon.RANGE_INCREASE;
+            }
+            this.setRangeFinder(this.rocketToSend.orbitingPlanet, newRange);
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        this.setRangeFinder(this.rocketToSend.orbitingPlanet, newRange);
     }
 
     public void setRangeFinder(final Planet origin, final float range) {
@@ -206,18 +229,22 @@ public class PlanetsTable extends Table {
 
     @Override
     public void act(float delta) {
-        super.act(delta);
+        try {
+            super.act(delta);
 
-        if (this.rangeFinderOrigin == null || this.rangeFinderRange == null) {
-            return;
-        }
+            if (this.rangeFinderOrigin == null || this.rangeFinderRange == null) {
+                return;
+            }
 
-        for (int i = 0; i < this.planetButtons.length; ++i) {
-            PlanetImageButton planetButton = this.planetButtons[i];
-            planetButton.setDisabled(
-                this.distanceBetweenPlanets(this.rangeFinderOrigin, this.screen.planets.get(i)) > this.rangeFinderRange
-                    || this.rangeFinderOrigin.equals(this.screen.planets.get(i))
-            );
+            for (int i = 0; i < this.planetButtons.length; ++i) {
+                PlanetImageButton planetButton = this.planetButtons[i];
+                planetButton.setDisabled(
+                    this.distanceBetweenPlanets(this.rangeFinderOrigin, this.screen.planets.get(i)) > this.rangeFinderRange
+                        || this.rangeFinderOrigin.equals(this.screen.planets.get(i))
+                );
+            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 }

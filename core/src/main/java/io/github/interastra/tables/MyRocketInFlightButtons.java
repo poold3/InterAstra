@@ -13,7 +13,10 @@ import io.github.interastra.labels.ColorLabel;
 import io.github.interastra.models.RocketInFlight;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.tooltips.*;
+
+import java.util.logging.Level;
 
 public class MyRocketInFlightButtons extends Table {
     private final GameScreen screen;
@@ -32,10 +35,14 @@ public class MyRocketInFlightButtons extends Table {
         viewRocketButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.entityBeingFollowed = rocket;
-                screen.camera.targetZoom = screen.camera.getZoomForSize(5f);
-                screen.removePlanetDashboardButton();
-                screen.togglePlanetDashboard();
+                try {
+                    screen.entityBeingFollowed = rocket;
+                    screen.camera.targetZoom = screen.camera.getZoomForSize(5f);
+                    screen.removePlanetDashboardButton();
+                    screen.togglePlanetDashboard();
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         viewRocketButton.addListener(new ColorTextTooltip("View Rocket", new InstantTooltipManager(), skin, Color.BLACK));
@@ -48,7 +55,11 @@ public class MyRocketInFlightButtons extends Table {
 
     @Override
     public void act(float delta) {
-        super.act(delta);
-        this.rocketArrivalLabel.setText(Math.round(this.rocket.arrivalTimer));
+        try {
+            super.act(delta);
+            this.rocketArrivalLabel.setText(Math.round(this.rocket.arrivalTimer));
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 }

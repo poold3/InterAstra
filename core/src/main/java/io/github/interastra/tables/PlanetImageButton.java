@@ -8,6 +8,9 @@ import com.badlogic.gdx.utils.Align;
 import io.github.interastra.labels.ColorLabel;
 import io.github.interastra.models.Planet;
 import io.github.interastra.screens.GameScreen;
+import io.github.interastra.services.InterAstraLog;
+
+import java.util.logging.Level;
 
 public class PlanetImageButton extends Stack {
     public static float PLANET_SIZE = 70f;
@@ -65,28 +68,32 @@ public class PlanetImageButton extends Stack {
 
     @Override
     public void act(float delta) {
-        super.act(delta);
+        try {
+            super.act(delta);
 
-        this.updateTimer += delta;
-        if (this.updateTimer < 1f) {
-            return;
-        }
+            this.updateTimer += delta;
+            if (this.updateTimer < 1f) {
+                return;
+            }
 
-        this.updateTimer -= 1f;
-        if (!this.hasMyBase && this.planet.hasMyBase) {
-            Image baseImage = new Image(new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("base")));
-            this.baseIndicator.setActor(baseImage);
-            this.hasMyBase = true;
-        }
+            this.updateTimer -= 1f;
+            if (!this.hasMyBase && this.planet.hasMyBase) {
+                Image baseImage = new Image(new TextureRegionDrawable(this.screen.iconsTextureAtlas.findRegion("base")));
+                this.baseIndicator.setActor(baseImage);
+                this.hasMyBase = true;
+            }
 
-        if (this.planet.numMyRockets != this.numRocketsInOrbit) {
-            this.numRocketsInOrbit = this.planet.numMyRockets;
-            this.rocketsInOrbitIndicator.setText(this.numRocketsInOrbit);
-        }
+            if (this.planet.numMyRockets != this.numRocketsInOrbit) {
+                this.numRocketsInOrbit = this.planet.numMyRockets;
+                this.rocketsInOrbitIndicator.setText(this.numRocketsInOrbit);
+            }
 
-        if (this.planet.rocketsInFlight.size() != this.numRocketsInFlight) {
-            this.numRocketsInFlight = this.planet.rocketsInFlight.size();
-            this.rocketsInFlightIndicator.setText(this.numRocketsInFlight);
+            if (this.planet.rocketsInFlight.size() != this.numRocketsInFlight) {
+                this.numRocketsInFlight = this.planet.rocketsInFlight.size();
+                this.rocketsInFlightIndicator.setText(this.numRocketsInFlight);
+            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 }

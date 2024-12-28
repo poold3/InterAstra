@@ -6,9 +6,11 @@ import io.github.interastra.rest.callbacks.SetReadyCallback;
 import io.github.interastra.screens.GameScreen;
 import io.github.interastra.screens.LobbyScreen;
 import io.github.interastra.screens.MainMenuScreen;
+import io.github.interastra.services.InterAstraLog;
 import okhttp3.*;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 public class RestService {
     public static String BASE_URL = "http://localhost:8090";
@@ -18,74 +20,94 @@ public class RestService {
         .build();
 
     public static void shutdownClient() {
-        client.dispatcher().executorService().shutdown();
-        client.connectionPool().evictAll();
+        try {
+            client.dispatcher().executorService().shutdown();
+            client.connectionPool().evictAll();
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public static void newGame(final MainMenuScreen screen, final String name) {
-        RequestBody requestBody = new FormBody.Builder()
-            .add("name", name)
-            .build();
+        try {
+            RequestBody requestBody = new FormBody.Builder()
+                .add("name", name)
+                .build();
 
-        Request request = new Request.Builder()
-            .url(BASE_URL + "/create-game")
-            .post(requestBody)
-            .addHeader("Accept", "application/json")
-            .build();
+            Request request = new Request.Builder()
+                .url(BASE_URL + "/create-game")
+                .post(requestBody)
+                .addHeader("Accept", "application/json")
+                .build();
 
-        Call call = client.newCall(request);
-        call.enqueue(new JoinGameCallback(screen));
+            Call call = client.newCall(request);
+            call.enqueue(new JoinGameCallback(screen));
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public static void joinGame(final MainMenuScreen screen, final String name, final String gameCode) {
-        RequestBody requestBody = new FormBody.Builder()
-            .add("name", name)
-            .add("gameCode", gameCode)
-            .build();
+        try {
+            RequestBody requestBody = new FormBody.Builder()
+                .add("name", name)
+                .add("gameCode", gameCode)
+                .build();
 
-        Request request = new Request.Builder()
-            .url(BASE_URL + "/join-game")
-            .post(requestBody)
-            .addHeader("Accept", "application/json")
-            .build();
+            Request request = new Request.Builder()
+                .url(BASE_URL + "/join-game")
+                .post(requestBody)
+                .addHeader("Accept", "application/json")
+                .build();
 
-        Call call = client.newCall(request);
-        call.enqueue(new JoinGameCallback(screen));
+            Call call = client.newCall(request);
+            call.enqueue(new JoinGameCallback(screen));
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public static void setReady(final LobbyScreen screen, final String gameCode, final String name, final boolean ready) {
-        RequestBody requestBody = new FormBody.Builder()
-            .add("name", name)
-            .add("gameCode", gameCode)
-            .add("ready", String.valueOf(ready))
-            .build();
+        try {
+            RequestBody requestBody = new FormBody.Builder()
+                .add("name", name)
+                .add("gameCode", gameCode)
+                .add("ready", String.valueOf(ready))
+                .build();
 
-        Request request = new Request.Builder()
-            .url(BASE_URL + "/set-ready")
-            .post(requestBody)
-            .addHeader("Accept", "application/json")
-            .build();
+            Request request = new Request.Builder()
+                .url(BASE_URL + "/set-ready")
+                .post(requestBody)
+                .addHeader("Accept", "application/json")
+                .build();
 
-        Call call = client.newCall(request);
-        call.enqueue(new SetReadyCallback(screen));
+            Call call = client.newCall(request);
+            call.enqueue(new SetReadyCallback(screen));
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public static void addBase(final GameScreen screen, final String planetName, final String base, final int currentNumBases, final String rocketId) {
-        RequestBody requestBody = new FormBody.Builder()
-            .add("gameCode", screen.lobbyScreen.gameCode)
-            .add("planetName", planetName)
-            .add("base", base)
-            .add("currentNumBases", String.valueOf(currentNumBases))
-            .add("rocketId", rocketId)
-            .build();
+        try {
+            RequestBody requestBody = new FormBody.Builder()
+                .add("gameCode", screen.lobbyScreen.gameCode)
+                .add("planetName", planetName)
+                .add("base", base)
+                .add("currentNumBases", String.valueOf(currentNumBases))
+                .add("rocketId", rocketId)
+                .build();
 
-        Request request = new Request.Builder()
-            .url(BASE_URL + "/add-base")
-            .post(requestBody)
-            .addHeader("Accept", "application/json")
-            .build();
+            Request request = new Request.Builder()
+                .url(BASE_URL + "/add-base")
+                .post(requestBody)
+                .addHeader("Accept", "application/json")
+                .build();
 
-        Call call = client.newCall(request);
-        call.enqueue(new AddBaseCallback(screen));
+            Call call = client.newCall(request);
+            call.enqueue(new AddBaseCallback(screen));
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 }

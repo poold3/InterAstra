@@ -18,11 +18,13 @@ import io.github.interastra.message.models.PlanetMessageModel;
 import io.github.interastra.message.models.PlayerMessageModel;
 import io.github.interastra.models.*;
 import io.github.interastra.services.CameraOperatorService;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.stages.GameStage;
 import io.github.interastra.tables.*;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 public class GameScreen implements Screen {
     public static final float MIN_WORLD_SIZE = 1000f;
@@ -122,22 +124,30 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(new Color(0.004f, 0f, 0.03f, 1f));
+        try {
+            ScreenUtils.clear(new Color(0.004f, 0f, 0.03f, 1f));
 
-        this.input();
-        this.logic(delta);
-        this.draw();
+            this.input();
+            this.logic(delta);
+            this.draw();
 
-        stage.act(delta);
-        stage.draw();
+            stage.act(delta);
+            stage.draw();
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     @Override
     public void resize(int width, int height) {
-        this.stageViewport.update(width, height, true);
-        this.gameViewport.update(width, height, true);
-        this.camera.center();
-        this.sol.reposition(this.gameViewport.getWorldWidth() / 2f, this.gameViewport.getWorldHeight() / 2f);
+        try {
+            this.stageViewport.update(width, height, true);
+            this.gameViewport.update(width, height, true);
+            this.camera.center();
+            this.sol.reposition(this.gameViewport.getWorldWidth() / 2f, this.gameViewport.getWorldHeight() / 2f);
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     @Override
@@ -157,7 +167,11 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        this.stage.dispose();
+        try {
+            this.stage.dispose();
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public void input() {
@@ -263,66 +277,82 @@ public class GameScreen implements Screen {
     }
 
     public void loadGameData(final GameStartMessage gameData) {
-        this.basesToWin = gameData.basesToWin();
-        // Add Sol
-        this.sol = new Star(this.planetsTextureAtlas, gameData.sol());
+        try {
+            this.basesToWin = gameData.basesToWin();
+            // Add Sol
+            this.sol = new Star(this.planetsTextureAtlas, gameData.sol());
 
-        // Add Planets
-        this.planets = new ArrayList<>();
-        for (PlanetMessageModel planet : gameData.planets()) {
-            this.planets.add(new Planet(this.planetsTextureAtlas, planet, this.spaceCraftTextureAtlas, this.lobbyScreen.myName, cooldownSound));
-        }
-
-        // Add Players
-        this.players = new ArrayList<>(gameData.players());
-        for (PlayerMessageModel player : this.players) {
-            if (player.name().equals(this.lobbyScreen.myName)) {
-                this.myPlayer = new Player(player);
+            // Add Planets
+            this.planets = new ArrayList<>();
+            for (PlanetMessageModel planet : gameData.planets()) {
+                this.planets.add(new Planet(this.planetsTextureAtlas, planet, this.spaceCraftTextureAtlas, this.lobbyScreen.myName, cooldownSound));
             }
+
+            // Add Players
+            this.players = new ArrayList<>(gameData.players());
+            for (PlayerMessageModel player : this.players) {
+                if (player.name().equals(this.lobbyScreen.myName)) {
+                    this.myPlayer = new Player(player);
+                }
+            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     public void unsubscribeToGameTopics() {
-        for (StompSession.Subscription sub : this.gameSubscriptions) {
-            sub.unsubscribe();
+        try {
+            for (StompSession.Subscription sub : this.gameSubscriptions) {
+                sub.unsubscribe();
+            }
+            this.gameSubscriptions.clear();
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        this.gameSubscriptions.clear();
     }
 
     public void subscribeToGameTopics() {
-        this.unsubscribeToGameTopics();
+        try {
+            this.unsubscribeToGameTopics();
 
-        // Add lobby update subscription
-        this.gameSubscriptions.add(
-            this.lobbyScreen.messageSession.subscribe(
-                String.format("/topic/game-update/%s", this.lobbyScreen.gameCode),
-                new GameUpdate(this)
-            )
-        );
+            // Add lobby update subscription
+            this.gameSubscriptions.add(
+                this.lobbyScreen.messageSession.subscribe(
+                    String.format("/topic/game-update/%s", this.lobbyScreen.gameCode),
+                    new GameUpdate(this)
+                )
+            );
 
-        // Add game start subscription
-        this.gameSubscriptions.add(
-            this.lobbyScreen.messageSession.subscribe(
-                String.format("/topic/game-end/%s", this.lobbyScreen.gameCode),
-                new GameEnd(this)
-            )
-        );
+            // Add game start subscription
+            this.gameSubscriptions.add(
+                this.lobbyScreen.messageSession.subscribe(
+                    String.format("/topic/game-end/%s", this.lobbyScreen.gameCode),
+                    new GameEnd(this)
+                )
+            );
 
-        // Add transfer subscriptions
-        this.gameSubscriptions.add(
-            this.lobbyScreen.messageSession.subscribe(
-                String.format("/topic/transfer/%s", this.lobbyScreen.gameCode),
-                new Transfer(this)
-            )
-        );
+            // Add transfer subscriptions
+            this.gameSubscriptions.add(
+                this.lobbyScreen.messageSession.subscribe(
+                    String.format("/topic/transfer/%s", this.lobbyScreen.gameCode),
+                    new Transfer(this)
+                )
+            );
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     public void toggleOptionsMenu() {
-        this.optionsTable.isVisible = !this.optionsTable.isVisible;
-        if (this.optionsTable.isVisible) {
-            this.stage.addActor(this.optionsTable);
-        } else {
-            this.optionsTable.remove();
+        try {
+            this.optionsTable.isVisible = !this.optionsTable.isVisible;
+            if (this.optionsTable.isVisible) {
+                this.stage.addActor(this.optionsTable);
+            } else {
+                this.optionsTable.remove();
+            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -337,97 +367,125 @@ public class GameScreen implements Screen {
     }
 
     public void togglePlanetDashboard() {
-        if (this.transferTable.isVisible) {
-            this.toggleTransferTable();
-        } else if (this.buySellTable.isVisible) {
-            this.toggleBuySellTable();
-        } else if (this.infoTable.isVisible) {
-            this.toggleInfoTable();
-        }
+        try {
+            if (this.transferTable.isVisible) {
+                this.toggleTransferTable();
+            } else if (this.buySellTable.isVisible) {
+                this.toggleBuySellTable();
+            } else if (this.infoTable.isVisible) {
+                this.toggleInfoTable();
+            }
 
-        if (!this.planetDashboardTable.isVisible && (this.entityBeingFollowed == null || this.entityBeingFollowed.getClass() != Planet.class)) {
-            return;
-        }
+            if (!this.planetDashboardTable.isVisible && (this.entityBeingFollowed == null || this.entityBeingFollowed.getClass() != Planet.class)) {
+                return;
+            }
 
-        this.planetDashboardTable.isVisible = !this.planetDashboardTable.isVisible;
-        if (this.planetDashboardTable.isVisible) {
-            this.planetDashboardTable.setPlanet((Planet) this.entityBeingFollowed);
-            this.stage.addActor(this.planetDashboardTable);
-        } else {
-            this.planetDashboardTable.remove();
+            this.planetDashboardTable.isVisible = !this.planetDashboardTable.isVisible;
+            if (this.planetDashboardTable.isVisible) {
+                this.planetDashboardTable.setPlanet((Planet) this.entityBeingFollowed);
+                this.stage.addActor(this.planetDashboardTable);
+            } else {
+                this.planetDashboardTable.remove();
+            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     public void toggleTransferTable() {
-        if (this.planetDashboardTable.isVisible) {
-            this.togglePlanetDashboard();
-        } else if (this.buySellTable.isVisible) {
-            this.toggleBuySellTable();
-        } else if (this.infoTable.isVisible) {
-            this.toggleInfoTable();
-        }
-        this.transferTable.isVisible = !this.transferTable.isVisible;
-        if (this.transferTable.isVisible) {
-            this.stage.addActor(this.transferTable);
-        } else {
-            this.transferTable.remove();
+        try {
+            if (this.planetDashboardTable.isVisible) {
+                this.togglePlanetDashboard();
+            } else if (this.buySellTable.isVisible) {
+                this.toggleBuySellTable();
+            } else if (this.infoTable.isVisible) {
+                this.toggleInfoTable();
+            }
+            this.transferTable.isVisible = !this.transferTable.isVisible;
+            if (this.transferTable.isVisible) {
+                this.stage.addActor(this.transferTable);
+            } else {
+                this.transferTable.remove();
+            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     public void toggleBuySellTable() {
-        if (this.planetDashboardTable.isVisible) {
-            this.togglePlanetDashboard();
-        } else if (this.transferTable.isVisible) {
-            this.toggleTransferTable();
-        } else if (this.infoTable.isVisible) {
-            this.toggleInfoTable();
-        }
-        this.buySellTable.isVisible = !this.buySellTable.isVisible;
-        if (this.buySellTable.isVisible) {
-            this.buySellTable.revaluationLabelUpdateTimer = 1f;
-            this.stage.addActor(this.buySellTable);
-        } else {
-            this.buySellTable.remove();
+        try {
+            if (this.planetDashboardTable.isVisible) {
+                this.togglePlanetDashboard();
+            } else if (this.transferTable.isVisible) {
+                this.toggleTransferTable();
+            } else if (this.infoTable.isVisible) {
+                this.toggleInfoTable();
+            }
+            this.buySellTable.isVisible = !this.buySellTable.isVisible;
+            if (this.buySellTable.isVisible) {
+                this.buySellTable.revaluationLabelUpdateTimer = 1f;
+                this.stage.addActor(this.buySellTable);
+            } else {
+                this.buySellTable.remove();
+            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     public void toggleInfoTable() {
-        if (this.planetDashboardTable.isVisible) {
-            this.togglePlanetDashboard();
-        } else if (this.transferTable.isVisible) {
-            this.toggleTransferTable();
-        } else if (this.buySellTable.isVisible) {
-            this.toggleBuySellTable();
-        }
-        this.infoTable.isVisible = !this.infoTable.isVisible;
-        if (this.infoTable.isVisible) {
-            this.stage.addActor(this.infoTable);
-        } else {
-            this.infoTable.remove();
+        try {
+            if (this.planetDashboardTable.isVisible) {
+                this.togglePlanetDashboard();
+            } else if (this.transferTable.isVisible) {
+                this.toggleTransferTable();
+            } else if (this.buySellTable.isVisible) {
+                this.toggleBuySellTable();
+            }
+            this.infoTable.isVisible = !this.infoTable.isVisible;
+            if (this.infoTable.isVisible) {
+                this.stage.addActor(this.infoTable);
+            } else {
+                this.infoTable.remove();
+            }
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     public void addRocket(final AddRocketMessage message) {
-        if (!this.lobbyScreen.messageSession.isConnected()) {
-            return;
+        try {
+            if (!this.lobbyScreen.messageSession.isConnected()) {
+                return;
+            }
+            String url = String.format("/ia-ws/add-rocket/%s", this.lobbyScreen.gameCode);
+            this.lobbyScreen.messageSession.send(url, message);
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        String url = String.format("/ia-ws/add-rocket/%s", this.lobbyScreen.gameCode);
-        this.lobbyScreen.messageSession.send(url, message);
     }
 
     public void removeRocket(final RemoveRocketMessage message) {
-        if (!this.lobbyScreen.messageSession.isConnected()) {
-            return;
+        try {
+            if (!this.lobbyScreen.messageSession.isConnected()) {
+                return;
+            }
+            String url = String.format("/ia-ws/remove-rocket/%s", this.lobbyScreen.gameCode);
+            this.lobbyScreen.messageSession.send(url, message);
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        String url = String.format("/ia-ws/remove-rocket/%s", this.lobbyScreen.gameCode);
-        this.lobbyScreen.messageSession.send(url, message);
     }
 
     public void sendTransfer(final TransferMessage message) {
-        if (!this.lobbyScreen.messageSession.isConnected()) {
-            return;
+        try {
+            if (!this.lobbyScreen.messageSession.isConnected()) {
+                return;
+            }
+            String url = String.format("/ia-ws/transfer/%s", this.lobbyScreen.gameCode);
+            this.lobbyScreen.messageSession.send(url, message);
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        String url = String.format("/ia-ws/transfer/%s", this.lobbyScreen.gameCode);
-        this.lobbyScreen.messageSession.send(url, message);
     }
 }

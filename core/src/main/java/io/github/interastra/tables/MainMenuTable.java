@@ -10,7 +10,10 @@ import io.github.interastra.message.MessageService;
 import io.github.interastra.screens.MainMenuScreen;
 import io.github.interastra.rest.RestService;
 import io.github.interastra.services.ClickListenerService;
+import io.github.interastra.services.InterAstraLog;
 import io.github.interastra.services.ValidationService;
+
+import java.util.logging.Level;
 
 public class MainMenuTable extends Table {
     public static final float BUTTON_WIDTH = 150f;
@@ -79,11 +82,15 @@ public class MainMenuTable extends Table {
         menuTextField.addListener(new FocusListener() {
             @Override
             public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
-                super.keyboardFocusChanged(event, actor, focused);
-                if (focused && menuTextField.getText().equals(text)) {
-                    menuTextField.setText("");
-                } else if (!focused && menuTextField.getText().isBlank()) {
-                    menuTextField.setText(text);
+                try {
+                    super.keyboardFocusChanged(event, actor, focused);
+                    if (focused && menuTextField.getText().equals(text)) {
+                        menuTextField.setText("");
+                    } else if (!focused && menuTextField.getText().isBlank()) {
+                        menuTextField.setText(text);
+                    }
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         });
@@ -96,16 +103,20 @@ public class MainMenuTable extends Table {
         newGameButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                String name = usernameTextField.getText().trim();
-                if (!ValidationService.validateName(name)) {
-                    screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage(ValidationService.NAME_VALIDATION_MESSAGE);
-                    return;
-                }
+                try {
+                    String name = usernameTextField.getText().trim();
+                    if (!ValidationService.validateName(name)) {
+                        screen.badSound.play(0.5f);
+                        screen.notificationTable.setMessage(ValidationService.NAME_VALIDATION_MESSAGE);
+                        return;
+                    }
 
-                screen.notificationTable.startLoading("Connecting");
-                setIPAddress();
-                RestService.newGame(screen, name);
+                    screen.notificationTable.startLoading("Connecting");
+                    setIPAddress();
+                    RestService.newGame(screen, name);
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         return newGameButton;
@@ -116,23 +127,27 @@ public class MainMenuTable extends Table {
         joinGameButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                String name = usernameTextField.getText().trim();
-                if (!ValidationService.validateName(name)) {
-                    screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage(ValidationService.NAME_VALIDATION_MESSAGE);
-                    return;
-                }
+                try {
+                    String name = usernameTextField.getText().trim();
+                    if (!ValidationService.validateName(name)) {
+                        screen.badSound.play(0.5f);
+                        screen.notificationTable.setMessage(ValidationService.NAME_VALIDATION_MESSAGE);
+                        return;
+                    }
 
-                String gameCode = gameCodeTextField.getText().trim();
-                if (!ValidationService.validateGameCode(gameCode)) {
-                    screen.badSound.play(0.5f);
-                    screen.notificationTable.setMessage(ValidationService.GAME_CODE_VALIDATION_MESSAGE);
-                    return;
-                }
+                    String gameCode = gameCodeTextField.getText().trim();
+                    if (!ValidationService.validateGameCode(gameCode)) {
+                        screen.badSound.play(0.5f);
+                        screen.notificationTable.setMessage(ValidationService.GAME_CODE_VALIDATION_MESSAGE);
+                        return;
+                    }
 
-                screen.notificationTable.startLoading("Connecting");
-                setIPAddress();
-                RestService.joinGame(screen, name, gameCode);
+                    screen.notificationTable.startLoading("Connecting");
+                    setIPAddress();
+                    RestService.joinGame(screen, name, gameCode);
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         return joinGameButton;
@@ -143,22 +158,30 @@ public class MainMenuTable extends Table {
         exitButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                screen.leaveSound.play();
-                screen.notificationTable.setMessage("Goodbye!");
-                screen.exitGame = true;
-                RestService.shutdownClient();
+                try {
+                    screen.leaveSound.play();
+                    screen.notificationTable.setMessage("Goodbye!");
+                    screen.exitGame = true;
+                    RestService.shutdownClient();
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
         return exitButton;
     }
 
     public void setIPAddress() {
-        String ipAddress = this.ipAddressTextField.getText();
-        if (ipAddress.isBlank() || ipAddress.equals("IP Address")) {
-            return;
-        }
+        try {
+            String ipAddress = this.ipAddressTextField.getText();
+            if (ipAddress.isBlank() || ipAddress.equals("IP Address")) {
+                return;
+            }
 
-        RestService.BASE_URL = String.format("http://%s:8090", ipAddress);
-        MessageService.BASE_URL = String.format("ws://%s:8090", ipAddress);
+            RestService.BASE_URL = String.format("http://%s:8090", ipAddress);
+            MessageService.BASE_URL = String.format("ws://%s:8090", ipAddress);
+        } catch (Exception e) {
+            InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 }

@@ -4,6 +4,8 @@ interastra-mac
 interastra-mac.zip
 *.dmg
 
+*.log
+
 ## Gradle:
 .gradle/
 gradle-app.setting
