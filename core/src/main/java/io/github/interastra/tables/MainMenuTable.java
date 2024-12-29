@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.utils.Align;
+import io.github.interastra.Main;
 import io.github.interastra.message.MessageService;
 import io.github.interastra.screens.MainMenuScreen;
 import io.github.interastra.rest.RestService;
@@ -41,6 +42,9 @@ public class MainMenuTable extends Table {
         this.row();
 
         this.ipAddressTextField = this.getMenuTextField("IP Address");
+        if (!Main.IP_ADDRESS.equals("localhost")) {
+            this.ipAddressTextField.setText(Main.IP_ADDRESS);
+        }
         this.add(this.ipAddressTextField).center().padTop(30f).size(TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
         this.row();
 
@@ -178,6 +182,7 @@ public class MainMenuTable extends Table {
                 return;
             }
 
+            Main.IP_ADDRESS = ipAddress;
             RestService.BASE_URL = String.format("http://%s:8090", ipAddress);
             MessageService.BASE_URL = String.format("ws://%s:8090", ipAddress);
         } catch (Exception e) {

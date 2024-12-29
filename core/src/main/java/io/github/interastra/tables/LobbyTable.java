@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Clipboard;
+import io.github.interastra.Main;
 import io.github.interastra.labels.ColorLabel;
 import io.github.interastra.message.models.LobbyPlayerMessageModel;
 import io.github.interastra.rest.RestService;
@@ -44,8 +45,14 @@ public class LobbyTable extends Table {
         this.add(gameTitleLabel).expandX().center().padTop(20);
         this.row();
 
-        Table gameCodeTable = this.getGameCodeTable();
-        this.add(gameCodeTable).padTop(20f);
+        Table codeTable = new Table();
+        Table gameCodeTable = this.getCopyCodeTable(screen.gameCode, this.getGameCodeClickListenerService());
+        codeTable.add(gameCodeTable).pad(20f, 10f, 0f, 10f);
+        if (!Main.IP_ADDRESS.equals("localhost")) {
+            Table ipAddressTable = this.getCopyCodeTable(Main.IP_ADDRESS, this.getIpAddressClickListenerService());
+            codeTable.add(ipAddressTable).pad(20f, 10f, 0f, 10f);
+        }
+        this.add(codeTable).padTop(20f);
         this.row();
 
         this.playersTable = new Table();
@@ -67,15 +74,15 @@ public class LobbyTable extends Table {
         return new Label("Inter Astra", titleLabelStyle);
     }
 
-    public Table getGameCodeTable() {
-        Table gameCodeTable = new Table();
-        gameCodeTable.setBackground(this.skin.getDrawable("panel_square"));
+    public Table getCopyCodeTable(final String text, final ClickListenerService clickListenerService) {
+        Table copyCodeTable = new Table();
+        copyCodeTable.setBackground(this.skin.getDrawable("panel_square"));
 
-        Label.LabelStyle gameCodeLabelStyle = new Label.LabelStyle();
-        gameCodeLabelStyle.font = this.skin.getFont("Teko-32");
-        Label gameCodeLabel = new Label(String.format("%s", this.screen.gameCode), gameCodeLabelStyle);
+        Label.LabelStyle copyCodeLabelStyle = new Label.LabelStyle();
+        copyCodeLabelStyle.font = this.skin.getFont("Teko-32");
+        Label gameCodeLabel = new Label(String.format("%s", text), copyCodeLabelStyle);
 
-        gameCodeTable.add(gameCodeLabel).padLeft(10f);
+        copyCodeTable.add(gameCodeLabel).padLeft(10f);
 
         TextureRegion copyTextureRegion = this.screen.iconsTextureAtlas.findRegion("copy");
         Drawable copyDrawable = new TextureRegionDrawable(copyTextureRegion);
@@ -87,7 +94,15 @@ public class LobbyTable extends Table {
         copyButtonStyle.imageDown = copyDrawable;
         ImageButton copyImageButton = new ImageButton(copyButtonStyle);
 
-        copyImageButton.addListener(new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
+        copyImageButton.addListener(clickListenerService);
+
+        copyCodeTable.add(copyImageButton).pad(0f, 10f, 0f, 10f);
+
+        return copyCodeTable;
+    }
+
+    public ClickListenerService getGameCodeClickListenerService() {
+        return new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 try {
@@ -98,11 +113,22 @@ public class LobbyTable extends Table {
                     InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
-        });
+        };
+    }
 
-        gameCodeTable.add(copyImageButton).pad(0f, 10f, 0f, 10f);
-
-        return gameCodeTable;
+    public ClickListenerService getIpAddressClickListenerService() {
+        return new ClickListenerService(this.screen.buttonSound, Cursor.SystemCursor.Hand) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                try {
+                    screen.notificationTable.setMessage("IP Address copied to clipboard.");
+                    Clipboard clipboard = Gdx.app.getClipboard();
+                    clipboard.setContents(Main.IP_ADDRESS);
+                } catch (Exception e) {
+                    InterAstraLog.logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
+        };
     }
 
     public void updatePlayers() {

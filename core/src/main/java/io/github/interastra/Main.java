@@ -13,6 +13,7 @@ import io.github.interastra.services.InterAstraLog;
 import java.util.logging.Level;
 
 public class Main extends Game {
+    public static String IP_ADDRESS = "localhost";
     public AssetManager assetManager;
     public SpriteBatch spriteBatch;
 
