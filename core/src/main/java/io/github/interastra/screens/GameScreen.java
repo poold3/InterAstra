@@ -177,7 +177,10 @@ public class GameScreen implements Screen {
     public void input() {
         // Escape key to exit
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            if (this.planetDashboardTable.isVisible) {
+            if (this.planetsTable.rocketToSend != null) {
+                this.planetsTable.rocketToSend = null;
+                this.planetsTable.resetRangeFinder();
+            } else if (this.planetDashboardTable.isVisible) {
                 this.togglePlanetDashboard();
             } else if (this.transferTable.isVisible) {
                 this.toggleTransferTable();

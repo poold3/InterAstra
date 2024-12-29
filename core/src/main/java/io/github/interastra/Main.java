@@ -19,6 +19,12 @@ public class Main extends Game {
     @Override
     public void create() {
         try {
+            // Load screens
+            Class.forName("io.github.interastra.screens.GameScreen");
+            Class.forName("io.github.interastra.screens.LoadingScreen");
+            Class.forName("io.github.interastra.screens.LobbyScreen");
+            Class.forName("io.github.interastra.screens.MainMenuScreen");
+
             this.assetManager = new AssetManager();
             this.assetManager.load("icons/icons.atlas", TextureAtlas.class);
             this.assetManager.load("planets/planets.atlas", TextureAtlas.class);
